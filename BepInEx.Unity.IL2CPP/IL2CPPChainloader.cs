@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using BepInEx.Core.Bootstrap;
 using BepInEx.Logging;
 using BepInEx.Preloader.Core;
 using BepInEx.Preloader.Core.Logging;

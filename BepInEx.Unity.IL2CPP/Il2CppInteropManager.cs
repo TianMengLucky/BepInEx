@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using BepInEx.Unity.Common;
 using BepInEx.Unity.IL2CPP.Hook;
 using BepInEx.Unity.IL2CPP.Logging;
 using Cpp2IL.Core;

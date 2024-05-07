@@ -7,11 +7,13 @@ using BepInEx.Preloader.Core;
 using BepInEx.Preloader.Core.Logging;
 using BepInEx.Preloader.Core.Patching;
 using BepInEx.Preloader.RuntimeFixes;
-using BepInEx.Unity.Common;
 using MonoMod.Utils;
 
 namespace BepInEx.Unity.IL2CPP;
 
+/// <summary>
+/// 
+/// </summary>
 public static class Preloader
 {
     private static PreloaderConsoleListener PreloaderLog { get; set; }

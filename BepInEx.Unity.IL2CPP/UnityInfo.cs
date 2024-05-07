@@ -3,14 +3,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using AssetRipper.VersionUtilities;
+using AsmResolver.PE.Platforms;
+using AssetRipper.Primitives;
+using Il2CppSystem.Threading;
 using MonoMod.Utils;
 
 [assembly: InternalsVisibleTo("BepInEx.Unity.Mono.Preloader")]
 [assembly: InternalsVisibleTo("BepInEx.Unity.Mono")]
 [assembly: InternalsVisibleTo("BepInEx.Unity.IL2CPP")]
 
-namespace BepInEx.Unity.Common;
+namespace BepInEx.Unity.IL2CPP;
 
 /// <summary>
 ///     Various information about the currently executing Unity player.
@@ -70,7 +72,7 @@ public static class UnityInfo
             }
 
         // On Windows, we can try to parse executable name, but some games can mess up the file version as well 
-        if (PlatformHelper.Is(Platform.Windows))
+        if (PlatformDetection.OS.Is(OSKind.Windows))
             try
             {
                 var version = FileVersionInfo.GetVersionInfo(PlayerPath);
@@ -96,17 +98,8 @@ public static class UnityInfo
         Version = default;
     }
 
-    private class ManagerLookup
+    private class ManagerLookup(string filePath, params int[] lookupOffsets)
     {
-        private readonly string filePath;
-        private readonly int[] lookupOffsets;
-
-        public ManagerLookup(string filePath, params int[] lookupOffsets)
-        {
-            this.filePath = filePath;
-            this.lookupOffsets = lookupOffsets;
-        }
-
         public bool TryLookup(out UnityVersion version)
         {
             var path = Path.Combine(GameDataPath, filePath);

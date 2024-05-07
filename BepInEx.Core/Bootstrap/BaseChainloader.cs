@@ -6,11 +6,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Mono.Cecil;
 
-namespace BepInEx.Bootstrap;
+namespace BepInEx.Core.Bootstrap;
 
 public abstract class BaseChainloader<TPlugin>
 {
