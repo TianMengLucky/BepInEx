@@ -12,7 +12,7 @@ public abstract class BasePlugin
 
         Log = Logger.CreateLogSource(metadata.Name);
 
-        Config = new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, metadata.GUID + ".cfg"), false, metadata);
+        Config = new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, metadata.Guid + ".cfg"), false, metadata);
     }
 
     public ManualLogSource Log { get; }

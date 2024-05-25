@@ -102,9 +102,7 @@ public static class Paths
         ExecutablePath = executablePath;
         ProcessName = Path.GetFileNameWithoutExtension(executablePath);
 
-        GameRootPath = PlatformHelper.Is(Platform.MacOS)
-                           ? Utility.ParentDirectory(executablePath, 4)
-                           : Path.GetDirectoryName(executablePath);
+        GameRootPath = Path.GetDirectoryName(executablePath);
 
         GameDataPath = managedPath != null && gameDataRelativeToManaged
                            ? Path.GetDirectoryName(managedPath)

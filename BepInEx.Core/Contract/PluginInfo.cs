@@ -52,7 +52,7 @@ public class PluginInfo : ICacheable
         bw.Write(TypeName);
         bw.Write(Location);
 
-        bw.Write(Metadata.GUID);
+        bw.Write(Metadata.Guid);
         bw.Write(Metadata.Name);
         bw.Write(Metadata.Version.ToString());
 

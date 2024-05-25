@@ -11,7 +11,7 @@ using MonoMod.Utils;
 // ReSharper disable once CheckNamespace
 namespace Doorstop;
 
-internal static class Entrypoint
+/*internal static class Entrypoint
 {
     /// <summary>
     ///     The main entrypoint of BepInEx, called from Doorstop.
@@ -70,4 +70,4 @@ internal static class Entrypoint
             mutex?.ReleaseMutex();
         }
     }
-}
+}*/

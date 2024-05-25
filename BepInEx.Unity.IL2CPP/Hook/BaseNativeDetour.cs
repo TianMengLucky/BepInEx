@@ -2,27 +2,22 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using BepInEx.Logging;
+using MonoMod.Core;
 using MonoMod.RuntimeDetour;
 
 namespace BepInEx.Unity.IL2CPP.Hook;
 
-internal abstract class BaseNativeDetour<T> : INativeDetour where T : BaseNativeDetour<T>
+internal abstract class BaseNativeDetour<T>(nint originalMethodPtr, Delegate detourMethod) : INativeDetour
+    where T : BaseNativeDetour<T>
 {
     protected static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource(typeof(T).Name);
 
-    protected BaseNativeDetour(nint originalMethodPtr, Delegate detourMethod)
-    {
-        OriginalMethodPtr = originalMethodPtr;
-        DetourMethod = detourMethod;
-        DetourMethodPtr = Marshal.GetFunctionPointerForDelegate(detourMethod);
-    }
-
     public bool IsPrepared { get; protected set; }
     protected MethodInfo TrampolineMethod { get; set; }
-    protected Delegate DetourMethod { get; set; }
+    protected Delegate DetourMethod { get; set; } = detourMethod;
 
-    public nint OriginalMethodPtr { get; }
-    public nint DetourMethodPtr { get; }
+    public nint OriginalMethodPtr { get; } = originalMethodPtr;
+    public nint DetourMethodPtr { get; } = Marshal.GetFunctionPointerForDelegate(detourMethod);
     public nint TrampolinePtr { get; protected set; }
     public bool IsValid { get; private set; } = true;
     public bool IsApplied { get; private set; }
@@ -63,7 +58,7 @@ internal abstract class BaseNativeDetour<T> : INativeDetour where T : BaseNative
         if (TrampolineMethod == null)
         {
             Prepare();
-            TrampolineMethod = DetourHelper.GenerateNativeProxy(TrampolinePtr, signature);
+            TrampolineMethod = n.GenerateNativeProxy(TrampolinePtr, signature);
         }
 
         return TrampolineMethod;
@@ -78,6 +73,10 @@ internal abstract class BaseNativeDetour<T> : INativeDetour where T : BaseNative
 
         return Marshal.GetDelegateForFunctionPointer<TDelegate>(TrampolinePtr);
     }
+
+    public nint Target { get; }
+    public nint Detour { get; }
+    public nint OriginalTrampoline { get; }
 
     protected abstract void ApplyImpl();
 
@@ -95,4 +94,8 @@ internal abstract class BaseNativeDetour<T> : INativeDetour where T : BaseNative
     protected abstract void UndoImpl();
 
     protected abstract void FreeImpl();
+    public IDetourFactory Factory { get; }
+    public DetourConfig Config { get; }
+    public MethodInfo PublicTarget { get; }
+    public MethodInfo InvokeTarget { get; }
 }

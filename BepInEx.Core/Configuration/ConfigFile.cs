@@ -316,7 +316,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
                 if (_ownerMetadata != null)
                 {
                     writer.WriteLine($"## Settings file was created by plugin {_ownerMetadata.Name} v{_ownerMetadata.Version}");
-                    writer.WriteLine($"## Plugin GUID: {_ownerMetadata.GUID}");
+                    writer.WriteLine($"## Plugin GUID: {_ownerMetadata.Guid}");
                     writer.WriteLine();
                 }
 

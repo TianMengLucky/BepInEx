@@ -10,7 +10,7 @@
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All"/>
         <PackageReference Include="HarmonyX" Version="2.12.0" />
         <PackageReference Include="SemanticVersioning" Version="3.0.0-beta2" />
-        <PackageReference Include="MonoMod.Utils" Version="25.0.4" />
+        <PackageReference Include="MonoMod.Utils" Version="25.0.5" />
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="Contract\IPlugin.cs"/>

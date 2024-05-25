@@ -18,20 +18,20 @@ namespace BepInEx;
 [AttributeUsage(AttributeTargets.Class)]
 public class BepInPlugin : Attribute
 {
-    /// <param name="GUID">The unique identifier of the plugin. Should not change between plugin versions.</param>
-    /// <param name="Name">The user friendly name of the plugin. Is able to be changed between versions.</param>
-    /// <param name="Version">The specific version of the plugin.</param>
-    public BepInPlugin(string GUID, string Name, string Version)
+    /// <param name="guid">The unique identifier of the plugin. Should not change between plugin versions.</param>
+    /// <param name="name">The user friendly name of the plugin. Is able to be changed between versions.</param>
+    /// <param name="version">The specific version of the plugin.</param>
+    public BepInPlugin(string guid, string name, string version)
     {
-        this.GUID = GUID;
-        this.Name = Name;
-        this.Version = TryParseLongVersion(Version);
+        this.Guid = guid;
+        this.Name = name;
+        this.Version = TryParseLongVersion(version);
     }
 
     /// <summary>
     ///     The unique identifier of the plugin. Should not change between plugin versions.
     /// </summary>
-    public string GUID { get; protected set; }
+    public string Guid { get; protected set; }
 
 
     /// <summary>
@@ -58,7 +58,10 @@ public class BepInPlugin : Attribute
             return new Version(longVersion.Major, longVersion.Minor,
                                longVersion.Build != -1 ? longVersion.Build : 0);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         return null;
     }
@@ -104,12 +107,12 @@ public class BepInDependency : Attribute, ICacheable
     ///     this one.
     ///     If the other plugin doesn't exist, what happens depends on the <see cref="Flags" /> parameter.
     /// </summary>
-    /// <param name="DependencyGUID">The GUID of the referenced plugin.</param>
-    /// <param name="Flags">The flags associated with this dependency definition.</param>
-    public BepInDependency(string DependencyGUID, DependencyFlags Flags = DependencyFlags.HardDependency)
+    /// <param name="dependencyGuid">The GUID of the referenced plugin.</param>
+    /// <param name="flags">The flags associated with this dependency definition.</param>
+    public BepInDependency(string dependencyGuid, DependencyFlags flags = DependencyFlags.HardDependency)
     {
-        this.DependencyGUID = DependencyGUID;
-        this.Flags = Flags;
+        this.DependencyGUID = dependencyGuid;
+        this.Flags = flags;
         VersionRange = null;
     }
 

@@ -51,10 +51,10 @@ public abstract class BaseChainloader<TPlugin>
             return null;
         }
 
-        if (string.IsNullOrEmpty(metadata.GUID) || !allowedGuidRegex.IsMatch(metadata.GUID))
+        if (string.IsNullOrEmpty(metadata.Guid) || !allowedGuidRegex.IsMatch(metadata.Guid))
         {
             Logger.Log(LogLevel.Warning,
-                       $"Skipping type [{type.FullName}] because its GUID [{metadata.GUID}] is of an illegal format.");
+                       $"Skipping type [{type.FullName}] because its GUID [{metadata.Guid}] is of an illegal format.");
             return null;
         }
 
@@ -163,17 +163,7 @@ public abstract class BaseChainloader<TPlugin>
 
     protected virtual void InitializeLoggers()
     {
-        if (ConsoleManager.ConsoleEnabled && !ConsoleManager.ConsoleActive)
-            ConsoleManager.CreateConsole();
-
-        if (ConsoleManager.ConsoleActive)
-        {
-            if (!Logger.Listeners.Any(x => x is ConsoleLogListener))
-                Logger.Listeners.Add(new ConsoleLogListener());
-
-            ConsoleManager.SetConsoleTitle(ConsoleTitle);
-        }
-
+        
         if (ConfigDiskLogging.Value)
             Logger.Listeners.Add(new DiskLogListener("LogOutput.log", ConfigDiskLoggingDisplayedLevel.Value,
                                                      ConfigDiskAppend.Value, ConfigDiskLoggingInstantFlushing.Value,
@@ -224,7 +214,7 @@ public abstract class BaseChainloader<TPlugin>
             new SortedDictionary<string, IEnumerable<string>>(StringComparer.InvariantCultureIgnoreCase);
         var pluginsByGuid = new Dictionary<string, PluginInfo>();
 
-        foreach (var pluginInfoGroup in plugins.GroupBy(info => info.Metadata.GUID))
+        foreach (var pluginInfoGroup in plugins.GroupBy(info => info.Metadata.Guid))
         {
             if (Plugins.TryGetValue(pluginInfoGroup.Key, out var loadedPlugin))
             {
@@ -259,8 +249,8 @@ public abstract class BaseChainloader<TPlugin>
                 }
 
                 loadedVersion = pluginInfo;
-                dependencyDict[pluginInfo.Metadata.GUID] = pluginInfo.Dependencies.Select(d => d.DependencyGUID);
-                pluginsByGuid[pluginInfo.Metadata.GUID] = pluginInfo;
+                dependencyDict[pluginInfo.Metadata.Guid] = pluginInfo.Dependencies.Select(d => d.DependencyGUID);
+                pluginsByGuid[pluginInfo.Metadata.Guid] = pluginInfo;
             }
         }
 
@@ -270,8 +260,8 @@ public abstract class BaseChainloader<TPlugin>
                                                   || Plugins.ContainsKey(incompatibility.IncompatibilityGUID))
                )
             {
-                pluginsByGuid.Remove(pluginInfo.Metadata.GUID);
-                dependencyDict.Remove(pluginInfo.Metadata.GUID);
+                pluginsByGuid.Remove(pluginInfo.Metadata.Guid);
+                dependencyDict.Remove(pluginInfo.Metadata.Guid);
 
                 var incompatiblePluginsNew = pluginInfo.Incompatibilities.Select(x => x.IncompatibilityGUID)
                                                        .Where(x => pluginsByGuid.ContainsKey(x));
@@ -320,12 +310,6 @@ public abstract class BaseChainloader<TPlugin>
         }
         catch (Exception ex)
         {
-            try
-            {
-                ConsoleManager.CreateConsole();
-            }
-            catch { }
-
             Logger.Log(LogLevel.Error, $"Error occurred loading plugins: {ex}");
         }
 
@@ -377,7 +361,7 @@ public abstract class BaseChainloader<TPlugin>
                 }
             }
 
-            processedPlugins.Add(plugin.Metadata.GUID, plugin.Metadata.Version);
+            processedPlugins.Add(plugin.Metadata.Guid, plugin.Metadata.Version);
 
             if (dependsOnInvalidPlugin)
             {
@@ -396,7 +380,7 @@ public abstract class BaseChainloader<TPlugin>
                 DependencyErrors.Add(message);
                 Logger.Log(LogLevel.Error, message);
 
-                invalidPlugins.Add(plugin.Metadata.GUID);
+                invalidPlugins.Add(plugin.Metadata.Guid);
                 continue;
             }
 
@@ -407,7 +391,7 @@ public abstract class BaseChainloader<TPlugin>
                 if (!loadedAssemblies.TryGetValue(plugin.Location, out var ass))
                     loadedAssemblies[plugin.Location] = ass = Assembly.LoadFrom(plugin.Location);
 
-                Plugins[plugin.Metadata.GUID] = plugin;
+                Plugins[plugin.Metadata.Guid] = plugin;
                 TryRunModuleCtor(plugin, ass);
                 plugin.Instance = LoadPlugin(plugin, ass);
                 loadedPlugins.Add(plugin);
@@ -416,8 +400,8 @@ public abstract class BaseChainloader<TPlugin>
             }
             catch (Exception ex)
             {
-                invalidPlugins.Add(plugin.Metadata.GUID);
-                Plugins.Remove(plugin.Metadata.GUID);
+                invalidPlugins.Add(plugin.Metadata.Guid);
+                Plugins.Remove(plugin.Metadata.Guid);
 
                 Logger.Log(LogLevel.Error,
                            $"Error loading [{plugin}]: {(ex is ReflectionTypeLoadException re ? TypeLoader.TypeLoadExceptionToString(re) : ex.ToString())}");

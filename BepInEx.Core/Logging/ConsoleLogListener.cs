@@ -1,7 +1,8 @@
 ﻿using System;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     Logs entries using a console spawned by BepInEx.
@@ -19,9 +20,9 @@ public class ConsoleLogListener : ILogListener
     /// <inheritdoc />
     public void LogEvent(object sender, LogEventArgs eventArgs)
     {
-        ConsoleManager.SetConsoleColor(eventArgs.Level.GetConsoleColor());
+        /*ConsoleManager.SetConsoleColor(eventArgs.Level.GetConsoleColor());
         ConsoleManager.ConsoleStream?.Write(eventArgs.ToStringLine());
-        ConsoleManager.SetConsoleColor(ConsoleColor.Gray);
+        ConsoleManager.SetConsoleColor(ConsoleColor.Gray);*/
     }
 
     /// <inheritdoc />

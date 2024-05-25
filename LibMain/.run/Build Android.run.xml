@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Build Android" type="BatchConfigurationType" factoryName="Batch">
+    <module name="LibMain" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="ANDROID_NDK_HOME" value="D:\Microsoft\AndroidNDK\android-ndk-r26d" />
+    </envs>
+    <option name="SCRIPT_NAME" value="./build.bat" />
+    <option name="PARAMETERS" value="" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using BepInEx.Core.Logging;
 using BepInEx.IL2CPP.RuntimeFixes;
 using BepInEx.Logging;
 using BepInEx.Preloader.Core;
@@ -31,16 +32,16 @@ public static class Preloader
             ConsoleSetOutFix.Apply();
             UnityInfo.Initialize(Paths.ExecutablePath, Paths.GameDataPath);
 
-            ConsoleManager.Initialize(false, true);
+            /*ConsoleManager.Initialize(false, true);*/
 
             PreloaderLog = new PreloaderConsoleListener();
             Logger.Listeners.Add(PreloaderLog);
 
-            if (ConsoleManager.ConsoleEnabled)
+            /*if (ConsoleManager.ConsoleEnabled)
             {
                 ConsoleManager.CreateConsole();
                 Logger.Listeners.Add(new ConsoleLogListener());
-            }
+            }*/
 
             RedirectStdErrFix.Apply();
 
@@ -54,14 +55,14 @@ public static class Preloader
             Logger.Log(LogLevel.Debug, $"Interop assembly directory: {Il2CppInteropManager.IL2CPPInteropAssemblyPath}");
             Logger.Log(LogLevel.Debug, $"BepInEx root path: {Paths.BepInExRootPath}");
 
-            if (PlatformHelper.Is(Platform.Wine) && !Environment.Is64BitProcess)
+            /*if (PlatformHelper.Is(Platform.Wine) && !Environment.Is64BitProcess)
             {
                 if (!NativeLibrary.TryGetExport(NativeLibrary.Load("ntdll"), "RtlRestoreContext", out var _))
                 {
                     Logger.Log(LogLevel.Warning,
                                "Your wine version doesn't support CoreCLR properly, expect crashes! Upgrade to wine 7.16 or higher.");
                 }
-            }
+            }*/
 
             NativeLibrary.SetDllImportResolver(typeof(Il2CppInterop.Runtime.IL2CPP).Assembly, DllImportResolver);
 

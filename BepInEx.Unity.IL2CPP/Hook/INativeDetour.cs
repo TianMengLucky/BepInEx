@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP.Hook.Dobby;
-using BepInEx.Unity.IL2CPP.Hook.Funchook;
-using MonoMod.RuntimeDetour;
+using Il2CppInterop.Runtime.Injection;
 using MonoMod.Utils;
 
 namespace BepInEx.Unity.IL2CPP.Hook;
@@ -30,15 +29,9 @@ public interface INativeDetour : IDetour
         var detour = DetourProviderType.Value switch
         {
             DetourProvider.Dobby    => new DobbyDetour(original, target),
-            DetourProvider.Funchook => new FunchookDetour(original, target),
-            _                       => CreateDefault(original, target)
+            var _                   => CreateDefault(original, target)
         };
-        if (!ReflectionHelper.IsMono)
-        {
-            return new CacheDetourWrapper(detour, target);
-        }
-
-        return detour;
+        return !PlatformDetection.Runtime.HasFlag(RuntimeKind.Mono) ? new CacheDetourWrapper(detour, target) : detour;
     }
 
     public static INativeDetour CreateAndApply<T>(nint from, T to, out T original)
@@ -54,52 +47,46 @@ public interface INativeDetour : IDetour
     // Workaround for CoreCLR collecting all delegates
     private class CacheDetourWrapper : INativeDetour
     {
-        private readonly INativeDetour _wrapped;
+        private readonly INativeDetour wrapped;
 
-        private List<object> _cache = new();
+        private readonly List<object> cache = new();
 
         public CacheDetourWrapper(INativeDetour wrapped, Delegate target)
         {
-            _wrapped = wrapped;
-            _cache.Add(target);
+            this.wrapped = wrapped;
+            cache.Add(target);
         }
 
         public void Dispose()
         {
-            _wrapped.Dispose();
-            _cache.Clear();
+            wrapped.Dispose();
+            cache.Clear();
         }
 
-        public void Apply() => _wrapped.Apply();
-
-        public void Undo() => _wrapped.Undo();
-
-        public void Free() => _wrapped.Free();
-
-        public MethodBase GenerateTrampoline(MethodBase signature = null) => _wrapped.GenerateTrampoline(signature);
-
+        public void Apply() => wrapped.Apply();
+        
         public T GenerateTrampoline<T>() where T : Delegate
         {
-            var trampoline = _wrapped.GenerateTrampoline<T>();
-            _cache.Add(trampoline);
+            var trampoline = wrapped.GenerateTrampoline<T>();
+            cache.Add(trampoline);
             return trampoline;
         }
 
-        public bool IsValid => _wrapped.IsValid;
+        public nint Target { get; }
+        public nint Detour { get; }
+        public nint OriginalTrampoline { get; }
+        
 
-        public bool IsApplied => _wrapped.IsApplied;
+        public nint OriginalMethodPtr => wrapped.OriginalMethodPtr;
 
-        public nint OriginalMethodPtr => _wrapped.OriginalMethodPtr;
+        public nint DetourMethodPtr => wrapped.DetourMethodPtr;
 
-        public nint DetourMethodPtr => _wrapped.DetourMethodPtr;
-
-        public nint TrampolinePtr => _wrapped.TrampolinePtr;
+        public nint TrampolinePtr => wrapped.TrampolinePtr;
     }
 
     internal enum DetourProvider
     {
         Default,
-        Dobby,
-        Funchook
+        Dobby
     }
 }

@@ -29,20 +29,6 @@ internal static class RedirectStdErrFix
 
     public static void Apply()
     {
-        if (PlatformHelper.Is(Platform.Windows))
-        {
-            var errorFile = CreateFile(Path.Combine(Paths.BepInExRootPath, "ErrorLog.log"), GENERIC_WRITE,
-                                       FILE_SHARE_READ,
-                                       0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-            if (errorFile == INVALID_HANDLE_VALUE)
-            {
-                Logger.Log(LogLevel.Warning, "Failed to open error log file; skipping error redirection");
-                return;
-            }
-
-            if (!SetStdHandle(STD_ERROR_HANDLE, errorFile))
-                Logger.Log(LogLevel.Warning, "Failed to redirect stderr; skipping error redirection");
-        }
         // On unix, we can generally redirect stderr to a file "normally" via piping
     }
 }

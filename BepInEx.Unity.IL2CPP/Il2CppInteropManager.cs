@@ -96,7 +96,7 @@ internal static partial class Il2CppInteropManager
 
     public static string GameAssemblyPath => Environment.GetEnvironmentVariable("BEPINEX_GAME_ASSEMBLY_PATH") ??
                                              Path.Combine(Paths.GameRootPath,
-                                                          "GameAssembly." + PlatformHelper.LibrarySuffix);
+                                                          "GameAssembly.so");
 
     private static string HashPath => Path.Combine(IL2CPPInteropAssemblyPath, "assembly-hash.txt");
 
@@ -303,7 +303,10 @@ internal static partial class Il2CppInteropManager
         var unityVersion = UnityInfo.Version;
         Cpp2IlApi.InitializeLibCpp2Il(GameAssemblyPath, metadataPath, unityVersion, false);
 
-        List<Cpp2IlProcessingLayer> processingLayers = new() { new AttributeInjectorProcessingLayer(), };
+        List<Cpp2IlProcessingLayer> processingLayers = [new AttributeInjectorProcessingLayer()];
+
+        if (Cpp2IlApi.CurrentAppContext == null)
+            return [];
 
         foreach (var cpp2IlProcessingLayer in processingLayers)
         {
@@ -315,7 +318,7 @@ internal static partial class Il2CppInteropManager
             cpp2IlProcessingLayer.Process(Cpp2IlApi.CurrentAppContext);
         }
 
-        var assemblies = new AsmResolverDummyDllOutputFormat().BuildAssemblies(Cpp2IlApi.CurrentAppContext);
+        var assemblies = new AsmResolverDllOutputFormatDefault().BuildAssemblies(Cpp2IlApi.CurrentAppContext);
 
         LibCpp2IlMain.Reset();
         Cpp2IlApi.CurrentAppContext = null;
