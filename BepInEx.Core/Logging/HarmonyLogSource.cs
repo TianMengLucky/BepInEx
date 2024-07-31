@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using BepInEx.Configuration;
+using BepInEx.Core.Configuration;
 using HarmonyLogger = HarmonyLib.Tools.Logger;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 public class HarmonyLogSource : ILogSource
 {

@@ -1,5 +1,5 @@
 using System.IO;
-using BepInEx.Bootstrap;
+using BepInEx.Core.Bootstrap;
 
 namespace BepInEx.Preloader.Core.Patching;
 

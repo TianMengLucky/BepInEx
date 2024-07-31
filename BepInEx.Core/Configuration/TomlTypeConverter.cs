@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using BepInEx.Logging;
+using BepInEx.Core.Logging;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Serializer/deserializer used by the config system.

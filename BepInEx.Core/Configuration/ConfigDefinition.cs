@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Section and key of a setting. Used as a unique key for identification within a
-///     <see cref="T:BepInEx.Configuration.ConfigFile" />.
+///     <see cref="T:BepInEx.Core.Configuration.ConfigFile" />.
 ///     The same definition can be used in multiple config files, it will point to different settings then.
 /// </summary>
 /// <inheritdoc />

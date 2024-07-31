@@ -6,11 +6,9 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using BepInEx;
-using BepInEx.ConsoleUtil;
 using MonoMod.Utils;
 
-namespace UnityInjector.ConsoleUtil;
+namespace BepInEx.Core.Console.Windows;
 
 internal class ConsoleWindow
 {

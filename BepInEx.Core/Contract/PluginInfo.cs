@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BepInEx.Bootstrap;
+using BepInEx.Core.Bootstrap;
 
-namespace BepInEx;
+namespace BepInEx.Core.Contract;
 
 /// <summary>
 ///     Data class that represents information about a loadable BepInEx plugin.

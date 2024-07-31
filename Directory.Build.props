@@ -3,10 +3,9 @@
         <VersionPrefix>6.0.0</VersionPrefix>
         <Authors>BepInEx</Authors>
         <LangVersion>latest</LangVersion>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <DebugType>embedded</DebugType>
         <Configurations>Debug;Release</Configurations>
         <PackageProjectUrl>https://github.com/BepInEx/BepInEx</PackageProjectUrl>

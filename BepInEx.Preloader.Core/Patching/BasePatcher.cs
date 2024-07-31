@@ -1,5 +1,7 @@
-using BepInEx.Configuration;
-using BepInEx.Logging;
+using BepInEx.Core;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Contract;
+using BepInEx.Core.Logging;
 
 namespace BepInEx.Preloader.Core.Patching;
 

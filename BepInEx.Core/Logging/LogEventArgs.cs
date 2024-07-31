@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     Log event arguments. Contains info about the log message.

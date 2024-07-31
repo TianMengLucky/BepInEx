@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Arguments for events concerning a change of a setting.

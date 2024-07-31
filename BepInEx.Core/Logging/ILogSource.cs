@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     Log source that can output log messages.

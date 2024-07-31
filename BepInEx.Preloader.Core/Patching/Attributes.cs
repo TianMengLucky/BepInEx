@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using BepInEx.Core.Contract;
 using Mono.Cecil;
 using Version = SemanticVersioning.Version;
 

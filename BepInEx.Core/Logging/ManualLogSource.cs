@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using BepInEx.Core.Logging.Interpolation;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     A generic, multi-purpose log source. Exposes simple API to manually emit logs.

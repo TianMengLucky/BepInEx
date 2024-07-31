@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using BepInEx.Logging;
+using BepInEx.Core.Logging;
 using HarmonyLib;
 
-namespace BepInEx.Preloader.RuntimeFixes;
+namespace BepInEx.Preloader.Core.RuntimeFixes;
 
 public static class ConsoleSetOutFix
 {

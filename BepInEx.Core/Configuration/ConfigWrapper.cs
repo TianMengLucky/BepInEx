@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Provides access to a single setting inside of a <see cref="Configuration.ConfigFile" />.

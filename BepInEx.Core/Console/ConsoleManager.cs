@@ -2,11 +2,12 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
-using BepInEx.Configuration;
-using BepInEx.Unix;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Console.Unix;
+using BepInEx.Core.Console.Windows;
 using MonoMod.Utils;
 
-namespace BepInEx;
+namespace BepInEx.Core.Console;
 
 public static class ConsoleManager
 {

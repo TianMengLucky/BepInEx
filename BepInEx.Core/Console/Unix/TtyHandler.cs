@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace BepInEx.Unix;
+namespace BepInEx.Core.Console.Unix;
 
 internal class TtyInfo
 {

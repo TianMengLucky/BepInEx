@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using BepInEx.Core.Logging.Interpolation;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     Handles pub-sub event marshalling across all log listeners and sources.

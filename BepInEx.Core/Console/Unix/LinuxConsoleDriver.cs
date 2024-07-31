@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Logging;
 using HarmonyLib;
-using UnityInjector.ConsoleUtil;
 
-namespace BepInEx.Unix;
+namespace BepInEx.Core.Console.Unix;
 
 internal class LinuxConsoleDriver : IConsoleDriver
 {
@@ -23,10 +22,10 @@ internal class LinuxConsoleDriver : IConsoleDriver
         if (ForceCustomTtyDriverConfig.Value)
             return;
 
-        var consoleDriverType = typeof(Console).Assembly.GetType("System.ConsoleDriver");
+        var consoleDriverType = typeof(System.Console).Assembly.GetType("System.ConsoleDriver");
 
         if (consoleDriverType != null)
-            UseMonoTtyDriver = typeof(Console).Assembly.GetType("System.ParameterizedStrings") != null;
+            UseMonoTtyDriver = typeof(System.Console).Assembly.GetType("System.ParameterizedStrings") != null;
     }
 
     public static bool UseMonoTtyDriver { get; }
@@ -59,7 +58,7 @@ internal class LinuxConsoleDriver : IConsoleDriver
         {
             // Mono implementation handles xterm for us
 
-            var writer = ConsoleWriter.CreateConsoleStreamWriter(duplicateStream, Console.Out.Encoding, true);
+            var writer = ConsoleWriter.CreateConsoleStreamWriter(duplicateStream, System.Console.Out.Encoding, true);
 
             StandardOut = TextWriter.Synchronized(writer);
 
@@ -70,7 +69,7 @@ internal class LinuxConsoleDriver : IConsoleDriver
         {
             // Handle TTY ourselves
 
-            var writer = new StreamWriter(duplicateStream, Console.Out.Encoding);
+            var writer = new StreamWriter(duplicateStream, System.Console.Out.Encoding);
 
             writer.AutoFlush = true;
 

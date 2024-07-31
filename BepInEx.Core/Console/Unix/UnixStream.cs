@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace BepInEx.Unix;
+namespace BepInEx.Core.Console.Unix;
 
 internal class UnixStream : Stream
 {

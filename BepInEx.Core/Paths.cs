@@ -1,10 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
+using BepInEx.Core.Contract;
 using MonoMod.Utils;
 using SemanticVersioning;
 
-namespace BepInEx;
+namespace BepInEx.Core;
 
 /// <summary>
 ///     Paths used by BepInEx

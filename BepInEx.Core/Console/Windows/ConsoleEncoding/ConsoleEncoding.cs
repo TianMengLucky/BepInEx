@@ -6,7 +6,7 @@
 using System;
 using System.Text;
 
-namespace UnityInjector.ConsoleUtil;
+namespace BepInEx.Core.Console.Windows.ConsoleEncoding;
 
 // --------------------------------------------------
 // Code ported from

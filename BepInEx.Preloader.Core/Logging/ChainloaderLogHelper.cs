@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BepInEx.Logging;
+using BepInEx.Core;
+using BepInEx.Core.Console;
+using BepInEx.Core.Logging;
 using MonoMod.Utils;
 
 namespace BepInEx.Preloader.Core.Logging;

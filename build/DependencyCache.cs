@@ -4,6 +4,8 @@ using System.IO;
 using Cake.Core.IO;
 using Cake.Json;
 
+namespace Build;
+
 readonly record struct DependencyCache(BuildContext Ctx, FilePath CacheFile)
 {
     readonly IDictionary<string, string> cache =

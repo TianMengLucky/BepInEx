@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace BepInEx;
+namespace BepInEx.Core.Console;
 
 internal interface IConsoleDriver
 {

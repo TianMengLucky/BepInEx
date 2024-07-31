@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Logging;
 
 namespace BepInEx.Preloader.Core.Logging;
 

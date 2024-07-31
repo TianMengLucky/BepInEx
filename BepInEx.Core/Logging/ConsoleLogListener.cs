@@ -1,7 +1,8 @@
 ﻿using System;
-using BepInEx.Configuration;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Console;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     Logs entries using a console spawned by BepInEx.

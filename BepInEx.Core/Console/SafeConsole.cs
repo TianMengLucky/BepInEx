@@ -6,7 +6,7 @@
 using System;
 using System.Reflection;
 
-namespace UnityInjector.ConsoleUtil;
+namespace BepInEx.Core.Console;
 
 /// <summary>
 ///     Console class with safe handlers for Unity 4.x, which does not have a proper Console implementation
@@ -24,7 +24,7 @@ internal static class SafeConsole
 
     static SafeConsole()
     {
-        var tConsole = typeof(Console);
+        var tConsole = typeof(System.Console);
         InitColors(tConsole);
     }
 

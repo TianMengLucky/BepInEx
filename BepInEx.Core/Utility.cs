@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Mono.Cecil;
 
-namespace BepInEx;
+namespace BepInEx.Core;
 
 /// <summary>
 ///     Generic helper properties and methods.

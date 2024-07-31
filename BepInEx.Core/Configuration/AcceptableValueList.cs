@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Specify the list of acceptable values for a setting.

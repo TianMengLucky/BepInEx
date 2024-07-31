@@ -1,11 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
-#if NET35
-using System.Security.Permissions;
 
-#endif
-
-namespace BepInEx.ConsoleUtil
+namespace BepInEx.Core.Console.Windows
 {
     internal class Kon
     {

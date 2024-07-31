@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     A generic log listener that receives log events and can route them to some output (e.g. file, console, socket).

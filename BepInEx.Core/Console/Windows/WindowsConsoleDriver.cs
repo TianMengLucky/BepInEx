@@ -2,13 +2,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using BepInEx.ConsoleUtil;
 using HarmonyLib;
 using Microsoft.Win32.SafeHandles;
 using MonoMod.Utils;
-using UnityInjector.ConsoleUtil;
 
-namespace BepInEx;
+namespace BepInEx.Core.Console.Windows;
 
 internal class WindowsConsoleDriver : IConsoleDriver
 {
@@ -23,11 +21,11 @@ internal class WindowsConsoleDriver : IConsoleDriver
     }.FirstOrDefault(m => m != null);
 
     private readonly Func<int> getWindowHeight = AccessTools
-                                                 .PropertyGetter(typeof(Console), nameof(Console.WindowHeight))
+                                                 .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowHeight))
                                                  ?.CreateDelegate<Func<int>>();
 
     private readonly Func<int> getWindowWidth = AccessTools
-                                                .PropertyGetter(typeof(Console), nameof(Console.WindowWidth))
+                                                .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowWidth))
                                                 ?.CreateDelegate<Func<int>>();
 
     private bool useManagedEncoder;
@@ -76,12 +74,12 @@ internal class WindowsConsoleDriver : IConsoleDriver
         if (ConsoleActive)
         {
             // We're in a .NET framework / XNA environment; console *is* stdout
-            ConsoleOut = Console.Out;
-            StandardOut = new StreamWriter(Console.OpenStandardOutput());
+            ConsoleOut = System.Console.Out;
+            StandardOut = new StreamWriter(System.Console.OpenStandardOutput());
         }
         else
         {
-            StandardOut = Console.Out;
+            StandardOut = System.Console.Out;
         }
     }
 
@@ -93,7 +91,7 @@ internal class WindowsConsoleDriver : IConsoleDriver
         // Encoding.GetEncoding throws NotImplementedException on most codepages
         // NOTE: We don't set Console.OutputEncoding because it resets any existing Console.Out writers
         if (!useManagedEncoder)
-            ConsoleEncoding.ConsoleCodePage = codepage;
+            ConsoleEncoding.ConsoleEncoding.ConsoleCodePage = codepage;
 
         // If stdout exists, write to it, otherwise make it the same as console out
         // Not sure if this is needed? Does the original Console.Out still work?
@@ -114,7 +112,7 @@ internal class WindowsConsoleDriver : IConsoleDriver
         var consoleOutStream = OpenFileStream(ConsoleWindow.ConsoleOutHandle);
         // Can't use Console.OutputEncoding because it can be null (i.e. not preference by user)
         ConsoleOut = new StreamWriter(consoleOutStream,
-                                      useManagedEncoder ? Utility.UTF8NoBom : ConsoleEncoding.OutputEncoding)
+                                      useManagedEncoder ? Utility.UTF8NoBom : ConsoleEncoding.ConsoleEncoding.OutputEncoding)
         {
             AutoFlush = true
         };

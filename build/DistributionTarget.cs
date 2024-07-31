@@ -1,5 +1,7 @@
 using System;
 
+namespace Build;
+
 readonly struct DistributionTarget
 {
     public DistributionTarget(string distributionIdentifier, string runtimeIdentifier)

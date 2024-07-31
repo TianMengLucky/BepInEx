@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Logging;
 using Mono.Cecil;
 
-namespace BepInEx.Bootstrap;
+namespace BepInEx.Core.Bootstrap;
 
 /// <summary>
 ///     A cacheable metadata item. Can be used with <see cref="TypeLoader.LoadAssemblyCache{T}" /> and

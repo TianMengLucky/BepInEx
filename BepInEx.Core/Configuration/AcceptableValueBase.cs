@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Base type of all classes representing and enforcing acceptable values of config settings.

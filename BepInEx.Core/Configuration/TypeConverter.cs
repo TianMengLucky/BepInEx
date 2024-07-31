@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     A serializer/deserializer combo for some type(s). Used by the config system.

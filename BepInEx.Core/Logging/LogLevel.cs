@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     The level, or severity of a log entry.

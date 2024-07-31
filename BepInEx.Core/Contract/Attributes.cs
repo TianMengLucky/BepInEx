@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using BepInEx.Bootstrap;
+using BepInEx.Core.Bootstrap;
 using Mono.Cecil;
 using Range = SemanticVersioning.Range;
 using Version = SemanticVersioning.Version;
 
-namespace BepInEx;
+namespace BepInEx.Core.Contract;
 
 #region BaseUnityPlugin
 

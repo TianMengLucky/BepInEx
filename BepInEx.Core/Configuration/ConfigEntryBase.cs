@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using BepInEx.Logging;
+using BepInEx.Core.Logging;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Provides access to a single setting inside of a <see cref="Configuration.ConfigFile" />.

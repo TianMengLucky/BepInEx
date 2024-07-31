@@ -9,6 +9,8 @@ using Cake.Core.IO;
 using Spectre.Console;
 using Path = System.IO.Path;
 
+namespace Build;
+
 static class DownloadTasks
 {
     public static void DownloadFiles(this ICakeContext ctx,

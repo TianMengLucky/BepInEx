@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Text;
-using BepInEx.Logging;
 
-namespace BepInEx.Core.Logging.Interpolation;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     Interpolated string handler for BepInEx <see cref="Logger" />. This allows to conditionally skip logging certain
@@ -11,7 +10,7 @@ namespace BepInEx.Core.Logging.Interpolation;
 /// </summary>
 /// <remarks>
 ///     The class isn't meant to be constructed manually.
-///     Instead, use <see cref="ManualLogSource.Log(BepInEx.Logging.LogLevel,BepInExLogInterpolatedStringHandler)" /> with
+///     Instead, use <see cref="ManualLogSource.Log(BepInEx.Core.Logging.LogLevel,BepInEx.Core.Logging.BepInExLogInterpolatedStringHandler)" /> with
 ///     string interpolation.
 /// </remarks>
 [InterpolatedStringHandler]

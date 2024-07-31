@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     Metadata of a <see cref="ConfigEntryBase" />.

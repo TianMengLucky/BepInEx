@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace BepInEx.Logging;
+namespace BepInEx.Core.Logging;
 
 /// <summary>
 ///     A source that routes all logs from the inbuilt .NET <see cref="Trace" /> API to the BepInEx logging system.

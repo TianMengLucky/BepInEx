@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using BepInEx.Logging;
+using BepInEx.Core.Contract;
+using BepInEx.Core.Logging;
 
-namespace BepInEx.Configuration;
+namespace BepInEx.Core.Configuration;
 
 /// <summary>
 ///     A helper class to handle persistent data. All public methods are thread-safe.
@@ -387,7 +388,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     ///     Access one of the existing settings. If the setting has not been added yet, false is returned. Otherwise, true.
     ///     If the setting exists but has a different type than T, an exception is thrown.
     ///     New settings should be added with
-    ///     <see cref="Bind{T}(BepInEx.Configuration.ConfigDefinition,T,BepInEx.Configuration.ConfigDescription)" />.
+    ///     <see cref="Bind{T}(BepInEx.Core.Configuration.ConfigDefinition,T,BepInEx.Core.Configuration.ConfigDescription)" />.
     /// </summary>
     /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
     /// <param name="configDefinition">Section and Key of the setting.</param>
@@ -411,7 +412,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     ///     Access one of the existing settings. If the setting has not been added yet, null is returned.
     ///     If the setting exists but has a different type than T, an exception is thrown.
     ///     New settings should be added with
-    ///     <see cref="Bind{T}(BepInEx.Configuration.ConfigDefinition,T,BepInEx.Configuration.ConfigDescription)" />.
+    ///     <see cref="Bind{T}(BepInEx.Core.Configuration.ConfigDefinition,T,BepInEx.Core.Configuration.ConfigDescription)" />.
     /// </summary>
     /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
     /// <param name="section">Section/category/group of the setting. Settings are grouped by this.</param>

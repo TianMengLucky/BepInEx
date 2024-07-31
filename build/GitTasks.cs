@@ -1,6 +1,8 @@
 ﻿using Cake.Common;
 using Cake.Core;
 
+namespace Build;
+
 static class GitTasks
 {
     public static string Git(this ICakeContext ctx, string args, string separator = "")

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using HarmonyLib;
 
-namespace BepInEx.Unix;
+namespace BepInEx.Core.Console.Unix;
 
 internal static class ConsoleWriter
 {

@@ -6,9 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using BepInEx.Bootstrap;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+using BepInEx.Core;
+using BepInEx.Core.Bootstrap;
+using BepInEx.Core.Configuration;
+using BepInEx.Core.Contract;
+using BepInEx.Core.Logging;
 using HarmonyLib;
 using Mono.Cecil;
 
@@ -18,16 +20,9 @@ namespace BepInEx.Preloader.Core.Patching;
 ///     Worker class which is used for loading and patching entire folders of assemblies, or alternatively patching and
 ///     loading assemblies one at a time.
 /// </summary>
-public class AssemblyPatcher : IDisposable
+public class AssemblyPatcher(Func<byte[], string, Assembly> assemblyLoader) : IDisposable
 {
     private static readonly string CurrentAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-
-    private Func<byte[], string, Assembly> assemblyLoader;
-
-    public AssemblyPatcher(Func<byte[], string, Assembly> assemblyLoader)
-    {
-        this.assemblyLoader = assemblyLoader;
-    }
 
     /// <summary>
     ///     The context of this assembly patcher instance that is passed to all patcher plugins.
@@ -43,7 +38,7 @@ public class AssemblyPatcher : IDisposable
     /// </summary>
     private IEnumerable<BasePatcher> PatcherPluginsSafe => PatcherContext.PatcherPlugins.ToList();
 
-    private ManualLogSource Logger { get; } = BepInEx.Logging.Logger.CreateLogSource("AssemblyPatcher");
+    private ManualLogSource Logger { get; } = BepInEx.Core.Logging.Logger.CreateLogSource("AssemblyPatcher");
 
     private static Regex allowedGuidRegex { get; } = new(@"^[a-zA-Z0-9\._\-]+$");
 

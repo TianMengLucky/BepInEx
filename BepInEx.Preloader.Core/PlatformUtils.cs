@@ -135,37 +135,22 @@ internal static class PlatformUtils
     private delegate string GetWineVersionDelegate();
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Unicode)]
-    public struct WindowsOSVersionInfoExW
+    public struct WindowsOSVersionInfoExW()
     {
-        public uint dwOSVersionInfoSize;
-        public uint dwMajorVersion;
-        public uint dwMinorVersion;
-        public uint dwBuildNumber;
-        public uint dwPlatformId;
+        public uint dwOSVersionInfoSize = (uint) Marshal.SizeOf(typeof(WindowsOSVersionInfoExW));
+        public uint dwMajorVersion = 0;
+        public uint dwMinorVersion = 0;
+        public uint dwBuildNumber = 0;
+        public uint dwPlatformId = 0;
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string szCSDVersion;
+        public string szCSDVersion = null;
 
-        public ushort wServicePackMajor;
-        public ushort wServicePackMinor;
-        public ushort wSuiteMask;
-        public byte wProductType;
-        public byte wReserved;
-
-        public WindowsOSVersionInfoExW()
-        {
-            dwOSVersionInfoSize = (uint) Marshal.SizeOf(typeof(WindowsOSVersionInfoExW));
-            dwMajorVersion = 0;
-            dwMinorVersion = 0;
-            dwBuildNumber = 0;
-            dwPlatformId = 0;
-            szCSDVersion = null;
-            wServicePackMajor = 0;
-            wServicePackMinor = 0;
-            wSuiteMask = 0;
-            wProductType = 0;
-            wReserved = 0;
-        }
+        public ushort wServicePackMajor = 0;
+        public ushort wServicePackMinor = 0;
+        public ushort wSuiteMask = 0;
+        public byte wProductType = 0;
+        public byte wReserved = 0;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

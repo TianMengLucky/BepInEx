@@ -1,4 +1,4 @@
-﻿using BepInEx.Logging;
+﻿using BepInEx.Core.Logging;
 
 namespace BepInEx.Preloader.Core;
 

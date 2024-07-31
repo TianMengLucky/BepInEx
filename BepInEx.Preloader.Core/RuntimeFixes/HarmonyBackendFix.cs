@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using BepInEx.Configuration;
+using BepInEx.Core.Configuration;
 
-namespace BepInEx.Preloader.RuntimeFixes;
+namespace BepInEx.Preloader.Core.RuntimeFixes;
 
 public static class HarmonyBackendFix
 {
