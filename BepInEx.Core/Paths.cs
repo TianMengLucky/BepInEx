@@ -48,13 +48,13 @@ public static class Paths
     /// <summary>
     ///     The path of the currently executing program BepInEx is encapsulated in.
     /// </summary>
-    public static string ExecutablePath { get; private set; }
+    public static string? ExecutablePath { get; private set; }
 
     /// <summary>
     ///     The directory that the currently executing process resides in.
     ///     <para>On OSX however, this is the parent directory of the game.app folder.</para>
     /// </summary>
-    public static string GameRootPath { get; private set; }
+    public static string? GameRootPath { get; private set; }
 
     /// <summary>
     ///     The path to the config directory.
@@ -94,24 +94,24 @@ public static class Paths
     /// </summary>
     public static string[] DllSearchPaths { get; private set; }
 
-    public static void SetExecutablePath(string executablePath,
-                                         string bepinRootPath = null,
-                                         string managedPath = null,
+    public static void SetExecutablePath(string? executablePath,
+                                         string? bepInExRootPath = null,
+                                         string? managedPath = null,
                                          bool gameDataRelativeToManaged = false,
-                                         string[] dllSearchPath = null)
+                                         string[]? dllSearchPath = null)
     {
         ExecutablePath = executablePath;
         ProcessName = Path.GetFileNameWithoutExtension(executablePath);
 
-        GameRootPath = PlatformHelper.Is(Platform.MacOS)
+        GameRootPath = PlatformDetection.OS.Is(OSKind.OSX)
                            ? Utility.ParentDirectory(executablePath, 4)
-                           : Path.GetDirectoryName(executablePath);
+                           : Path.GetDirectoryName(executablePath)!;
 
         GameDataPath = managedPath != null && gameDataRelativeToManaged
-                           ? Path.GetDirectoryName(managedPath)
-                           : Path.Combine(GameRootPath, $"{ProcessName}_Data");
+                           ? Path.GetDirectoryName(managedPath)!
+                           : Path.Combine(GameRootPath!, $"{ProcessName}_Data");
         ManagedPath = managedPath ?? Path.Combine(GameDataPath, "Managed");
-        BepInExRootPath = bepinRootPath ?? Path.Combine(GameRootPath, "BepInEx");
+        BepInExRootPath = bepInExRootPath ?? Path.Combine(GameRootPath!, "BepInEx");
         ConfigPath = Path.Combine(BepInExRootPath, "config");
         BepInExConfigPath = Path.Combine(ConfigPath, "BepInEx.cfg");
         PluginPath = Path.Combine(BepInExRootPath, "plugins");
@@ -120,7 +120,7 @@ public static class Paths
         BepInExAssemblyPath = Path.Combine(BepInExAssemblyDirectory,
                                            $"{Assembly.GetExecutingAssembly().GetName().Name}.dll");
         CachePath = Path.Combine(BepInExRootPath, "cache");
-        DllSearchPaths = (dllSearchPath ?? new string[0]).Concat(new[] { ManagedPath }).Distinct().ToArray();
+        DllSearchPaths = (dllSearchPath ?? []).Concat(new[] { ManagedPath }).Distinct().ToArray();
     }
 
     internal static void SetPluginPath(string pluginPath) =>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using MonoMod.Utils;
 
@@ -20,41 +19,33 @@ internal static class UnixStreamHelper
     public delegate int fwriteDelegate(IntPtr ptr, IntPtr size, IntPtr nmemb, IntPtr stream);
 
     public delegate int isattyDelegate(int fd);
-
-    [DynDllImport("libc")]
+    
+    private static IntPtr libcHandle;
+    
     public static dupDelegate dup;
-
-    [DynDllImport("libc")]
+    
     public static fdopenDelegate fdopen;
-
-    [DynDllImport("libc")]
+    
     public static freadDelegate fread;
-
-    [DynDllImport("libc")]
+    
     public static fwriteDelegate fwrite;
-
-    [DynDllImport("libc")]
+    
     public static fcloseDelegate fclose;
-
-    [DynDllImport("libc")]
+    
     public static fflushDelegate fflush;
-
-    [DynDllImport("libc")]
+    
     public static isattyDelegate isatty;
-
+    
     static UnixStreamHelper()
     {
-        var libcMapping = new Dictionary<string, List<DynDllMapping>>
-        {
-            ["libc"] = new()
-            {
-                "libc.so.6",               // Ubuntu glibc
-                "libc",                    // Linux glibc
-                "/usr/lib/libSystem.dylib" // OSX POSIX
-            }
-        };
-
-        typeof(UnixStreamHelper).ResolveDynDllImports(libcMapping);
+        libcHandle = DynDll.OpenLibrary(PlatformDetection.OS.Is(OSKind.OSX) ? "/usr/lib/libSystem.dylib" : "libc");
+        dup = libcHandle.GetExportAsDelegate<dupDelegate>("dup")!;
+        fdopen = libcHandle.GetExportAsDelegate<fdopenDelegate>("fdopen")!;
+        fread = libcHandle.GetExportAsDelegate<freadDelegate>("fread")!;
+        fwrite = libcHandle.GetExportAsDelegate<fwriteDelegate>("fwrite")!;
+        fclose = libcHandle.GetExportAsDelegate<fcloseDelegate>("fclose")!;
+        fflush = libcHandle.GetExportAsDelegate<fflushDelegate>("fflush")!;
+        isatty = libcHandle.GetExportAsDelegate<isattyDelegate>("isatty")!; 
     }
 
     public static Stream CreateDuplicateStream(int fileDescriptor)

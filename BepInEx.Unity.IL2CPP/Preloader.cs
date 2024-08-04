@@ -31,7 +31,7 @@ public static class Preloader
             ConsoleSetOutFix.Apply();
             UnityInfo.Initialize(Paths.ExecutablePath, Paths.GameDataPath);
 
-            ConsoleManager.Initialize(false, true);
+            ConsoleManager.Initialize(false);
 
             PreloaderLog = new PreloaderConsoleListener();
             Logger.Listeners.Add(PreloaderLog);
@@ -54,7 +54,7 @@ public static class Preloader
             Logger.Log(LogLevel.Debug, $"Interop assembly directory: {Il2CppInteropManager.IL2CPPInteropAssemblyPath}");
             Logger.Log(LogLevel.Debug, $"BepInEx root path: {Paths.BepInExRootPath}");
 
-            if (PlatformHelper.Is(Platform.Wine) && !Environment.Is64BitProcess)
+            if (PlatformDetection.OS.Is(OSKind.Wine) && !Environment.Is64BitProcess)
             {
                 if (!NativeLibrary.TryGetExport(NativeLibrary.Load("ntdll"), "RtlRestoreContext", out var _))
                 {

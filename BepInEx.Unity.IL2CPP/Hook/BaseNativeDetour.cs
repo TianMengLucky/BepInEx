@@ -2,28 +2,28 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using BepInEx.Core.Logging;
-using MonoMod.RuntimeDetour;
+using MonoMod.Core;
 
 namespace BepInEx.Unity.IL2CPP.Hook;
 
-internal abstract class BaseNativeDetour<T>(nint originalMethodPtr, Delegate detourMethod) : INativeDetour
+internal abstract class BaseNativeDetour<T>
+    (IntPtr originalMethodPtr, IntPtr detourMethod) : ICoreNativeDetour
     where T : BaseNativeDetour<T>
 {
     protected static readonly ManualLogSource _Logger = Logger.CreateLogSource(typeof(T).Name);
 
     public bool IsPrepared { get; protected set; }
-    protected MethodInfo TrampolineMethod { get; set; }
-    protected Delegate DetourMethod { get; set; } = detourMethod;
 
-    public nint OriginalMethodPtr { get; } = originalMethodPtr;
-    public nint DetourMethodPtr { get; } = Marshal.GetFunctionPointerForDelegate(detourMethod);
-    public nint TrampolinePtr { get; protected set; }
-    public bool IsValid { get; private set; } = true;
+    public IntPtr Source { get; } = originalMethodPtr;
+    public IntPtr Target { get; } = detourMethod;
+    
+    public bool HasOrigEntrypoint { get; protected set; }
+    public IntPtr OrigEntrypoint { get; protected set; }
     public bool IsApplied { get; private set; }
 
     public void Dispose()
     {
-        if (!IsValid) return;
+        if (!IsApplied) return;
         Undo();
         Free();
     }
@@ -36,7 +36,7 @@ internal abstract class BaseNativeDetour<T>(nint originalMethodPtr, Delegate det
         ApplyImpl();
 
         _Logger.Log(LogLevel.Debug,
-                   $"Original: {OriginalMethodPtr:X}, Trampoline: {TrampolinePtr:X}, diff: {Math.Abs(OriginalMethodPtr - TrampolinePtr):X}");
+                   $"Original: {Source:X}, Trampoline: {OrigEntrypoint:X}, diff: {Math.Abs(Source - OrigEntrypoint):X}");
 
         IsApplied = true;
     }
@@ -49,28 +49,6 @@ internal abstract class BaseNativeDetour<T>(nint originalMethodPtr, Delegate det
     public void Free()
     {
         FreeImpl();
-        IsValid = false;
-    }
-
-    public MethodBase GenerateTrampoline(MethodBase signature = null)
-    {
-        if (TrampolineMethod == null)
-        {
-            Prepare();
-            TrampolineMethod = DetourHelper.GenerateNativeProxy(TrampolinePtr, signature);
-        }
-
-        return TrampolineMethod;
-    }
-
-    public TDelegate GenerateTrampoline<TDelegate>() where TDelegate : Delegate
-    {
-        if (!typeof(Delegate).IsAssignableFrom(typeof(TDelegate)))
-            throw new InvalidOperationException($"Type {typeof(TDelegate)} not a delegate type.");
-
-        _ = GenerateTrampoline(typeof(TDelegate).GetMethod("Invoke"));
-
-        return Marshal.GetDelegateForFunctionPointer<TDelegate>(TrampolinePtr);
     }
 
     protected abstract void ApplyImpl();
@@ -78,9 +56,9 @@ internal abstract class BaseNativeDetour<T>(nint originalMethodPtr, Delegate det
     private void Prepare()
     {
         if (IsPrepared) return;
-        _Logger.LogDebug($"Preparing detour from 0x{OriginalMethodPtr:X2} to 0x{DetourMethodPtr:X2}");
+        _Logger.LogDebug($"Preparing detour from 0x{Source:X2} to 0x{Target:X2}");
         PrepareImpl();
-        _Logger.LogDebug($"Prepared detour; Trampoline: 0x{TrampolinePtr:X2}");
+        _Logger.LogDebug($"Prepared detour; Trampoline: 0x{OrigEntrypoint:X2}");
         IsPrepared = true;
     }
 

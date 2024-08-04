@@ -87,7 +87,7 @@ public static class Utility
     /// <param name="path">The path to get the parent directory of.</param>
     /// <param name="levels">The amount of levels to traverse. Defaults to 1</param>
     /// <returns>The parent directory.</returns>
-    public static string ParentDirectory(string path, int levels = 1)
+    public static string? ParentDirectory(string? path, int levels = 1)
     {
         for (var i = 0; i < levels; i++)
             path = Path.GetDirectoryName(path);
@@ -325,7 +325,7 @@ public static class Utility
     /// </summary>
     /// <param name="strings">Strings to hash</param>
     /// <returns>MD5 of the strings</returns>
-    public static string HashStrings(params string[] strings)
+    public static string HashStrings(params string?[] strings)
     {
         using var md5 = MD5.Create();
 

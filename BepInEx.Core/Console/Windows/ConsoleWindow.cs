@@ -6,7 +6,6 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using MonoMod.Utils;
 
 namespace BepInEx.Core.Console.Windows;
 

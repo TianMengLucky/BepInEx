@@ -13,7 +13,7 @@ internal interface IConsoleDriver
 
     void PreventClose();
 
-    void Initialize(bool alreadyActive, bool useManagedEncoder);
+    void Initialize(bool alreadyActive);
 
     // Apparently Windows code-pages work in Mono.
     // https://stackoverflow.com/a/33456543

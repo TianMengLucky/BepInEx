@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BepInEx.Unity.IL2CPP.Hook.Funchook;
 
-internal class FunchookDetour(nint originalMethodPtr, Delegate detourMethod)
+internal class FunchookDetour(IntPtr originalMethodPtr, IntPtr detourMethod)
     : BaseNativeDetour<FunchookDetour>(originalMethodPtr, detourMethod)
 {
     private readonly nint funchookInstance = FunchookLib.Create();
@@ -12,9 +12,10 @@ internal class FunchookDetour(nint originalMethodPtr, Delegate detourMethod)
 
     protected override unsafe void PrepareImpl()
     {
-        var trampolinePtr = OriginalMethodPtr;
-        EnsureSuccess(FunchookLib.Prepare(funchookInstance, &trampolinePtr, DetourMethodPtr));
-        TrampolinePtr = trampolinePtr;
+        var trampolinePtr = Source;
+        EnsureSuccess(FunchookLib.Prepare(funchookInstance, &trampolinePtr, Target));
+        OrigEntrypoint = trampolinePtr;
+        HasOrigEntrypoint = true;
     }
 
     protected override void UndoImpl() => EnsureSuccess(FunchookLib.Uninstall(funchookInstance, 0));

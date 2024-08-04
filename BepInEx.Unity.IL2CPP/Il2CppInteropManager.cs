@@ -28,7 +28,6 @@ using Il2CppInterop.Runtime.Startup;
 using LibCpp2IL;
 using Microsoft.Extensions.Logging;
 using Mono.Cecil;
-using MonoMod.Utils;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using MSLoggerFactory = Microsoft.Extensions.Logging.LoggerFactory;
 
@@ -97,8 +96,8 @@ internal static partial class Il2CppInteropManager
     private static bool initialized;
 
     public static string GameAssemblyPath => Environment.GetEnvironmentVariable("BEPINEX_GAME_ASSEMBLY_PATH") ??
-                                             Path.Combine(Paths.GameRootPath,
-                                                          "GameAssembly." + PlatformHelper.LibrarySuffix);
+                                             Path.Combine(Paths.GameRootPath!,
+                                                          $"GameAssembly.{Core.Utils.PlatformPostFix}");
 
     private static string HashPath => Path.Combine(IL2CPPInteropAssemblyPath, "assembly-hash.txt");
 
@@ -154,10 +153,10 @@ internal static partial class Il2CppInteropManager
             }
 
         // Hash some common dependencies as they can affect output
-        HashString(md5, typeof(InteropAssemblyGenerator).Assembly.GetName().Version.ToString());
-        HashString(md5, typeof(Cpp2IlApi).Assembly.GetName().Version.ToString());
+        HashString(md5, typeof(InteropAssemblyGenerator).Assembly.GetName().Version?.ToString());
+        HashString(md5, typeof(Cpp2IlApi).Assembly.GetName().Version?.ToString());
 
-        md5.TransformFinalBlock(new byte[0], 0, 0);
+        md5.TransformFinalBlock([], 0, 0);
 
         return Utility.ByteArrayToString(md5.Hash);
     }
@@ -166,14 +165,11 @@ internal static partial class Il2CppInteropManager
     {
         static bool NeedGenerationOrSkip()
         {
-            if (!UpdateInteropAssemblies.Value)
-            {
-                var hash = ComputeHash();
-                _Logger.LogWarning($"Interop assemblies are possibly out of date. To disable this message, create file {HashPath} with the following contents: {hash}");
-                return false;
-            }
+            if (UpdateInteropAssemblies.Value) return true;
+            var hash = ComputeHash();
+            _Logger.LogWarning($"Interop assemblies are possibly out of date. To disable this message, create file {HashPath} with the following contents: {hash}");
+            return false;
 
-            return true;
         }
 
         if (!Directory.Exists(IL2CPPInteropAssemblyPath))
@@ -212,14 +208,21 @@ internal static partial class Il2CppInteropManager
         var interopLogger = LoggerFactory.CreateLogger("Il2CppInterop");
 
         var unityVersion = UnityInfo.Version;
-        Il2CppInteropRuntime.Create(new RuntimeConfiguration
-                            {
-                                UnityVersion = new Version(unityVersion.Major, unityVersion.Minor, unityVersion.Build),
-                                DetourProvider = new Il2CppInteropDetourProvider()
-                            })
-                            .AddLogger(interopLogger)
-                            .AddHarmonySupport()
-                            .Start();
+        try
+        {
+            Il2CppInteropRuntime.Create(new RuntimeConfiguration
+                                {
+                                    UnityVersion = new Version(unityVersion.Major, unityVersion.Minor, unityVersion.Build),
+                                    DetourProvider = new Il2CppInteropDetourProvider()
+                                })
+                                .AddLogger(interopLogger)
+                                .AddHarmonySupport()
+                                .Start();
+        }
+        catch (Exception e)
+        {
+            interopLogger.LogError($"Il2CppInterop Error: \n {e}");
+        }
     }
 
     private static void GenerateInteropAssemblies()

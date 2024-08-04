@@ -18,12 +18,12 @@ public static class EnvVars
     /// <summary>
     ///     Full path to the game's "Managed" folder that contains all the game's managed assemblies
     /// </summary>
-    public static string DOORSTOP_MANAGED_FOLDER_DIR { get; private set; }
+    public static string? DOORSTOP_MANAGED_FOLDER_DIR { get; private set; }
 
     /// <summary>
     ///     Full path to the game executable currently running.
     /// </summary>
-    public static string DOORSTOP_PROCESS_PATH { get; private set; }
+    public static string? DOORSTOP_PROCESS_PATH { get; private set; }
 
     /// <summary>
     ///     Array of paths where Mono searches DLLs from before assembly resolvers are invoked.

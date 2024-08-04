@@ -41,7 +41,7 @@ public class PluginInfo : ICacheable
     /// <summary>
     ///     Instance of the plugin that represents this info. NULL if no plugin is instantiated from info (yet)
     /// </summary>
-    public object Instance { get; internal set; }
+    public object? Instance { get; internal set; }
 
     public string TypeName { get; internal set; }
 

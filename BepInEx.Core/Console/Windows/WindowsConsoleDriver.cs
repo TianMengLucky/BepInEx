@@ -14,21 +14,19 @@ internal class WindowsConsoleDriver : IConsoleDriver
     // IntPtr overload is used for file streams (check #139).
     // On the other hand, not all Unity games come with SafeFileHandle overload for FileStream
     // As such, we're trying to use SafeFileHandle when it's available and go back to IntPtr overload if not available
-    private static readonly ConstructorInfo FileStreamCtor = new[]
+    private static readonly ConstructorInfo? FileStreamCtor = new[]
     {
-        AccessTools.Constructor(typeof(FileStream), new[] { typeof(SafeFileHandle), typeof(FileAccess) }),
-        AccessTools.Constructor(typeof(FileStream), new[] { typeof(IntPtr), typeof(FileAccess) })
+        AccessTools.Constructor(typeof(FileStream), [typeof(SafeFileHandle), typeof(FileAccess)]),
+        AccessTools.Constructor(typeof(FileStream), [typeof(IntPtr), typeof(FileAccess)])
     }.FirstOrDefault(m => m != null);
 
-    private readonly Func<int> getWindowHeight = AccessTools
-                                                 .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowHeight))
+    private readonly Func<int>? getWindowHeight = AccessTools
+                                                  .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowHeight))
+                                                  ?.CreateDelegate<Func<int>>();
+
+    private readonly Func<int>? getWindowWidth = AccessTools
+                                                 .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowWidth))
                                                  ?.CreateDelegate<Func<int>>();
-
-    private readonly Func<int> getWindowWidth = AccessTools
-                                                .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowWidth))
-                                                ?.CreateDelegate<Func<int>>();
-
-    private bool useManagedEncoder;
 
     private int ConsoleWidth
     {
@@ -66,10 +64,9 @@ internal class WindowsConsoleDriver : IConsoleDriver
     public bool ConsoleActive { get; private set; }
     public bool ConsoleIsExternal => true;
 
-    public void Initialize(bool alreadyActive, bool useManagedEncoder)
+    public void Initialize(bool alreadyActive)
     {
         ConsoleActive = alreadyActive;
-        this.useManagedEncoder = useManagedEncoder;
 
         if (ConsoleActive)
         {
@@ -90,8 +87,7 @@ internal class WindowsConsoleDriver : IConsoleDriver
         // Make sure of ConsoleEncoding helper class because on some Monos
         // Encoding.GetEncoding throws NotImplementedException on most codepages
         // NOTE: We don't set Console.OutputEncoding because it resets any existing Console.Out writers
-        if (!useManagedEncoder)
-            ConsoleEncoding.ConsoleEncoding.ConsoleCodePage = codepage;
+        ConsoleEncoding.ConsoleEncoding.ConsoleCodePage = codepage;
 
         // If stdout exists, write to it, otherwise make it the same as console out
         // Not sure if this is needed? Does the original Console.Out still work?
@@ -110,9 +106,7 @@ internal class WindowsConsoleDriver : IConsoleDriver
         };
 
         var consoleOutStream = OpenFileStream(ConsoleWindow.ConsoleOutHandle);
-        // Can't use Console.OutputEncoding because it can be null (i.e. not preference by user)
-        ConsoleOut = new StreamWriter(consoleOutStream,
-                                      useManagedEncoder ? Utility.UTF8NoBom : ConsoleEncoding.ConsoleEncoding.OutputEncoding)
+        ConsoleOut = new StreamWriter(consoleOutStream, Utility.UTF8NoBom)
         {
             AutoFlush = true
         };
@@ -141,12 +135,12 @@ internal class WindowsConsoleDriver : IConsoleDriver
 
     private static Stream OpenFileStream(IntPtr handle)
     {
-        if (ReflectionHelper.IsCore)
+        if (Utils.IsCore)
         {
             var windowsConsoleStreamType = Type.GetType("System.ConsolePal+WindowsConsoleStream, System.Console", true);
             var constructor = AccessTools.Constructor(windowsConsoleStreamType,
-                                                      new[] { typeof(IntPtr), typeof(FileAccess), typeof(bool) });
-            return (Stream)constructor.Invoke(new object[] { handle, FileAccess.Write, true });
+                                                      [typeof(IntPtr), typeof(FileAccess), typeof(bool)]);
+            return (Stream)constructor.Invoke([handle, FileAccess.Write, true]);
         }
 
         var fileHandle = new SafeFileHandle(handle, false);

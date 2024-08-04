@@ -4,8 +4,11 @@
 
 # BepInEx
 
+MonoMod Update Form https://github.com/aldelaro5/BepInEx
+BepInEx Base Adds Customised Modifications to Among Us
+Only IL2CPP is retained
+
 ![Github All Releases](https://img.shields.io/github/downloads/bepinex/bepinex/total.svg)
-![GitHub release](https://img.shields.io/github/release/bepinex/bepinex.svg)
 [![BepInEx Discord](https://user-images.githubusercontent.com/7288322/34429117-c74dbd12-ecb8-11e7-896d-46369cd0de5b.png)](https://discord.gg/MpFEDAg)
 
 Bepis Injector Extensible
@@ -18,11 +21,9 @@ BepInEx is a plugin / modding framework for Unity Mono, IL2CPP and .NET framewor
 
 #### Platform compatibility chart
 
-|              | Windows | OSX  | Linux | ARM |
-|--------------|---------|------|-------|-----|
-| Unity Mono   | ✔️      | ✔️  | ✔️    | N/A |
-| Unity IL2CPP | ✔️      | ❌   | ✔     | ❌  |
-| .NET / XNA   | ✔️      | Mono | Mono  | N/A |
+|              | Windows | OSX | Linux | ARM |
+|--------------|---------|-----|-------|-----|
+| Unity IL2CPP | ✔️      | ?   | ?     | WIP |
 
 A more comprehensive comparison list of features and compatibility is available at https://bepis.io/unity.html
 
@@ -58,15 +59,15 @@ A more comprehensive comparison list of features and compatibility is available 
 ## Used libraries
 
 - [NeighTools/UnityDoorstop](https://github.com/NeighTools/UnityDoorstop) - v4.3.0
-- [BepInEx/HarmonyX](https://github.com/BepInEx/HarmonyX) - v2.10.1
-- [0x0ade/MonoMod](https://github.com/0x0ade/MonoMod) - v22.5.1.1
+- [BepInEx/HarmonyX](https://github.com/BepInEx/HarmonyX) - Latest
+- [0x0ade/MonoMod](https://github.com/0x0ade/MonoMod) - Latest
 - [jbevain/cecil](https://github.com/jbevain/cecil) - v0.10.4
 
 #### IL2CPP libraries
 
-- [SamboyCoding/Cpp2IL](https://github.com/SamboyCoding/Cpp2IL) - v2022.0.7.2
-- [BepInEx/Il2CppInterop](https://github.com/BepInEx/Il2CppInterop) - v1.4.5
-- [BepInEx/dotnet-runtime](https://github.com/BepInEx/dotnet-runtime) - v6.0.7
+- [SamboyCoding/Cpp2IL](https://github.com/SamboyCoding/Cpp2IL) - Latest
+- [BepInEx/Il2CppInterop](https://github.com/BepInEx/Il2CppInterop) - Latest
+- [BepInEx/dotnet-runtime](https://github.com/BepInEx/dotnet-runtime) - Latest
 
 ## License
 

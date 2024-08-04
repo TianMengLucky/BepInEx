@@ -158,7 +158,8 @@ public static class TypeLoader
 
                 if (!assemblyFilter?.Invoke(ass) ?? false)
                 {
-                    result[dll] = new List<T>();
+                    Logger.Log(LogLevel.Debug, $"NoFilter {dll}");
+                    result[dll] = [];
                     continue;
                 }
 
@@ -166,6 +167,7 @@ public static class TypeLoader
                                  .Select(t => typeSelector(t, dll))
                                  .Where(t => t != null).ToList();
                 result[dll] = matches;
+                Logger.Log(LogLevel.Debug,$"Add {dll}");
             }
             catch (BadImageFormatException e)
             {

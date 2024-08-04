@@ -49,8 +49,6 @@ public static class ChainloaderLogHelper
             log.Log(LogLevel.Message, $"Built from commit {bepinVersion.Build}");
 
         Logger.Log(LogLevel.Info, $"System platform: {GetPlatformString()}");
-        Logger.Log(LogLevel.Info,
-                   $"Process bitness: {(PlatformUtils.ProcessIs64Bit ? "64-bit (x64)" : "32-bit (x86)")}");
     }
 
     private static string GetPlatformString()
@@ -73,7 +71,7 @@ public static class ChainloaderLogHelper
 
         // Not sure what it does on Linux. I think it returns the kernel version there too, but we already get the utsname structure from SetPlatform() regardless
 
-        if (PlatformHelper.Is(Platform.Windows))
+        if (PlatformDetection.OS.Is(OSKind.Windows))
         {
             osVersion = PlatformUtils.WindowsVersion;
 
@@ -81,25 +79,35 @@ public static class ChainloaderLogHelper
 
             // https://stackoverflow.com/a/2819962
 
-            if (osVersion.Major >= 10 && osVersion.Build >= 22000)
-                builder.Append("11");
-            else if (osVersion.Major >= 10)
-                builder.Append("10");
-            else if (osVersion.Major == 6 && osVersion.Minor == 3)
-                builder.Append("8.1");
-            else if (osVersion.Major == 6 && osVersion.Minor == 2)
-                builder.Append("8");
-            else if (osVersion.Major == 6 && osVersion.Minor == 1)
-                builder.Append("7");
-            else if (osVersion.Major == 6 && osVersion.Minor == 0)
-                builder.Append("Vista");
-            else if (osVersion.Major <= 5)
-                builder.Append("XP");
+            switch (osVersion.Major)
+            {
+                case >= 10 when osVersion.Build >= 22000:
+                    builder.Append("11");
+                    break;
+                case >= 10:
+                    builder.Append("10");
+                    break;
+                case 6 when osVersion.Minor == 3:
+                    builder.Append("8.1");
+                    break;
+                case 6 when osVersion.Minor == 2:
+                    builder.Append("8");
+                    break;
+                case 6 when osVersion.Minor == 1:
+                    builder.Append("7");
+                    break;
+                case 6 when osVersion.Minor == 0:
+                    builder.Append("Vista");
+                    break;
+                case <= 5:
+                    builder.Append("XP");
+                    break;
+            }
 
-            if (PlatformHelper.Is(Platform.Wine))
+            if (PlatformDetection.OS.Is(OSKind.Wine))
                 builder.AppendFormat(" (Wine {0})", PlatformUtils.WineVersion);
         }
-        else if (PlatformHelper.Is(Platform.MacOS))
+        else if (PlatformDetection.OS.Is(OSKind.OSX))
         {
             builder.Append("macOS ");
 
@@ -115,7 +123,7 @@ public static class ChainloaderLogHelper
                 builder.AppendFormat("Unknown (kernel {0})", osVersion);
             }
         }
-        else if (PlatformHelper.Is(Platform.Linux))
+        else if (PlatformDetection.OS.Is(OSKind.Linux))
         {
             builder.Append("Linux");
 
@@ -124,21 +132,11 @@ public static class ChainloaderLogHelper
                 builder.AppendFormat(" (kernel {0})", PlatformUtils.LinuxKernelVersion);
             }
         }
-
-        builder.Append(PlatformHelper.Is(Platform.Bits64) ? " 64-bit" : " 32-bit");
-
-        if (PlatformHelper.Is(Platform.Android))
-        {
+        
+        if (PlatformDetection.OS.Is(OSKind.Android))
             builder.Append(" Android");
-        }
-
-        if (PlatformHelper.Is(Platform.ARM))
-        {
-            builder.Append(" ARM");
-
-            if (PlatformHelper.Is(Platform.Bits64))
-                builder.Append("64");
-        }
+        
+        builder.Append(PlatformDetection.Architecture);
 
         return builder.ToString();
     }
