@@ -22,7 +22,7 @@ public class Il2CppDetourFactory : IDetourFactory
     
     public ICoreDetour CreateDetour(CreateDetourRequest request)
     {
-        throw new NullReferenceException();
+        return DetourContext.CurrentFactory?.CreateDetour(request) ?? throw new NullReferenceException();
     }
 
     public ICoreNativeDetour CreateNativeDetour(CreateNativeDetourRequest request)

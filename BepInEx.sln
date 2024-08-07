@@ -19,8 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{12081C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "build\Build.csproj", "{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BepInEx.Unity.Common", "BepInEx.Unity.Common\BepInEx.Unity.Common.csproj", "{240DF8EE-4026-4C66-B7CD-18593F76DFBA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BepInEx.Unity.IL2CPP", "BepInEx.Unity.IL2CPP\BepInEx.Unity.IL2CPP.csproj", "{A1FB7AB2-1021-44FA-85F6-D001B68CB527}"
 EndProject
 Global
@@ -66,14 +64,6 @@ Global
 		{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}.Release_Unity|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}.Release_Unity|Any CPU.Build.0 = Debug|Any CPU
 		{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Release_NetFramework|Any CPU.ActiveCfg = Debug|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Release_NetFramework|Any CPU.Build.0 = Debug|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Release_Unity|Any CPU.ActiveCfg = Debug|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Release_Unity|Any CPU.Build.0 = Debug|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{240DF8EE-4026-4C66-B7CD-18593F76DFBA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1FB7AB2-1021-44FA-85F6-D001B68CB527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1FB7AB2-1021-44FA-85F6-D001B68CB527}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1FB7AB2-1021-44FA-85F6-D001B68CB527}.Release_NetFramework|Any CPU.ActiveCfg = Debug|Any CPU

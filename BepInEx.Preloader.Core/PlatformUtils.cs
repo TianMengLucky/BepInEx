@@ -9,7 +9,7 @@ internal static class PlatformUtils
 {
     public static Version WindowsVersion { get; set; }
     public static string WineVersion { get; set; }
-    
+
     public static string LinuxKernelVersion { get; set; }
 
     [DllImport("libc.so.6", EntryPoint = "uname", CallingConvention = CallingConvention.Cdecl,
@@ -36,9 +36,9 @@ internal static class PlatformUtils
             var windowsVersionInfo = new WindowsOSVersionInfoExW();
             RtlGetVersion(ref windowsVersionInfo);
 
-            WindowsVersion = new Version((int) windowsVersionInfo.dwMajorVersion,
-                                         (int) windowsVersionInfo.dwMinorVersion, 0,
-                                         (int) windowsVersionInfo.dwBuildNumber);
+            WindowsVersion = new Version((int)windowsVersionInfo.dwMajorVersion,
+                                         (int)windowsVersionInfo.dwMinorVersion, 0,
+                                         (int)windowsVersionInfo.dwBuildNumber);
 
             var ntDll = LoadLibrary("ntdll.dll");
             if (ntDll != IntPtr.Zero)
@@ -51,15 +51,12 @@ internal static class PlatformUtils
                 }
             }
         }
-        
+
         if (PlatformDetection.OS.Is(OSKind.Linux))
         {
             var utsname_linux = new utsname_linux();
             var result = uname_linux(ref utsname_linux);
-            if (result != IntPtr.Zero)
-            {
-                LinuxKernelVersion = utsname_linux.version;
-            }
+            if (result != IntPtr.Zero) LinuxKernelVersion = utsname_linux.version;
         }
     }
 
@@ -70,7 +67,7 @@ internal static class PlatformUtils
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Unicode)]
     public struct WindowsOSVersionInfoExW()
     {
-        public uint dwOSVersionInfoSize = (uint) Marshal.SizeOf(typeof(WindowsOSVersionInfoExW));
+        public uint dwOSVersionInfoSize = (uint)Marshal.SizeOf(typeof(WindowsOSVersionInfoExW));
         public uint dwMajorVersion = 0;
         public uint dwMinorVersion = 0;
         public uint dwBuildNumber = 0;
@@ -85,7 +82,7 @@ internal static class PlatformUtils
         public byte wProductType = 0;
         public byte wReserved = 0;
     }
-    
+
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct utsname_linux

@@ -6,6 +6,7 @@ using BepInEx.Core;
 using BepInEx.Core.Console;
 using BepInEx.Core.Logging;
 using MonoMod.Utils;
+using Version = SemanticVersioning.Version;
 
 namespace BepInEx.Preloader.Core.Logging;
 
@@ -31,14 +32,14 @@ public static class ChainloaderLogHelper
         ["20.5.0"] = "11.4",
         ["21.0.1"] = "12.0",
         ["21.1.0"] = "12.0.1",
-        ["21.2.0"] = "12.1",
+        ["21.2.0"] = "12.1"
     };
 
     public static void PrintLogInfo(ManualLogSource log)
     {
         var bepinVersion = Paths.BepInExVersion;
-        var versionMini = new SemanticVersioning.Version(bepinVersion.Major, bepinVersion.Minor, bepinVersion.Patch,
-                                                         bepinVersion.PreRelease);
+        var versionMini = new Version(bepinVersion.Major, bepinVersion.Minor, bepinVersion.Patch,
+                                      bepinVersion.PreRelease);
         var consoleTitle = $"BepInEx {versionMini} - {Paths.ProcessName}";
         log.Log(LogLevel.Message, consoleTitle);
 
@@ -115,27 +116,21 @@ public static class ChainloaderLogHelper
             var osxVersion = osVersion.ToString(3);
 
             if (MacOSVersions.TryGetValue(osxVersion, out var macOsVersion))
-            {
                 builder.Append(macOsVersion);
-            }
             else
-            {
                 builder.AppendFormat("Unknown (kernel {0})", osVersion);
-            }
         }
         else if (PlatformDetection.OS.Is(OSKind.Linux))
         {
             builder.Append("Linux");
 
             if (PlatformUtils.LinuxKernelVersion != null)
-            {
                 builder.AppendFormat(" (kernel {0})", PlatformUtils.LinuxKernelVersion);
-            }
         }
-        
+
         if (PlatformDetection.OS.Is(OSKind.Android))
             builder.Append(" Android");
-        
+
         builder.Append(PlatformDetection.Architecture);
 
         return builder.ToString();

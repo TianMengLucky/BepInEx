@@ -64,9 +64,9 @@ public class PatcherPluginInfoAttribute : Attribute
         if (attr == null)
             return null;
 
-        return new PatcherPluginInfoAttribute((string) attr.ConstructorArguments[0].Value,
-                                              (string) attr.ConstructorArguments[1].Value,
-                                              (string) attr.ConstructorArguments[2].Value);
+        return new PatcherPluginInfoAttribute((string)attr.ConstructorArguments[0].Value,
+                                              (string)attr.ConstructorArguments[1].Value,
+                                              (string)attr.ConstructorArguments[2].Value);
     }
 
     internal static PatcherPluginInfoAttribute FromType(Type type)
@@ -76,7 +76,7 @@ public class PatcherPluginInfoAttribute : Attribute
         if (attributes.Length == 0)
             return null;
 
-        return (PatcherPluginInfoAttribute) attributes[0];
+        return (PatcherPluginInfoAttribute)attributes[0];
     }
 }
 

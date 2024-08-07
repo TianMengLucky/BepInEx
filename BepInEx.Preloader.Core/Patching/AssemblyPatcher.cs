@@ -149,7 +149,7 @@ public class AssemblyPatcher(Func<byte[], string, Assembly> assemblyLoader) : ID
                 {
                     var type = ass.GetType(patcherPlugin.TypeName);
 
-                    var instance = (BasePatcher) Activator.CreateInstance(type);
+                    var instance = (BasePatcher)Activator.CreateInstance(type);
                     instance.Context = PatcherContext;
 
                     PatcherContext.PatcherPlugins.Add(instance);
@@ -382,11 +382,11 @@ public class AssemblyPatcher(Func<byte[], string, Assembly> assemblyLoader) : ID
                     var result = patchDefinition.MethodInfo.Invoke(patchDefinition.Instance, arguments);
 
                     if (patchDefinition.MethodInfo.ReturnType == typeof(void)
-                     || patchDefinition.MethodInfo.ReturnType == typeof(bool) && (bool) result)
+                     || patchDefinition.MethodInfo.ReturnType == typeof(bool) && (bool)result)
                     {
                         if (isAssemblyPatch)
                         {
-                            assembly = (AssemblyDefinition) arguments[0];
+                            assembly = (AssemblyDefinition)arguments[0];
                             PatcherContext.AvailableAssemblies[targetDll] = assembly;
                         }
 
@@ -525,19 +525,19 @@ public class AssemblyPatcher(Func<byte[], string, Assembly> assemblyLoader) : ID
     #region Config
 
     private static readonly ConfigEntry<bool> ConfigDumpAssemblies = ConfigFile.CoreConfig.Bind(
-     "Preloader", "DumpAssemblies",
-     false,
-     "If enabled, BepInEx will save patched assemblies into BepInEx/DumpedAssemblies.\nThis can be used by developers to inspect and debug preloader patchers.");
+         "Preloader", "DumpAssemblies",
+         false,
+         "If enabled, BepInEx will save patched assemblies into BepInEx/DumpedAssemblies.\nThis can be used by developers to inspect and debug preloader patchers.");
 
     private static readonly ConfigEntry<bool> ConfigLoadDumpedAssemblies = ConfigFile.CoreConfig.Bind(
-     "Preloader", "LoadDumpedAssemblies",
-     false,
-     "If enabled, BepInEx will load patched assemblies from BepInEx/DumpedAssemblies instead of memory.\nThis can be used to be able to load patched assemblies into debuggers like dnSpy.\nIf set to true, will override DumpAssemblies.");
+         "Preloader", "LoadDumpedAssemblies",
+         false,
+         "If enabled, BepInEx will load patched assemblies from BepInEx/DumpedAssemblies instead of memory.\nThis can be used to be able to load patched assemblies into debuggers like dnSpy.\nIf set to true, will override DumpAssemblies.");
 
     private static readonly ConfigEntry<bool> ConfigBreakBeforeLoadAssemblies = ConfigFile.CoreConfig.Bind(
-     "Preloader", "BreakBeforeLoadAssemblies",
-     false,
-     "If enabled, BepInEx will call Debugger.Break() once before loading patched assemblies.\nThis can be used with debuggers like dnSpy to install breakpoints into patched assemblies before they are loaded.");
+         "Preloader", "BreakBeforeLoadAssemblies",
+         false,
+         "If enabled, BepInEx will call Debugger.Break() once before loading patched assemblies.\nThis can be used with debuggers like dnSpy to install breakpoints into patched assemblies before they are loaded.");
 
     #endregion
 }
