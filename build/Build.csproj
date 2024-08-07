@@ -10,9 +10,12 @@
         <PackageReference Include="Cake.Git" Version="4.0.0" />
         <PackageReference Include="Cake.Incubator" Version="8.0.0" />
         <PackageReference Include="Cake.Json" Version="7.0.1"/>
-        <PackageReference Include="Microsoft.Build" Version="17.2.0"/>
+        <PackageReference Include="Microsoft.Build" Version="17.10.4" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="$(SolutionDir)/.github/workflows/*.yml" LinkBase="ci"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ci\" />
     </ItemGroup>
 </Project>
