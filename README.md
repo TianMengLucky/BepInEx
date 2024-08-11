@@ -4,9 +4,10 @@
 
 # BepInEx
 
-MonoMod Update Form https://github.com/aldelaro5/BepInEx
-BepInEx Base Adds Customised Modifications to Among Us
+MonoMod Update Form https://github.com/BepInEx/BepInEx/pull/946
+BepInEx Base Adds Customised Modifications
 Only IL2CPP is retained
+Android Reference https://github.com/LemonLoader/MelonLoader2
 
 ![Github All Releases](https://img.shields.io/github/downloads/bepinex/bepinex/total.svg)
 [![BepInEx Discord](https://user-images.githubusercontent.com/7288322/34429117-c74dbd12-ecb8-11e7-896d-46369cd0de5b.png)](https://discord.gg/MpFEDAg)

@@ -22,14 +22,14 @@ public static class Utility
     ///     Whether current Common Language Runtime supports dynamic method generation using
     ///     <see cref="System.Reflection.Emit" /> namespace.
     /// </summary>
-    public static bool CLRSupportsDynamicAssemblies => CheckSRE();
+    public static bool CLRSupportsDynamicAssemblies => CheckSre();
 
     /// <summary>
     ///     An encoding for UTF-8 which does not emit a byte order mark (BOM).
     /// </summary>
     public static Encoding UTF8NoBom { get; } = new UTF8Encoding(false);
 
-    private static bool CheckSRE()
+    private static bool CheckSre()
     {
         try
         {
@@ -129,7 +129,7 @@ public static class Utility
     public static IEnumerable<TNode> TopologicalSort<TNode>(IEnumerable<TNode> nodes,
                                                             Func<TNode, IEnumerable<TNode>> dependencySelector)
     {
-        var sorted_list = new List<TNode>();
+        var sortedList = new List<TNode>();
 
         var visited = new HashSet<TNode>();
         var sorted = new HashSet<TNode>();
@@ -144,23 +144,22 @@ public static class Utility
         }
 
 
-        return sorted_list;
+        return sortedList;
 
         bool Visit(TNode node, Stack<TNode> stack)
         {
-            if (visited.Contains(node))
+            if (!visited.Add(node))
             {
                 if (!sorted.Contains(node)) return false;
             }
             else
             {
-                visited.Add(node);
                 stack.Push(node);
                 if (dependencySelector(node).Any(dep => !Visit(dep, stack)))
                     return false;
 
                 sorted.Add(node);
-                sorted_list.Add(node);
+                sortedList.Add(node);
 
                 stack.Pop();
             }
