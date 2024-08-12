@@ -1,8 +1,8 @@
-using System;
 using System.Runtime.InteropServices;
 using MonoMod.Utils;
+using NextBepLoader.Core;
 
-namespace NextBepLoader.Core.PreLoader;
+namespace NextBepLoader.Deskstop;
 
 internal static class PlatformUtils
 {
@@ -19,16 +19,16 @@ internal static class PlatformUtils
     [DllImport("ntdll.dll", SetLastError = true)]
     private static extern bool RtlGetVersion(ref WindowsOSVersionInfoExW versionInfo);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr LoadLibrary(string libraryName);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
 
     /// <summary>
     ///     Recreation of MonoMod's PlatformHelper.DeterminePlatform method, but with libc calls instead of creating processes.
     /// </summary>
-    public static void SetPlatformVersion()
+    public static void SetDesktopPlatformVersion()
     {
         if (PlatformDetection.OS.Is(OSKind.Windows))
         {

@@ -1,14 +1,13 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 using HarmonyLib;
 using NextBepLoader.Core.Logging;
 
-namespace NextBepLoader.Core.PreLoader.RuntimeFixes;
+namespace NextBepLoader.Deskstop.Console;
 
 public static class ConsoleSetOutFix
 {
     private static LoggedTextWriter loggedTextWriter;
-    internal static ManualLogSource ConsoleLogSource = Logger.CreateLogSource("Console");
+    internal static readonly ManualLogSource ConsoleLogSource = Logger.CreateLogSource("Console");
 
     public static void Apply()
     {
@@ -34,14 +33,18 @@ internal class LoggedTextWriter : TextWriter
 
     public override void Flush() => Parent.Flush();
 
-    public override void Write(string value)
+    public override void Write(string? value)
     {
+        if (value == null)
+            return;
         ConsoleSetOutFix.ConsoleLogSource.Log(LogLevel.Info, value);
         Parent.Write(value);
     }
 
-    public override void WriteLine(string value)
+    public override void WriteLine(string? value)
     {
+        if (value == null)
+            return;
         ConsoleSetOutFix.ConsoleLogSource.Log(LogLevel.Info, value);
         Parent.WriteLine(value);
     }

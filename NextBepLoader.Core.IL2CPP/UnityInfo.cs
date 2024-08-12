@@ -6,9 +6,11 @@ using System.Text;
 using AssetRipper.Primitives;
 using MonoMod.Utils;
 
-[assembly: InternalsVisibleTo("BepInEx.Unity.Mono.Preloader")]
-[assembly: InternalsVisibleTo("BepInEx.Unity.Mono")]
-[assembly: InternalsVisibleTo("BepInEx.Unity.IL2CPP")]
+[assembly: InternalsVisibleTo("NextBepLoader.Android")]
+[assembly: InternalsVisibleTo("NextBepLoader.Core")]
+[assembly: InternalsVisibleTo("NextBepLoader.Core.IL2CPP")]
+[assembly: InternalsVisibleTo("NextBepLoader.Core.PreLoader")]
+[assembly: InternalsVisibleTo("NextBepLoader.Desktop")]
 
 namespace NextBepLoader.Core.IL2CPP;
 

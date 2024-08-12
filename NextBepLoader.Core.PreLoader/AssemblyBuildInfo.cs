@@ -154,7 +154,7 @@ public class AssemblyBuildInfo
             FrameworkType.NetStandard  => "Standard",
             FrameworkType.NetCore      => "Core",
             FrameworkType.Unknown      => "Unknown",
-            _                          => throw new ArgumentOutOfRangeException()
+            var _                      => throw new ArgumentOutOfRangeException()
         };
 
         if (IsAnyCpu)
