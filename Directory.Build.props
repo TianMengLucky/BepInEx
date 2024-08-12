@@ -1,26 +1,39 @@
 <Project>
     <PropertyGroup>
         <VersionPrefix>6.0.0</VersionPrefix>
-        <Authors>BepInEx</Authors>
+        <Authors>BepInEx,TianMeng</Authors>
         <LangVersion>latest</LangVersion>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
         <DebugType>embedded</DebugType>
         <Configurations>Debug;Release</Configurations>
-        <PackageProjectUrl>https://github.com/BepInEx/BepInEx</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/BepInEx/BepInEx</RepositoryUrl>
+<!--        <PackageProjectUrl>https://github.com/BepInEx/BepInEx</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/BepInEx/BepInEx</RepositoryUrl>-->
         <RepositoryType>git</RepositoryType>
         <Copyright>Copyright © 2022 BepInEx Team</Copyright>
         <BuildDir>$(SolutionDir)bin</BuildDir>
-        <PackageOutputPath>$(BuildDir)/NuGet</PackageOutputPath>
+<!--        <PackageOutputPath>$(BuildDir)/NuGet</PackageOutputPath>-->
         <PackageIcon>logo.png</PackageIcon>
         <NoWarn>CS8618</NoWarn>
     </PropertyGroup>
+    
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
+    
     <ItemGroup>
         <None Include="$(SolutionDir)\assets\logos\logo.png" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
+
+    <!-- CopyLocalLockFileAssemblies causes to also output shared assemblies: https://github.com/NuGet/Home/issues/4837#issuecomment-354536302 -->
+    <!-- Since all core assemblies usually follow naming of System.*, we just delete them for now -->
+    <!-- Also delete deps.json as they are not used by mono -->
+    <Target Name="DeleteSys" AfterTargets="Build">
+        <ItemGroup>
+            <FilesToDelete Include="$(OutputPath)System.*.dll"/>
+            <FilesToDelete Include="$(OutputPath)*.deps.json"/>
+        </ItemGroup>
+        <Delete Files="@(FilesToDelete)"/>
+    </Target>
 </Project>

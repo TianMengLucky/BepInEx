@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Description>BepInEx Core library</Description>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <RootNamespace>NextBepLoader.Core</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All"/>
+        <PackageReference Include="HarmonyX" Version="2.13.0" />
+        <PackageReference Include="SemanticVersioning" Version="3.0.0-beta2" />
+        <PackageReference Include="MonoMod.Utils" Version="25.0.6" />
+        <PackageReference Include="Tomlyn" Version="0.17.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Contract\IPlugin.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Utils\" />
+    </ItemGroup>
+</Project>
