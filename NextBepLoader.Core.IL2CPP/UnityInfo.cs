@@ -21,11 +21,11 @@ public static class UnityInfo
 {
     // Adapted from https://github.com/SamboyCoding/Cpp2IL/blob/development/LibCpp2IL/LibCpp2IlMain.cs
     private static readonly ManagerLookup[] ManagerVersionLookup =
-    {
-        new("globalgamemanagers", 0x14, 0x30),
-        new("data.unity3d", 0x12),
-        new("mainData", 0x14)
-    };
+    [
+        new ManagerLookup("globalgamemanagers", 0x14, 0x30),
+        new ManagerLookup("data.unity3d", 0x12),
+        new ManagerLookup("mainData", 0x14)
+    ];
 
     private static bool initialized;
 
@@ -77,7 +77,7 @@ public static class UnityInfo
             {
                 var version = FileVersionInfo.GetVersionInfo(PlayerPath);
                 // Parse manually because some games can also wipe the file version (so it's an empty string)
-                var simpleVersion = new Version(version.FileVersion);
+                var simpleVersion = new Version(version.FileVersion ?? throw new InvalidOperationException());
                 Version = new UnityVersion((ushort)simpleVersion.Major, (ushort)simpleVersion.Minor,
                                            (ushort)simpleVersion.Build);
                 return;

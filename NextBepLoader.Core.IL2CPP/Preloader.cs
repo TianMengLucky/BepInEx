@@ -10,7 +10,6 @@ namespace NextBepLoader.Core.IL2CPP;
 
 public static class Preloader
 {
-    private static PreloaderConsoleListener PreloaderLog { get; set; }
 
     internal static ManualLogSource Log => PreloaderLogger.Log;
 
@@ -22,13 +21,12 @@ public static class Preloader
         try
         {
             HarmonyBackendFix.Initialize();
-            ConsoleSetOutFix.Apply();
             UnityInfo.Initialize(Paths.ExecutablePath, Paths.GameDataPath);
 
-            ConsoleManager.Initialize(false);
+            /*ConsoleManager.Initialize(false);*/
 
-            PreloaderLog = new PreloaderConsoleListener();
-            Logger.Listeners.Add(PreloaderLog);
+
+            /*Logger.Listeners.Add(PreloaderLog);
 
             if (ConsoleManager.ConsoleEnabled)
             {
@@ -38,15 +36,15 @@ public static class Preloader
 
             RedirectStdErrFix.Apply();
 
-            ChainloaderLogHelper.PrintLogInfo(Log);
+            ChainloaderLogHelper.PrintLogInfo(Log);*/
 
             Logger.Log(LogLevel.Info, $"Running under Unity {UnityInfo.Version}");
             Logger.Log(LogLevel.Info, $"Runtime version: {Environment.Version}");
             Logger.Log(LogLevel.Info, $"Runtime information: {RuntimeInformation.FrameworkDescription}");
 
-            Logger.Log(LogLevel.Debug, $"Game executable path: {Paths.ExecutablePath}");
-            Logger.Log(LogLevel.Debug, $"Interop assembly directory: {Il2CppInteropManager.IL2CPPInteropAssemblyPath}");
-            Logger.Log(LogLevel.Debug, $"BepInEx root path: {Paths.BepInExRootPath}");
+            Logger.Log(LogLevel.Info, $"Game executable path: {Paths.ExecutablePath}");
+            Logger.Log(LogLevel.Info, $"Interop assembly directory: {Il2CppInteropManager.IL2CPPInteropAssemblyPath}");
+            Logger.Log(LogLevel.Info, $"BepInEx root path: {Paths.LoaderRootPath}");
 
             if (PlatformDetection.OS.Is(OSKind.Wine) && !Environment.Is64BitProcess)
                 if (!NativeLibrary.TryGetExport(NativeLibrary.Load("ntdll"), "RtlRestoreContext", out var _))
@@ -55,9 +53,7 @@ public static class Preloader
             
 
             Il2CppInteropManager.Initialize();
-
-
-            Logger.Listeners.Remove(PreloaderLog);
+            
 
 
             Chainloader = new IL2CPPChainloader();

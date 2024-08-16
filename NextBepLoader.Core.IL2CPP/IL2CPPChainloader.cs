@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP;
 
-public class IL2CPPChainloader : BaseChainloader<BasePlugin>
+public class IL2CPPChainloader/* : BaseChainloader<BasePlugin>*/
 {
     private static readonly ConfigEntry<bool> ConfigUnityLogging = ConfigFile.CoreConfig.Bind(
      "Logging", "UnityLogListening",
@@ -49,9 +49,9 @@ public class IL2CPPChainloader : BaseChainloader<BasePlugin>
     /// </summary>
     public event Action<PluginInfo, Assembly, BasePlugin> PluginLoad;
 
-    public override void Initialize(string gameExePath = null)
+    public /*override */void Initialize(string gameExePath = null)
     {
-        base.Initialize(gameExePath);
+        /*base.Initialize(gameExePath);*/
         Instance = this;
 
         if (!NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out var il2CppHandle))
@@ -90,7 +90,8 @@ public class IL2CPPChainloader : BaseChainloader<BasePlugin>
 
                 unhook = true;
 
-                Instance.Execute();
+                /*
+                Instance.Execute();*/
             }
             catch (Exception ex)
             {
@@ -111,17 +112,17 @@ public class IL2CPPChainloader : BaseChainloader<BasePlugin>
 
     /// <summary>
     /// </summary>
-    protected override void InitializeLoggers()
+    protected/* override */void InitializeLoggers()
     {
-        base.InitializeLoggers();
+        /*base.InitializeLoggers();
 
         if (!ConfigDiskWriteUnityLog.Value) DiskLogListener.BlacklistedSources.Add("Unity");
 
         ChainloaderLogHelper.RewritePreloaderLogs();
-        Logger.Sources.Add(new IL2CPPLogSource());
+        Logger.Sources.Add(new IL2CPPLogSource());*/
     }
 
-    public override BasePlugin? LoadPlugin(PluginInfo pluginInfo, Assembly pluginAssembly)
+    public/* override */BasePlugin? LoadPlugin(PluginInfo pluginInfo, Assembly pluginAssembly)
     {
         Logger.Log(LogLevel.Debug, $"{pluginInfo.TypeName}");
         var type = pluginAssembly.GetType(pluginInfo.TypeName);
