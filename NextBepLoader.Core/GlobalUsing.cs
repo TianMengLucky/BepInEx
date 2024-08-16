@@ -1,0 +1,1 @@
+global using InterpolatedStringHandlerAttribute = System.Runtime.CompilerServices.InterpolatedStringHandlerAttribute;

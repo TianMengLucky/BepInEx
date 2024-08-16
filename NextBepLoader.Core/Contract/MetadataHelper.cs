@@ -38,7 +38,7 @@ public static class MetadataHelper
         if (attributes.Length == 0)
             return null;
 
-        return (BepInPlugin) attributes[0];
+        return (BepInPlugin)attributes[0];
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public static class MetadataHelper
     /// <param name="pluginType">The plugin type.</param>
     /// <returns>The attributes of the type, if existing.</returns>
     public static T[] GetAttributes<T>(Type pluginType) where T : Attribute =>
-        (T[]) pluginType.GetCustomAttributes(typeof(T), true);
+        (T[])pluginType.GetCustomAttributes(typeof(T), true);
 
     /// <summary>
     ///     Gets the specified attributes of an assembly, if they exist.
@@ -64,7 +64,7 @@ public static class MetadataHelper
     /// <typeparam name="T">The attribute type to retrieve.</typeparam>
     /// <returns>The attributes of the type, if existing.</returns>
     public static T[] GetAttributes<T>(Assembly assembly) where T : Attribute =>
-        (T[]) assembly.GetCustomAttributes(typeof(T), true);
+        (T[])assembly.GetCustomAttributes(typeof(T), true);
 
     /// <summary>
     ///     Gets the specified attributes of an instance, if they exist.
@@ -82,7 +82,7 @@ public static class MetadataHelper
     /// <param name="member">The reflection metadata instance.</param>
     /// <returns>The attributes of the instance, if existing.</returns>
     public static T[] GetAttributes<T>(MemberInfo member) where T : Attribute =>
-        (T[]) member.GetCustomAttributes(typeof(T), true);
+        (T[])member.GetCustomAttributes(typeof(T), true);
 
     /// <summary>
     ///     Retrieves the dependencies of the specified plugin type.

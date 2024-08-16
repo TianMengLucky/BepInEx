@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NextBepLoader.Core.Bootstrap;
 using NextBepLoader.Core.Contract.Attributes;
 
 namespace NextBepLoader.Core.Contract;
@@ -11,7 +8,7 @@ namespace NextBepLoader.Core.Contract;
 ///     Data class that represents information about a loadable BepInEx plugin.
 ///     Contains all metadata and additional info required for plugin loading by <see cref="Chainloader" />.
 /// </summary>
-public class PluginInfo : ICacheable
+public abstract class PluginInfo/* : ICacheable*/
 {
     /// <summary>
     ///     General metadata about a plugin.
@@ -48,7 +45,7 @@ public class PluginInfo : ICacheable
 
     internal Version TargettedBepInExVersion { get; set; }
 
-    void ICacheable.Save(BinaryWriter bw)
+    /*void ICacheable.Save(BinaryWriter bw)
     {
         bw.Write(TypeName);
         bw.Write(Location);
@@ -65,12 +62,12 @@ public class PluginInfo : ICacheable
         var depList = Dependencies.ToList();
         bw.Write(depList.Count);
         foreach (var bepInDependency in depList)
-            ((ICacheable) bepInDependency).Save(bw);
+            ((ICacheable)bepInDependency).Save(bw);
 
         var incList = Incompatibilities.ToList();
         bw.Write(incList.Count);
         foreach (var bepInIncompatibility in incList)
-            ((ICacheable) bepInIncompatibility).Save(bw);
+            ((ICacheable)bepInIncompatibility).Save(bw);
 
         bw.Write(TargettedBepInExVersion.ToString(4));
     }
@@ -93,7 +90,7 @@ public class PluginInfo : ICacheable
         for (var i = 0; i < depCount; i++)
         {
             var dep = new BepInDependency("");
-            ((ICacheable) dep).Load(br);
+            ((ICacheable)dep).Load(br);
             depList.Add(dep);
         }
 
@@ -104,14 +101,14 @@ public class PluginInfo : ICacheable
         for (var i = 0; i < incCount; i++)
         {
             var inc = new BepInIncompatibility("");
-            ((ICacheable) inc).Load(br);
+            ((ICacheable)inc).Load(br);
             incList.Add(inc);
         }
 
         Incompatibilities = incList;
 
         TargettedBepInExVersion = new Version(br.ReadString());
-    }
+    }*/
 
     /// <inheritdoc />
     public override string ToString() => $"{Metadata?.Name} {Metadata?.Version}";

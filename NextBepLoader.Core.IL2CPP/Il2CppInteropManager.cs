@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using AsmResolver.DotNet;
 using Cpp2IL.Core;
 using Cpp2IL.Core.Api;
 using Cpp2IL.Core.InstructionSets;
@@ -21,7 +22,6 @@ using Il2CppInterop.HarmonySupport;
 using Il2CppInterop.Runtime.Startup;
 using LibCpp2IL;
 using Microsoft.Extensions.Logging;
-using Mono.Cecil;
 using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.IL2CPP.Hook;
 using NextBepLoader.Core.IL2CPP.Logging;
@@ -33,13 +33,6 @@ namespace NextBepLoader.Core.IL2CPP;
 
 internal static partial class Il2CppInteropManager
 {
-    static Il2CppInteropManager()
-    {
-        InstructionSetRegistry.RegisterInstructionSet<X86InstructionSet>(DefaultInstructionSets.X86_32);
-        InstructionSetRegistry.RegisterInstructionSet<X86InstructionSet>(DefaultInstructionSets.X86_64);
-        LibCpp2IlBinaryRegistry.RegisterBuiltInBinarySupport();
-    }
-
     private static readonly ConfigEntry<bool> UpdateInteropAssemblies =
         ConfigFile.CoreConfig.Bind("IL2CPP",
                                    "UpdateInteropAssemblies",
@@ -93,19 +86,28 @@ internal static partial class Il2CppInteropManager
 
     private static bool initialized;
 
+    static Il2CppInteropManager()
+    {
+        InstructionSetRegistry.RegisterInstructionSet<X86InstructionSet>(DefaultInstructionSets.X86_32);
+        InstructionSetRegistry.RegisterInstructionSet<X86InstructionSet>(DefaultInstructionSets.X86_64);
+        LibCpp2IlBinaryRegistry.RegisterBuiltInBinarySupport();
+    }
+
     public static string GameAssemblyPath => Environment.GetEnvironmentVariable("BEPINEX_GAME_ASSEMBLY_PATH") ??
-                                             Path.Combine(Paths.GameRootPath!,
-                                                          $"GameAssembly.{NextBepLoader.Core.Utils.PlatformPostFix}");
+                                             Path.Combine(Paths.GameRootPath,
+                                                          $"{Core.Utils.PlatformGameAssemblyName}.{Core.Utils.PlatformPostFix}");
 
     private static string HashPath => Path.Combine(IL2CPPInteropAssemblyPath, "assembly-hash.txt");
 
-    private static string IL2CPPBasePath {
-        get {
+    private static string IL2CPPBasePath
+    {
+        get
+        {
             if (il2cppInteropBasePath != null)
                 return il2cppInteropBasePath;
             var path = Utility.GetCommandLineArgValue("--unhollowed-path") ?? IL2CPPInteropAssembliesPath.Value;
-            il2cppInteropBasePath = path.Replace("{BepInEx}", Paths.BepInExRootPath)
-                                     .Replace("{ProcessName}", Paths.ProcessName);
+            il2cppInteropBasePath = path.Replace("{BepInEx}", Paths.LoaderRootPath)
+                                        .Replace("{ProcessName}", Paths.ProcessName);
             return il2cppInteropBasePath;
         }
     }
@@ -134,7 +136,7 @@ internal static partial class Il2CppInteropManager
                 hash.TransformBlock(buffer, 0, read, buffer, 0);
         }
 
-        static void HashString(ICryptoTransform hash, string str)
+        static void HashString(ICryptoTransform hash, string? str)
         {
             var buffer = Encoding.UTF8.GetBytes(str);
             hash.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
@@ -167,7 +169,6 @@ internal static partial class Il2CppInteropManager
             var hash = ComputeHash();
             _Logger.LogWarning($"Interop assemblies are possibly out of date. To disable this message, create file {HashPath} with the following contents: {hash}");
             return false;
-
         }
 
         if (!Directory.Exists(IL2CPPInteropAssemblyPath))
@@ -210,7 +211,8 @@ internal static partial class Il2CppInteropManager
         {
             Il2CppInteropRuntime.Create(new RuntimeConfiguration
                                 {
-                                    UnityVersion = new Version(unityVersion.Major, unityVersion.Minor, unityVersion.Build),
+                                    UnityVersion =
+                                        new Version(unityVersion.Major, unityVersion.Minor, unityVersion.Build),
                                     DetourProvider = new Il2CppInteropDetourProvider()
                                 })
                                 .AddLogger(interopLogger)
@@ -238,13 +240,13 @@ internal static partial class Il2CppInteropManager
             var asmResolverAssemblies = RunCpp2Il();
             var cecilAssemblies = new AsmToCecilConverter(asmResolverAssemblies).ConvertAll();
 
-            if (DumpDummyAssemblies.Value)
+            /*if (DumpDummyAssemblies.Value)
             {
                 var dummyPath = Path.Combine(Paths.BepInExRootPath, "dummy");
                 Directory.CreateDirectory(dummyPath);
                 foreach (var assemblyDefinition in cecilAssemblies)
                     assemblyDefinition.Write(Path.Combine(dummyPath, $"{assemblyDefinition.Name.Name}.dll"));
-            }
+            }*/
 
             RunIl2CppInteropGenerator(cecilAssemblies);
 
@@ -277,7 +279,7 @@ internal static partial class Il2CppInteropManager
         zipArchive.ExtractToDirectory(UnityBaseLibsDirectory);
     }
 
-    private static List<AsmResolver.DotNet.AssemblyDefinition> RunCpp2Il()
+    private static List<AssemblyDefinition> RunCpp2Il()
     {
         _Logger.LogMessage("Running Cpp2IL to generate dummy assemblies");
 
@@ -302,19 +304,15 @@ internal static partial class Il2CppInteropManager
             cpp2IlLogger.LogError($"[{s}] {message.Trim()}");
 
         var unityVersion = UnityInfo.Version;
-        Cpp2IlApi.InitializeLibCpp2Il(GameAssemblyPath, metadataPath, unityVersion, false);
+        Cpp2IlApi.InitializeLibCpp2Il(GameAssemblyPath, metadataPath, unityVersion);
 
-        List<Cpp2IlProcessingLayer> processingLayers = new() { new AttributeInjectorProcessingLayer(), };
+        List<Cpp2IlProcessingLayer> processingLayers = [new AttributeInjectorProcessingLayer()];
 
         foreach (var cpp2IlProcessingLayer in processingLayers)
-        {
             cpp2IlProcessingLayer.PreProcess(Cpp2IlApi.CurrentAppContext, processingLayers);
-        }
 
         foreach (var cpp2IlProcessingLayer in processingLayers)
-        {
             cpp2IlProcessingLayer.Process(Cpp2IlApi.CurrentAppContext);
-        }
 
         var assemblies = new AsmResolverDllOutputFormatDefault().BuildAssemblies(Cpp2IlApi.CurrentAppContext);
 
@@ -327,7 +325,7 @@ internal static partial class Il2CppInteropManager
         return assemblies;
     }
 
-    private static void RunIl2CppInteropGenerator(List<AssemblyDefinition> sourceAssemblies)
+    private static void RunIl2CppInteropGenerator(List<Mono.Cecil.AssemblyDefinition> sourceAssemblies)
     {
         var opts = new GeneratorOptions
         {
@@ -337,10 +335,10 @@ internal static partial class Il2CppInteropManager
             UnityBaseLibsDir = Directory.Exists(UnityBaseLibsDirectory) ? UnityBaseLibsDirectory : null,
             ObfuscatedNamesRegex = !string.IsNullOrEmpty(ConfigUnhollowerDeobfuscationRegex.Value)
                                        ? new Regex(ConfigUnhollowerDeobfuscationRegex.Value)
-                                       : null,
+                                       : null
         };
 
-        var renameMapLocation = Path.Combine(Paths.BepInExRootPath, "DeobfuscationMap.csv.gz");
+        var renameMapLocation = Path.Combine(Paths.LoaderRootPath, "DeobfuscationMap.csv.gz");
         if (File.Exists(renameMapLocation))
         {
             _Logger.LogInfo("Parsing deobfuscation rename mappings");

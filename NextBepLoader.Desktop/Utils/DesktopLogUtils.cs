@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using MonoMod.Utils;
 using NextBepLoader.Core.Logging;
-using Version = SemanticVersioning.Version;
 
-namespace NextBepLoader.Core.PreLoader.Logging;
+namespace NextBepLoader.Deskstop.Utils;
 
-public static class ChainloaderLogHelper
+public static class DesktopLogUtils
 {
     private static Dictionary<string, string> MacOSVersions { get; } = new()
     {
@@ -35,19 +31,19 @@ public static class ChainloaderLogHelper
 
     public static void PrintLogInfo(ManualLogSource log)
     {
-        var bepinVersion = Paths.BepInExVersion;
+        /*var bepinVersion = Paths.BepInExVersion;
         var versionMini = new Version(bepinVersion.Major, bepinVersion.Minor, bepinVersion.Patch,
                                       bepinVersion.PreRelease);
         var consoleTitle = $"BepInEx {versionMini} - {Paths.ProcessName}";
         log.Log(LogLevel.Message, consoleTitle);
 
-        if (ConsoleManager.ConsoleActive)
-            ConsoleManager.SetConsoleTitle(consoleTitle);
+        /*if (ConsoleManager.ConsoleActive)
+            ConsoleManager.SetConsoleTitle(consoleTitle);#1#
 
         if (!string.IsNullOrEmpty(bepinVersion.Build))
             log.Log(LogLevel.Message, $"Built from commit {bepinVersion.Build}");
 
-        Logger.Log(LogLevel.Info, $"System platform: {GetPlatformString()}");
+        Logger.Log(LogLevel.Info, $"System platform: {GetPlatformString()}");*/
     }
 
     private static string GetPlatformString()
@@ -90,10 +86,10 @@ public static class ChainloaderLogHelper
                     builder.Append("8.1");
                     break;
                 case 6 when osVersion.Minor == 2:
-                    builder.Append("8");
+                    builder.Append('8');
                     break;
                 case 6 when osVersion.Minor == 1:
-                    builder.Append("7");
+                    builder.Append('7');
                     break;
                 case 6 when osVersion.Minor == 0:
                     builder.Append("Vista");
@@ -104,7 +100,7 @@ public static class ChainloaderLogHelper
             }
 
             if (PlatformDetection.OS.Is(OSKind.Wine))
-                builder.AppendFormat(" (Wine {0})", PlatformUtils.WineVersion);
+                builder.Append($" (Wine {PlatformUtils.WineVersion})");
         }
         else if (PlatformDetection.OS.Is(OSKind.OSX))
         {
@@ -122,8 +118,8 @@ public static class ChainloaderLogHelper
         {
             builder.Append("Linux");
 
-            if (PlatformUtils.LinuxKernelVersion != null)
-                builder.AppendFormat(" (kernel {0})", PlatformUtils.LinuxKernelVersion);
+            if (!string.IsNullOrEmpty(PlatformUtils.LinuxKernelVersion))
+                builder.Append($" (kernel {PlatformUtils.LinuxKernelVersion})");
         }
 
         if (PlatformDetection.OS.Is(OSKind.Android))
@@ -132,23 +128,5 @@ public static class ChainloaderLogHelper
         builder.Append(PlatformDetection.Architecture);
 
         return builder.ToString();
-    }
-
-    public static void RewritePreloaderLogs()
-    {
-        if (PreloaderConsoleListener.LogEvents == null || PreloaderConsoleListener.LogEvents.Count == 0)
-            return;
-
-        // Temporarily disable the console log listener (if there is one from preloader) as we replay the preloader logs
-        var logListener = Logger.Listeners.FirstOrDefault(logger => logger is ConsoleLogListener);
-
-        if (logListener != null)
-            Logger.Listeners.Remove(logListener);
-
-        foreach (var preloaderLogEvent in PreloaderConsoleListener.LogEvents)
-            Logger.InternalLogEvent(PreloaderLogger.Log, preloaderLogEvent);
-
-        if (logListener != null)
-            Logger.Listeners.Add(logListener);
     }
 }

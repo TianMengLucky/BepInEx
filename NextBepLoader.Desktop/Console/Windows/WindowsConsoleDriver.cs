@@ -19,11 +19,13 @@ internal class WindowsConsoleDriver : IConsoleDriver
     }.FirstOrDefault(m => m != null);
 
     private readonly Func<int>? getWindowHeight = AccessTools
-                                                  .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowHeight))
+                                                  .PropertyGetter(typeof(System.Console),
+                                                                  nameof(System.Console.WindowHeight))
                                                   ?.CreateDelegate<Func<int>>();
 
     private readonly Func<int>? getWindowWidth = AccessTools
-                                                 .PropertyGetter(typeof(System.Console), nameof(System.Console.WindowWidth))
+                                                 .PropertyGetter(typeof(System.Console),
+                                                                 nameof(System.Console.WindowWidth))
                                                  ?.CreateDelegate<Func<int>>();
 
     private int ConsoleWidth
@@ -145,13 +147,12 @@ internal class WindowsConsoleDriver : IConsoleDriver
         var ctorParams = AccessTools.ActualParameters(FileStreamCtor,
         [
             fileHandle, fileHandle.DangerousGetHandle(),
-                                                          FileAccess.Write
+            FileAccess.Write
         ]);
-        return (FileStream) Activator.CreateInstance(typeof(FileStream), ctorParams)!;
+        return (FileStream)Activator.CreateInstance(typeof(FileStream), ctorParams)!;
     }
 
-    private IntPtr GetOutHandle()
-    {
+    private IntPtr GetOutHandle() =>
         /*switch (ConsoleManager.ConfigConsoleOutRedirectType.Value)
         {
             case ConsoleManager.ConsoleOutRedirectType.ConsoleOut:
@@ -164,6 +165,5 @@ internal class WindowsConsoleDriver : IConsoleDriver
                            ? ConsoleWindow.OriginalStdoutHandle
                            : ConsoleWindow.ConsoleOutHandle;
         }*/
-        return IntPtr.Zero;
-    }
+        IntPtr.Zero;
 }

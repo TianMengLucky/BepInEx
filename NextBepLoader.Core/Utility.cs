@@ -59,7 +59,7 @@ public static class Utility
     /// <param name="action">Action to perform.</param>
     /// <param name="exception">Possible exception that gets returned.</param>
     /// <returns>True, if action succeeded, false if an exception occured.</returns>
-    public static bool TryDo(Action action, out Exception exception)
+    public static bool TryDo(Action action, out Exception? exception)
     {
         exception = null;
         try
@@ -67,7 +67,7 @@ public static class Utility
             action();
             return true;
         }
-        catch (Exception e)
+        catch (Exception? e)
         {
             exception = e;
             return false;
@@ -116,7 +116,7 @@ public static class Utility
     /// </summary>
     /// <param name="self">The string to test.</param>
     /// <returns>True if the value parameter is null or empty, or if value consists exclusively of white-space characters.</returns>
-    public static bool IsNullOrWhiteSpace(this string self) => self == null || self.All(char.IsWhiteSpace);
+    public static bool IsNullOrWhiteSpace(this string? self) => self == null || self.All(char.IsWhiteSpace);
 
     /// <summary>
     ///     Sorts a given dependency graph using a direct toposort, reporting possible cyclic dependencies.
@@ -140,7 +140,7 @@ public static class Utility
             if (!Visit(input, currentStack))
                 throw new Exception("Cyclic Dependency:\r\n" + currentStack.Select(x => $" - {x}") //append dashes
                                                                            .Aggregate((a, b) =>
-                                                                               $"{a}\r\n{b}")); //add new lines inbetween
+                                                                                        $"{a}\r\n{b}")); //add new lines inbetween
         }
 
 
@@ -175,10 +175,10 @@ public static class Utility
     /// <param name="directory">Directory to search the assembly from.</param>
     /// <param name="assembly">The loaded assembly.</param>
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
-    public static bool TryResolveDllAssembly<T>(AssemblyName assemblyName,
+    public static bool TryResolveDllAssembly<T>(AssemblyName? assemblyName,
                                                 string directory,
                                                 Func<string, T> loader,
-                                                out T assembly) where T : class
+                                                out T? assembly) where T : class?
     {
         assembly = null;
 
@@ -240,7 +240,7 @@ public static class Utility
     /// <param name="directory">Directory to search the assembly from.</param>
     /// <param name="assembly">The loaded assembly.</param>
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
-    public static bool TryResolveDllAssembly(AssemblyName assemblyName, string directory, out Assembly? assembly) =>
+    public static bool TryResolveDllAssembly(AssemblyName? assemblyName, string directory, out Assembly? assembly) =>
         TryResolveDllAssembly(assemblyName, directory, Assembly.LoadFrom, out assembly);
 
     /// <summary>
@@ -251,10 +251,10 @@ public static class Utility
     /// <param name="readerParameters">Reader parameters that contain possible custom assembly resolver.</param>
     /// <param name="assembly">The loaded assembly.</param>
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
-    public static bool TryResolveDllAssembly(AssemblyName assemblyName,
+    public static bool TryResolveDllAssembly(AssemblyName? assemblyName,
                                              string directory,
                                              ReaderParameters readerParameters,
-                                             out AssemblyDefinition assembly) =>
+                                             out AssemblyDefinition? assembly) =>
         TryResolveDllAssembly(assemblyName, directory,
                               s => AssemblyDefinition.ReadAssembly(s, readerParameters), out assembly);
 
@@ -269,7 +269,7 @@ public static class Utility
     /// <returns></returns>
     public static bool TryOpenFileStream(string path,
                                          FileMode mode,
-                                         out FileStream fileStream,
+                                         out FileStream? fileStream,
                                          FileAccess access = FileAccess.ReadWrite,
                                          FileShare share = FileShare.Read)
     {
@@ -314,24 +314,24 @@ public static class Utility
         while ((read = stream.Read(buf, 0, buf.Length)) > 0)
             md5.TransformBlock(buf, 0, read, buf, 0);
 
-        md5.TransformFinalBlock(new byte[0], 0, 0);
+        md5.TransformFinalBlock([], 0, 0);
 
         return ByteArrayToString(md5.Hash);
     }
 
     /// <summary>
-    /// Hash a list of strings using MD5
+    ///     Hash a list of strings using MD5
     /// </summary>
     /// <param name="strings">Strings to hash</param>
     /// <returns>MD5 of the strings</returns>
-    public static string HashStrings(params string?[] strings)
+    public static string HashStrings(params string[] strings)
     {
         using var md5 = MD5.Create();
 
         foreach (var str in strings)
             md5.TransformBlock(Encoding.UTF8.GetBytes(str), 0, str.Length, null, 0);
 
-        md5.TransformFinalBlock(new byte[0], 0, 0);
+        md5.TransformFinalBlock([], 0, 0);
 
         return ByteArrayToString(md5.Hash);
     }
@@ -352,11 +352,11 @@ public static class Utility
     }
 
     /// <summary>
-    /// Get a value of a command line argument
+    ///     Get a value of a command line argument
     /// </summary>
     /// <param name="arg">Argument name</param>
     /// <returns>Next argument after the given argument name. If not found, returns null.</returns>
-    public static string GetCommandLineArgValue(string arg)
+    public static string? GetCommandLineArgValue(string arg)
     {
         var args = Environment.GetCommandLineArgs();
         for (var i = 1; i < args.Length; i++)
@@ -376,7 +376,7 @@ public static class Utility
     ///     which has problems with encoding.
     ///     Using <see cref="AssemblyName" /> solves this by doing parsing on managed side instead.
     /// </remarks>
-    public static bool TryParseAssemblyName(string fullName, out AssemblyName assemblyName)
+    public static bool TryParseAssemblyName(string fullName, out AssemblyName? assemblyName)
     {
         try
         {
@@ -418,8 +418,7 @@ public static class Utility
         foreach (var file in Directory.GetFiles(directory, pattern))
         {
             var fileName = Path.GetFileName(file);
-            if (!result.ContainsKey(fileName))
-                result[fileName] = file;
+            result.TryAdd(fileName, file);
         }
 
         return result.Values;

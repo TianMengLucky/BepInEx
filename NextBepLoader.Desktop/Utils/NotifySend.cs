@@ -14,7 +14,8 @@ internal static class NotifySend
             return Path.GetFullPath(fileName);
 
         var paths = Environment.GetEnvironmentVariable("PATH");
-        return paths?.Split(Path.PathSeparator).Select(path => Path.Combine(path, fileName)).FirstOrDefault(File.Exists);
+        return paths?.Split(Path.PathSeparator).Select(path => Path.Combine(path, fileName))
+                    .FirstOrDefault(File.Exists);
     }
 
     public static void Send(string summary, string body)
@@ -24,15 +25,15 @@ internal static class NotifySend
         var fileName = Find(EXECUTABLE_NAME);
         if (fileName == null)
             return;
-        
+
         var processStartInfo = new ProcessStartInfo(fileName)
         {
             ArgumentList =
             {
                 summary,
                 body,
-                "--app-name=BepInEx",
-            },
+                "--app-name=BepInEx"
+            }
         };
 
         Process.Start(processStartInfo);

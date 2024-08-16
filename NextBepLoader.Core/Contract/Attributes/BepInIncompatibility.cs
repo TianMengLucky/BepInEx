@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mono.Cecil;
-using NextBepLoader.Core.Bootstrap;
 
 namespace NextBepLoader.Core.Contract.Attributes;
 
@@ -11,7 +9,7 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     This attribute specifies other plugins that are incompatible with this plugin.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class BepInIncompatibility : Attribute, ICacheable
+public class BepInIncompatibility : Attribute/*, ICacheable*/
 {
     /// <summary>
     ///     Marks this <see cref="BaseUnityPlugin" /> as incompatible with another plugin.
@@ -28,16 +26,16 @@ public class BepInIncompatibility : Attribute, ICacheable
     /// </summary>
     public string IncompatibilityGUID { get; protected set; }
 
-    void ICacheable.Save(BinaryWriter bw) => bw.Write(IncompatibilityGUID);
+    /*void ICacheable.Save(BinaryWriter bw) => bw.Write(IncompatibilityGUID);
 
-    void ICacheable.Load(BinaryReader br) => IncompatibilityGUID = br.ReadString();
+    void ICacheable.Load(BinaryReader br) => IncompatibilityGUID = br.ReadString();*/
 
     internal static IEnumerable<BepInIncompatibility> FromCecilType(TypeDefinition td)
     {
         var attrs = MetadataHelper.GetCustomAttributes<BepInIncompatibility>(td, true);
         return attrs.Select(customAttribute =>
         {
-            var dependencyGuid = (string) customAttribute.ConstructorArguments[0].Value;
+            var dependencyGuid = (string)customAttribute.ConstructorArguments[0].Value;
             return new BepInIncompatibility(dependencyGuid);
         }).ToList();
     }

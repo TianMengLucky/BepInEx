@@ -1,3 +1,4 @@
+using MonoMod.Utils;
 using NextBepLoader.Core;
 using NextBepLoader.Deskstop.Utils;
 
@@ -5,14 +6,21 @@ namespace NextBepLoader.Deskstop;
 
 public class DesktopPath : LoaderPathBase
 {
-    public override string GameRootPath { get; set; }
+    public override string? GameRootPath { get; set; }
 
-    public override void InitPaths()
+    public override void InitPaths(bool autoCheckCreate = false)
     {
-        var bepinPath =
-            Path.GetDirectoryName(Path.GetDirectoryName(Path.GetFullPath(EnvVars.DOORSTOP_INVOKE_DLL_PATH)));
-        Paths.SetExecutablePath(EnvVars.DOORSTOP_PROCESS_PATH, bepinPath, EnvVars.DOORSTOP_MANAGED_FOLDER_DIR, false,
-                                EnvVars.DOORSTOP_DLL_SEARCH_DIRS);
-        base.InitPaths();
+        LoaderRootPath =
+            Path.GetDirectoryName(Path.GetDirectoryName(Path.GetFullPath(EnvVars.DOORSTOP_INVOKE_DLL_PATH))) ??
+            string.Empty;
+        ExecutablePath = EnvVars.DOORSTOP_PROCESS_PATH;
+        ProcessName = Path.GetFileNameWithoutExtension(ExecutablePath)!;
+        GameRootPath = PlatformDetection.OS.Is(OSKind.OSX)
+                           ? Utility.ParentDirectory(ExecutablePath, 4)
+                           : Path.GetDirectoryName(ExecutablePath);
+        ManagedPath = EnvVars.DOORSTOP_MANAGED_FOLDER_DIR ?? string.Empty;
+        DllSearchPaths = EnvVars.DOORSTOP_DLL_SEARCH_DIRS.Concat(new[] { ManagedPath }).Distinct().ToArray();
+        LoaderAssemblyPath = typeof(DesktopPath).Assembly.Location;
+        base.InitPaths(autoCheckCreate);
     }
 }

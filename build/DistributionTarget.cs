@@ -2,7 +2,7 @@ using System;
 
 namespace Build;
 
-readonly struct DistributionTarget
+internal readonly struct DistributionTarget
 {
     public DistributionTarget(string distributionIdentifier, string runtimeIdentifier)
     {
@@ -17,7 +17,8 @@ readonly struct DistributionTarget
         Target = $"{DistributionIdentifier}-{RuntimeIdentifier}";
     }
 
-    public DistributionTarget(string distributionIdentifier, string runtimeIdentifier, string frameworkTarget) : this(distributionIdentifier, runtimeIdentifier)
+    public DistributionTarget(string distributionIdentifier, string runtimeIdentifier, string frameworkTarget) :
+        this(distributionIdentifier, runtimeIdentifier)
     {
         FrameworkTarget = frameworkTarget;
         Target = $"{DistributionIdentifier}-{FrameworkTarget}-{RuntimeIdentifier}";

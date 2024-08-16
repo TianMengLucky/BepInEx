@@ -11,24 +11,21 @@ using Path = System.IO.Path;
 
 namespace Build;
 
-static class DownloadTasks
+internal static class DownloadTasks
 {
     public static void DownloadFiles(this ICakeContext ctx,
                                      string name,
-                                     params (string Name, string Url, FilePath Destination)[] files)
-    {
+                                     params (string Name, string Url, FilePath Destination)[] files) =>
         AnsiConsole.Progress().Start(pCtx =>
         {
             Task.WaitAll(files
                          .Select(t => DownloadFile(pCtx, t.Name, t.Url, t.Destination))
                          .ToArray());
         });
-    }
 
     public static void DownloadZipFiles(this ICakeContext ctx,
                                         string name,
-                                        params (string Name, string Url, DirectoryPath Destination)[] files)
-    {
+                                        params (string Name, string Url, DirectoryPath Destination)[] files) =>
         AnsiConsole.Progress().Start(pCtx =>
         {
             Task.WaitAll(files.Select(async t =>
@@ -39,9 +36,8 @@ static class DownloadTasks
                 File.Delete(zipFilePath!);
             }).ToArray());
         });
-    }
 
-    static async Task DownloadFile(ProgressContext pCtx, string name, string url, FilePath destination)
+    private static async Task DownloadFile(ProgressContext pCtx, string name, string url, FilePath destination)
     {
         using var client = new HttpClient();
         await using var fs = File.Create(destination.FullPath);
@@ -49,7 +45,7 @@ static class DownloadTasks
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Failed to download {name}");
         await using var stream = await response.Content.ReadAsStreamAsync();
-        var bar = pCtx.AddTask($"Downloading {name}", maxValue: (int) (response.Content.Headers.ContentLength ?? 1));
+        var bar = pCtx.AddTask($"Downloading {name}", maxValue: (int)(response.Content.Headers.ContentLength ?? 1));
 
         var buffer = new byte[4096];
         int read;
@@ -60,10 +56,10 @@ static class DownloadTasks
         }
     }
 
-    static async Task UnzipFile(ProgressContext pCtx, string name, FilePath zipFile, DirectoryPath destination)
+    private static async Task UnzipFile(ProgressContext pCtx, string name, FilePath zipFile, DirectoryPath destination)
     {
         using var zip = ZipFile.OpenRead(zipFile.FullPath);
-        var bar = pCtx.AddTask($"Extracting {name}", maxValue: (int) zip.Entries.Select(e => e.Length).Sum());
+        var bar = pCtx.AddTask($"Extracting {name}", maxValue: (int)zip.Entries.Select(e => e.Length).Sum());
 
         foreach (var entry in zip.Entries)
         {

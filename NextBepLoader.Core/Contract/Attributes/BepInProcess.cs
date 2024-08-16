@@ -27,6 +27,6 @@ public class BepInProcess : Attribute
     {
         var attrs = MetadataHelper.GetCustomAttributes<BepInProcess>(td, true);
         return attrs.Select(customAttribute =>
-                                new BepInProcess((string) customAttribute.ConstructorArguments[0].Value)).ToList();
+                                new BepInProcess((string)customAttribute.ConstructorArguments[0].Value)).ToList();
     }
 }

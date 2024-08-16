@@ -28,7 +28,7 @@ public class AssemblyBuildInfo
         AssemblyFrameworkType = FrameworkType.Unknown;
 
         var targetFrameworkAttribute = assemblyDefinition.CustomAttributes.FirstOrDefault(x =>
-            x.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute");
+                     x.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute");
 
         if (targetFrameworkAttribute == null)
             return;

@@ -40,7 +40,7 @@ internal class UnixStream : Stream
         var gcHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 
         var read = UnixStreamHelper.fread(new IntPtr(gcHandle.AddrOfPinnedObject().ToInt64() + offset),
-                                          (IntPtr) count, (IntPtr) 1, FileHandle);
+                                          count, 1, FileHandle);
 
         gcHandle.Free();
 
@@ -51,8 +51,8 @@ internal class UnixStream : Stream
     {
         var gcHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 
-        UnixStreamHelper.fwrite(new IntPtr(gcHandle.AddrOfPinnedObject().ToInt64() + offset), (IntPtr) count,
-                                (IntPtr) 1, FileHandle);
+        UnixStreamHelper.fwrite(new IntPtr(gcHandle.AddrOfPinnedObject().ToInt64() + offset), count,
+                                1, FileHandle);
 
         gcHandle.Free();
     }

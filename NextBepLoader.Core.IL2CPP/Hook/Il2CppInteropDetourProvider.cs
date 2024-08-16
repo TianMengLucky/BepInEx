@@ -12,7 +12,7 @@ internal class Il2CppInteropDetourProvider : IDetourProvider
     {
         if (DetourContext.Current == null)
             DetourContext.SetGlobalContext(new DetourFactoryContext(new Il2CppDetourFactory()));
-        
+
         var p = Marshal.GetFunctionPointerForDelegate(target);
         return new Il2CppInteropDetour(DetourContext.Current!.Factory!.CreateNativeDetour(original, p));
     }

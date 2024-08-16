@@ -9,21 +9,14 @@ namespace NextBepLoader.Core.IL2CPP.Hook;
 
 public class Il2CppDetourFactory : IDetourFactory
 {
-    
     private static readonly ConfigEntry<DetourProvider> DetourProviderType = ConfigFile.CoreConfig.Bind(
          "Detours", "DetourProviderType",
          DetourProvider.Default,
          "The native provider to use for managed detours"
         );
 
-    private static ICoreNativeDetour CreateDefault(nint original, IntPtr target) =>
-        // TODO: check and provide an OS accurate provider
-        new DobbyDetour(original, target);
-    
-    public ICoreDetour CreateDetour(CreateDetourRequest request)
-    {
-        return DetourContext.CurrentFactory?.CreateDetour(request) ?? throw new NullReferenceException();
-    }
+    public ICoreDetour CreateDetour(CreateDetourRequest request) =>
+        DetourContext.CurrentFactory?.CreateDetour(request) ?? throw new NullReferenceException();
 
     public ICoreNativeDetour CreateNativeDetour(CreateNativeDetourRequest request)
     {
@@ -36,6 +29,10 @@ public class Il2CppDetourFactory : IDetourFactory
 
         return detour;
     }
+
+    private static ICoreNativeDetour CreateDefault(nint original, IntPtr target) =>
+        // TODO: check and provide an OS accurate provider
+        new DobbyDetour(original, target);
 
     internal enum DetourProvider
     {

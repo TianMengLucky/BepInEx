@@ -25,7 +25,7 @@ internal static class ConsoleWriter
                     return (stream, encoding, l) =>
                     {
                         var vals = new object[] { stream, encoding, l };
-                        return (StreamWriter) ctor.Invoke(perm.Select(i => vals[i]).ToArray());
+                        return (StreamWriter)ctor.Invoke(perm.Select(i => vals[i]).ToArray());
                     };
                 return null;
             }

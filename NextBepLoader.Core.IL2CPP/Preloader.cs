@@ -2,11 +2,8 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using MonoMod.Utils;
-using NextBepLoader.Core.IL2CPP.RuntimeFixes;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.PreLoader;
-using NextBepLoader.Core.PreLoader.Logging;
-using NextBepLoader.Core.PreLoader.Patching;
 using NextBepLoader.Core.PreLoader.RuntimeFixes;
 
 namespace NextBepLoader.Core.IL2CPP;
@@ -52,30 +49,12 @@ public static class Preloader
             Logger.Log(LogLevel.Debug, $"BepInEx root path: {Paths.BepInExRootPath}");
 
             if (PlatformDetection.OS.Is(OSKind.Wine) && !Environment.Is64BitProcess)
-            {
                 if (!NativeLibrary.TryGetExport(NativeLibrary.Load("ntdll"), "RtlRestoreContext", out var _))
-                {
                     Logger.Log(LogLevel.Warning,
                                "Your wine version doesn't support CoreCLR properly, expect crashes! Upgrade to wine 7.16 or higher.");
-                }
-            }
-
-            NativeLibrary.SetDllImportResolver(typeof(Il2CppInterop.Runtime.IL2CPP).Assembly, DllImportResolver);
+            
 
             Il2CppInteropManager.Initialize();
-
-            using (var assemblyPatcher = new AssemblyPatcher((data, _) => Assembly.Load(data)))
-            {
-                assemblyPatcher.AddPatchersFromDirectory(Paths.PatcherPluginPath);
-
-                Log.LogInfo($"{assemblyPatcher.PatcherContext.PatcherPlugins.Count} patcher plugin{(assemblyPatcher.PatcherContext.PatcherPlugins.Count == 1 ? "" : "s")} loaded");
-
-                assemblyPatcher.LoadAssemblyDirectories(Il2CppInteropManager.IL2CPPInteropAssemblyPath);
-
-                Log.LogInfo($"{assemblyPatcher.PatcherContext.PatcherPlugins.Count} assemblies discovered");
-
-                assemblyPatcher.PatchAndLoad();
-            }
 
 
             Logger.Listeners.Remove(PreloaderLog);
@@ -92,14 +71,5 @@ public static class Preloader
             throw;
         }
     }
-
-    private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-    {
-        if (libraryName == "GameAssembly")
-        {
-            return NativeLibrary.Load(Il2CppInteropManager.GameAssemblyPath, assembly, searchPath);
-        }
-
-        return IntPtr.Zero;
-    }
+    
 }

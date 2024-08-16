@@ -18,23 +18,23 @@ internal static class UnixStreamHelper
     public delegate int fwriteDelegate(IntPtr ptr, IntPtr size, IntPtr nmemb, IntPtr stream);
 
     public delegate int isattyDelegate(int fd);
-    
-    private static IntPtr libcHandle;
-    
+
+    private static readonly IntPtr libcHandle;
+
     public static dupDelegate dup;
-    
+
     public static fdopenDelegate fdopen;
-    
+
     public static freadDelegate fread;
-    
+
     public static fwriteDelegate fwrite;
-    
+
     public static fcloseDelegate fclose;
-    
+
     public static fflushDelegate fflush;
-    
+
     public static isattyDelegate isatty;
-    
+
     static UnixStreamHelper()
     {
         libcHandle = DynDll.OpenLibrary(PlatformDetection.OS.Is(OSKind.OSX) ? "/usr/lib/libSystem.dylib" : "libc");
@@ -44,7 +44,7 @@ internal static class UnixStreamHelper
         fwrite = libcHandle.GetExportAsDelegate<fwriteDelegate>("fwrite")!;
         fclose = libcHandle.GetExportAsDelegate<fcloseDelegate>("fclose")!;
         fflush = libcHandle.GetExportAsDelegate<fflushDelegate>("fflush")!;
-        isatty = libcHandle.GetExportAsDelegate<isattyDelegate>("isatty")!; 
+        isatty = libcHandle.GetExportAsDelegate<isattyDelegate>("isatty")!;
     }
 
     public static Stream CreateDuplicateStream(int fileDescriptor)

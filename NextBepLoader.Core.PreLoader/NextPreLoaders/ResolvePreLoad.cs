@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace NextBepLoader.Core.PreLoader;
+namespace NextBepLoader.Core.PreLoader.NextPreLoaders;
+
 
 public class ResolvePreLoad : BasePreLoader
 {
+    public List<Assembly> ResolvedAssemblies { get; set; } = [];
+    public override PreLoadPriority Priority => PreLoadPriority.VeryLast;
+
     public override void Start()
     {
         // Cecil 0.11 requires one to manually set up list of trusted assemblies for assembly resolving
@@ -14,10 +19,10 @@ public class ResolvePreLoad : BasePreLoader
         AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Paths.ManagedPath);
         // The parent path -> .NET has some extra managed DLLs in there
         AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Path.GetDirectoryName(Paths.ManagedPath)!);
-        
+
         AppDomain.CurrentDomain.AssemblyResolve += LocalResolve;
     }
-    
+
     internal static Assembly? LocalResolve(object? sender, ResolveEventArgs args)
     {
         var assemblyName = new AssemblyName(args.Name);
@@ -28,9 +33,14 @@ public class ResolvePreLoad : BasePreLoader
         if (foundAssembly != null)
             return foundAssembly;
 
-        if (Utility.TryResolveDllAssembly(assemblyName, Paths.BepInExAssemblyDirectory, out foundAssembly)
-         || Utility.TryResolveDllAssembly(assemblyName, Paths.PatcherPluginPath, out foundAssembly)
-         || Utility.TryResolveDllAssembly(assemblyName, Paths.PluginPath, out foundAssembly))
+
+        if (
+            Utility.TryResolveDllAssembly(assemblyName, Paths.CoreAssemblyPath, out foundAssembly)
+          ||
+            Utility.TryResolveDllAssembly(assemblyName, Paths.PluginPath, out foundAssembly)
+          ||
+            Utility.TryResolveDllAssembly(assemblyName, Paths.DependencyDirectory, out foundAssembly)
+        )
             return foundAssembly;
 
         return null;

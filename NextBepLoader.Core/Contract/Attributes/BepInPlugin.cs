@@ -11,6 +11,8 @@ namespace NextBepLoader.Core.Contract.Attributes;
 [AttributeUsage(AttributeTargets.Class)]
 public class BepInPlugin : Attribute
 {
+    public BepInPlugin() {}
+    
     /// <param name="GUID">The unique identifier of the plugin. Should not change between plugin versions.</param>
     /// <param name="Name">The user friendly name of the plugin. Is able to be changed between versions.</param>
     /// <param name="Version">The specific version of the plugin.</param>
@@ -63,8 +65,8 @@ public class BepInPlugin : Attribute
         if (attr == null)
             return null;
 
-        return new BepInPlugin((string) attr.ConstructorArguments[0].Value,
-                               (string) attr.ConstructorArguments[1].Value,
-                               (string) attr.ConstructorArguments[2].Value);
+        return new BepInPlugin((string)attr.ConstructorArguments[0].Value,
+                               (string)attr.ConstructorArguments[1].Value,
+                               (string)attr.ConstructorArguments[2].Value);
     }
 }

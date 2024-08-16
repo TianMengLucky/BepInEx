@@ -23,7 +23,7 @@ internal class TtyInfo
         if (MaxColors <= 0 || ForegroundColorStrings == null)
             return string.Empty;
 
-        var index = (int) color % MaxColors;
+        var index = (int)color % MaxColors;
         return ForegroundColorStrings[index];
     }
 }
@@ -40,7 +40,7 @@ internal static class TtyHandler
 
     private static string TryTermInfoDir(string dir, string term)
     {
-        var infoFilePath = $"{dir}/{(int) term[0]:x}/{term}";
+        var infoFilePath = $"{dir}/{(int)term[0]:x}/{term}";
 
         if (File.Exists(infoFilePath))
             return infoFilePath;
@@ -139,7 +139,7 @@ internal static class TtyInfoParser
 
         var colorOffset =
             baseOffset
-          + intSize * (int) TermInfoNumbers.MaxColors; // Finally the offset for the max color integer
+          + intSize * (int)TermInfoNumbers.MaxColors; // Finally the offset for the max color integer
 
         //int stringOffset = baseOffset + (intSize * intFieldLength);
 
@@ -171,8 +171,8 @@ internal static class TtyInfoParser
       | (buffer[offset + 3] << 24);
 
     private static short GetInt16(byte[] buffer, int offset) =>
-        (short) (buffer[offset]
-               | (buffer[offset + 1] << 8));
+        (short)(buffer[offset]
+              | (buffer[offset + 1] << 8));
 
     private static int GetInteger(int intSize, byte[] buffer, int offset) =>
         intSize == 2

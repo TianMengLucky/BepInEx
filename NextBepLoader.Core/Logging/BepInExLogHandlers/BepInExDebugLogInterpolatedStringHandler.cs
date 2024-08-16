@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace NextBepLoader.Core.Logging.BepInExLogHandlers;
 
 /// <inheritdoc />

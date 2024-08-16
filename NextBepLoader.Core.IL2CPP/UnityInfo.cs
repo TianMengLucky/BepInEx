@@ -78,8 +78,8 @@ public static class UnityInfo
                 var version = FileVersionInfo.GetVersionInfo(PlayerPath);
                 // Parse manually because some games can also wipe the file version (so it's an empty string)
                 var simpleVersion = new Version(version.FileVersion);
-                Version = new UnityVersion((ushort) simpleVersion.Major, (ushort) simpleVersion.Minor,
-                                           (ushort) simpleVersion.Build);
+                Version = new UnityVersion((ushort)simpleVersion.Major, (ushort)simpleVersion.Minor,
+                                           (ushort)simpleVersion.Build);
                 return;
             }
             catch (Exception)
@@ -116,8 +116,8 @@ public static class UnityInfo
                 fs.Position = offset;
 
                 byte b;
-                while ((b = (byte) fs.ReadByte()) != 0)
-                    sb.Append((char) b);
+                while ((b = (byte)fs.ReadByte()) != 0)
+                    sb.Append((char)b);
 
                 try
                 {

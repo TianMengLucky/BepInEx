@@ -1,6 +1,3 @@
 namespace NextBepLoader.Core.Console;
 
-public interface IConsoleManager
-{
-    
-}
+public interface IConsoleManager { }

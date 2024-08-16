@@ -1,10 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Text;
-using MonoMod.Utils;
-using NextBepLoader.Core.Configuration;
-
 namespace NextBepLoader.Core.Console;
 
 /*public static class ConsoleManager

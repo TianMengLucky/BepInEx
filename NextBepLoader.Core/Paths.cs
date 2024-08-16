@@ -1,15 +1,13 @@
-﻿namespace NextBepLoader.Core;
+﻿using System.IO;
+
+namespace NextBepLoader.Core;
 
 /// <summary>
 ///     Paths used by BepInEx
 /// </summary>
 public static class Paths
 {
-    public static LoaderPathBase? MainInstance
-    {
-        get;
-        internal set;
-    }
+    public static LoaderPathBase? MainInstance { get; internal set; }
 
     /// <summary>
     ///     The path to the Managed folder that contains the main managed assemblies.
@@ -24,17 +22,17 @@ public static class Paths
     /// <summary>
     ///     The directory that the core BepInEx DLLs reside in.
     /// </summary>
-    public static string BepInExAssemblyDirectory => MainInstance?.BepInExAssemblyDirectory ?? string.Empty;
+    public static string CoreDirectory => MainInstance?.CoreDirectory ?? string.Empty;
 
     /// <summary>
     ///     The path to the core BepInEx DLL.
     /// </summary>
-    public static string BepInExAssemblyPath => MainInstance?.BepInExAssemblyPath ?? string.Empty;
+    public static string CoreAssemblyPath => MainInstance?.CoreAssemblyPath ?? string.Empty;
 
     /// <summary>
     ///     The path to the main BepInEx folder.
     /// </summary>
-    public static string BepInExRootPath => MainInstance?.BepInExRootPath ?? string.Empty;
+    public static string LoaderRootPath => MainInstance?.LoaderRootPath ?? string.Empty;
 
     /// <summary>
     ///     The path of the currently executing program BepInEx is encapsulated in.
@@ -51,11 +49,6 @@ public static class Paths
     ///     The path to the config directory.
     /// </summary>
     public static string ConfigPath => MainInstance?.ConfigPath ?? string.Empty;
-
-    /// <summary>
-    ///     The path to the global BepInEx configuration file.
-    /// </summary>
-    public static string BepInExConfigPath => MainInstance?.BepInExConfigPath ?? string.Empty;
 
     /// <summary>
     ///     The path to temporary cache files.
@@ -76,4 +69,7 @@ public static class Paths
     /// </summary>
     public static string ProcessName => MainInstance?.ProcessName ?? string.Empty;
 
+    public static string DependencyDirectory => MainInstance?.DependencyDirectory ?? string.Empty;
+
+    public static string CoreConfigFile => Path.Combine(ConfigPath, "NextBepLoaderConfig.Cfg");
 }

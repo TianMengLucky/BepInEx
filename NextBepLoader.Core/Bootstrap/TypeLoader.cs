@@ -1,16 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Mono.Cecil;
-using NextBepLoader.Core.Configuration;
-using NextBepLoader.Core.Logging;
-
 namespace NextBepLoader.Core.Bootstrap;
 
-/// <summary>
+/*/// <summary>
 ///     A cacheable metadata item. Can be used with <see cref="TypeLoader.LoadAssemblyCache{T}" /> and
 ///     <see cref="TypeLoader.SaveAssemblyCache{T}" /> to cache plugin metadata.
 /// </summary>
@@ -66,9 +56,9 @@ public static class TypeLoader
     #region Config
 
     private static readonly ConfigEntry<bool> EnableAssemblyCache = ConfigFile.CoreConfig.Bind(
-     "Caching", "EnableAssemblyCache",
-     true,
-     "Enable/disable assembly metadata cache\nEnabling this will speed up discovery of plugins and patchers by caching the metadata of all types BepInEx discovers.");
+         "Caching", "EnableAssemblyCache",
+         true,
+         "Enable/disable assembly metadata cache\nEnabling this will speed up discovery of plugins and patchers by caching the metadata of all types BepInEx discovers.");
 
     #endregion
 
@@ -80,7 +70,7 @@ public static class TypeLoader
         CecilResolver.ResolveFailure += CecilResolveOnFailure;
     }
 
-    public static AssemblyDefinition CecilResolveOnFailure(object sender, AssemblyNameReference reference)
+    public static AssemblyDefinition? CecilResolveOnFailure(object sender, AssemblyNameReference reference)
     {
         if (!Utility.TryParseAssemblyName(reference.FullName, out var name))
             return null;
@@ -127,14 +117,14 @@ public static class TypeLoader
     /// </returns>
     public static Dictionary<string, List<T>> FindPluginTypes<T>(string directory,
                                                                  Func<TypeDefinition, string, T> typeSelector,
-                                                                 Func<AssemblyDefinition, bool> assemblyFilter =
+                                                                 Func<AssemblyDefinition, bool>? assemblyFilter =
                                                                      null,
-                                                                 string cacheName = null)
+                                                                 string? cacheName = null)
         where T : ICacheable, new()
     {
         var result = new Dictionary<string, List<T>>();
         var hashes = new Dictionary<string, string>();
-        Dictionary<string, CachedAssembly<T>> cache = null;
+        Dictionary<string, CachedAssembly<T>>? cache = null;
 
         if (cacheName != null)
             cache = LoadAssemblyCache<T>(cacheName);
@@ -167,7 +157,7 @@ public static class TypeLoader
                                  .Select(t => typeSelector(t, dll))
                                  .Where(t => t != null).ToList();
                 result[dll] = matches;
-                Logger.Log(LogLevel.Debug,$"Add {dll}");
+                Logger.Log(LogLevel.Debug, $"Add {dll}");
             }
             catch (BadImageFormatException e)
             {
@@ -194,7 +184,7 @@ public static class TypeLoader
     ///     Cached type metadatas indexed by the path of the assembly that defines the type. If no cache is defined,
     ///     return null.
     /// </returns>
-    public static Dictionary<string, CachedAssembly<T>> LoadAssemblyCache<T>(string cacheName)
+    public static Dictionary<string, CachedAssembly<T>>? LoadAssemblyCache<T>(string? cacheName)
         where T : ICacheable, new()
     {
         if (!EnableAssemblyCache.Value)
@@ -245,7 +235,7 @@ public static class TypeLoader
     /// <param name="entries">List of plugin metadatas indexed by the path to the assembly that contains the types</param>
     /// <param name="hashes">Hash values that can be used for checking similarity between cached and live assembly</param>
     /// <typeparam name="T">Cacheable item</typeparam>
-    public static void SaveAssemblyCache<T>(string cacheName,
+    public static void SaveAssemblyCache<T>(string? cacheName,
                                             Dictionary<string, List<T>> entries,
                                             Dictionary<string, string> hashes)
         where T : ICacheable
@@ -291,20 +281,27 @@ public static class TypeLoader
         foreach (var exSub in ex.LoaderExceptions)
         {
             sb.AppendLine(exSub.Message);
-            if (exSub is FileNotFoundException exFileNotFound)
+            switch (exSub)
             {
-                if (!string.IsNullOrEmpty(exFileNotFound.FusionLog))
+                case FileNotFoundException exFileNotFound:
                 {
-                    sb.AppendLine("Fusion Log:");
-                    sb.AppendLine(exFileNotFound.FusionLog);
+                    if (!string.IsNullOrEmpty(exFileNotFound.FusionLog))
+                    {
+                        sb.AppendLine("Fusion Log:");
+                        sb.AppendLine(exFileNotFound.FusionLog);
+                    }
+
+                    break;
                 }
-            }
-            else if (exSub is FileLoadException exLoad)
-            {
-                if (!string.IsNullOrEmpty(exLoad.FusionLog))
+                case FileLoadException exLoad:
                 {
-                    sb.AppendLine("Fusion Log:");
-                    sb.AppendLine(exLoad.FusionLog);
+                    if (!string.IsNullOrEmpty(exLoad.FusionLog))
+                    {
+                        sb.AppendLine("Fusion Log:");
+                        sb.AppendLine(exLoad.FusionLog);
+                    }
+
+                    break;
                 }
             }
 
@@ -313,4 +310,4 @@ public static class TypeLoader
 
         return sb.ToString();
     }
-}
+}*/

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mono.Cecil;
-using NextBepLoader.Core.Bootstrap;
 using Range = SemanticVersioning.Range;
 
 namespace NextBepLoader.Core.Contract.Attributes;
@@ -12,7 +10,7 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     This attribute specifies any dependencies that this plugin has on other plugins.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class BepInDependency : Attribute, ICacheable
+public class BepInDependency : Attribute/*, ICacheable*/
 {
     /// <summary>
     ///     Flags that are applied to a dependency
@@ -74,31 +72,31 @@ public class BepInDependency : Attribute, ICacheable
     /// </summary>
     public Range VersionRange { get; protected set; }
 
-    void ICacheable.Save(BinaryWriter bw)
+    /*void ICacheable.Save(BinaryWriter bw)
     {
         bw.Write(DependencyGUID);
-        bw.Write((int) Flags);
+        bw.Write((int)Flags);
         bw.Write(VersionRange?.ToString() ?? string.Empty);
     }
 
     void ICacheable.Load(BinaryReader br)
     {
         DependencyGUID = br.ReadString();
-        Flags = (DependencyFlags) br.ReadInt32();
+        Flags = (DependencyFlags)br.ReadInt32();
 
         var versionRange = br.ReadString();
         VersionRange = versionRange == string.Empty ? null : Range.Parse(versionRange);
-    }
+    }*/
 
     internal static IEnumerable<BepInDependency> FromCecilType(TypeDefinition td)
     {
         var attrs = MetadataHelper.GetCustomAttributes<BepInDependency>(td, true);
         return attrs.Select(customAttribute =>
         {
-            var dependencyGuid = (string) customAttribute.ConstructorArguments[0].Value;
+            var dependencyGuid = (string)customAttribute.ConstructorArguments[0].Value;
             var secondArg = customAttribute.ConstructorArguments[1].Value;
             if (secondArg is string minVersion) return new BepInDependency(dependencyGuid, minVersion);
-            return new BepInDependency(dependencyGuid, (DependencyFlags) secondArg);
+            return new BepInDependency(dependencyGuid, (DependencyFlags)secondArg);
         }).ToList();
     }
 }

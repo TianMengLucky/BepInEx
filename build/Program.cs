@@ -10,6 +10,7 @@ using Cake.Common;
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Build;
+using Cake.Common.Tools.DotNet.MSBuild;
 using Cake.Common.Tools.DotNet.NuGet.Push;
 using Cake.Core;
 using Cake.Core.Diagnostics;
@@ -44,7 +45,7 @@ namespace Build
 
         internal readonly DistributionTarget[] Distributions =
         [
-            new("Unity.IL2CPP", "win-x86")
+            new DistributionTarget("Unity.IL2CPP", "win-x86")
         ];
 
 
@@ -93,7 +94,7 @@ namespace Build
             VersionPrefix + BuildType switch
             {
                 ProjectBuildType.Release => "",
-                var _                    => $"-{VersionSuffix}+{this.GitShortenSha(RootDirectory, CurrentCommit)}",
+                var _                    => $"-{VersionSuffix}+{this.GitShortenSha(RootDirectory, CurrentCommit)}"
             };
 
         public static string DoorstopZipUrl(string arch) =>
@@ -129,8 +130,7 @@ namespace Build
                 Configuration = "Release"
             };
             if (ctx.BuildType != BuildContext.ProjectBuildType.Release)
-            {
-                buildSettings.MSBuildSettings = new()
+                buildSettings.MSBuildSettings = new DotNetMSBuildSettings
                 {
                     VersionSuffix = ctx.VersionSuffix,
                     Properties =
@@ -139,7 +139,6 @@ namespace Build
                         ["RepositoryBranch"] = new[] { ctx.GitBranchCurrent(ctx.RootDirectory).FriendlyName }
                     }
                 };
-            }
 
             ctx.DotNetBuild(ctx.RootDirectory.FullPath, buildSettings);
         }
@@ -178,7 +177,8 @@ namespace Build
                 ctx.CleanDirectory(dobbyDir);
                 var archs = new[] { "win", "linux", "macos" };
                 var versions = archs
-                               .Select(a => ($"Dobby ({a})", BuildContext.DobbyZipUrl(a), dobbyDir.Combine($"dobby_{a}")))
+                               .Select(a => ($"Dobby ({a})", BuildContext.DobbyZipUrl(a),
+                                             dobbyDir.Combine($"dobby_{a}")))
                                .ToArray();
                 ctx.DownloadZipFiles($"Dobby {BuildContext.DOBBY_VERSION}", versions);
             });
@@ -276,7 +276,8 @@ namespace Build
                     {
                         ctx.DeleteFile(bepInExCoreDir.CombineWithFilePath("BepInEx.NET.Framework.Launcher.exe.config"));
 
-                        ctx.MoveFileToDirectory(bepInExCoreDir.CombineWithFilePath("BepInEx.NET.Framework.Launcher.exe"), targetDir);
+                        ctx.MoveFileToDirectory(bepInExCoreDir.CombineWithFilePath("BepInEx.NET.Framework.Launcher.exe"),
+                                                targetDir);
                     }
                     else if (dist.Runtime == "CoreCLR")
                     {
@@ -343,12 +344,14 @@ namespace Build
                                               ["changelog"] = changeLog,
                                               ["hash"] = ctx.CurrentCommit.Sha,
                                               ["short_hash"] = ctx.GitShortenSha(ctx.RootDirectory, ctx.CurrentCommit),
-                                              ["artifacts"] = ctx.Distributions.Select(d => new Dictionary<string, string>
-                                              {
-                                                  ["file"] = $"BepInEx-{d.Target}-{ctx.BuildPackageVersion}.zip",
-                                                  ["description"] =
-                                                      $"BepInEx {d.Engine} ({d.Runtime}{(d.FrameworkTarget == null ? "" : " " + d.FrameworkTarget)}) for {d.ClearOsName} ({d.Arch}) games"
-                                              }).ToArray()
+                                              ["artifacts"] = ctx.Distributions
+                                                                 .Select(d => new Dictionary<string, string>
+                                                                 {
+                                                                     ["file"] =
+                                                                         $"BepInEx-{d.Target}-{ctx.BuildPackageVersion}.zip",
+                                                                     ["description"] =
+                                                                         $"BepInEx {d.Engine} ({d.Runtime}{(d.FrameworkTarget == null ? "" : " " + d.FrameworkTarget)}) for {d.ClearOsName} ({d.Arch}) games"
+                                                                 }).ToArray()
                                           });
         }
     }

@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NextBepLoader.Core\NextBepLoader.Core.csproj" />
+        <ProjectReference Include="..\NextBepLoader.Core\NextBepLoader.Core.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -14,5 +14,7 @@
         <PackageReference Include="HarmonyX" Version="2.13.0"/>
         <PackageReference Include="MonoMod.RuntimeDetour" Version="25.1.2"/>
         <PackageReference Include="MonoMod.Utils" Version="25.0.6"/>
+
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
     </ItemGroup>
 </Project>

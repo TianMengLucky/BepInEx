@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using MonoMod.Utils;
+using NextBepLoader.Core;
 using NextBepLoader.Core.Logging;
 
-namespace NextBepLoader.Core.IL2CPP.RuntimeFixes;
+namespace NextBepLoader.Deskstop;
 
 internal static partial class RedirectStdErrFix
 {
@@ -14,14 +14,15 @@ internal static partial class RedirectStdErrFix
     private const int CREATE_ALWAYS = 2;
     private const int FILE_ATTRIBUTE_NORMAL = 0x00000080;
 
-    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileA", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileA", SetLastError = true,
+                   StringMarshalling = StringMarshalling.Utf16)]
     private static partial nint CreateFile(string fileName,
-                                          uint desiredAccess,
-                                          int shareMode,
-                                          nint securityAttributes,
-                                          int creationDisposition,
-                                          int flagsAndAttributes,
-                                          nint templateFile);
+                                           uint desiredAccess,
+                                           int shareMode,
+                                           nint securityAttributes,
+                                           int creationDisposition,
+                                           int flagsAndAttributes,
+                                           nint templateFile);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -31,7 +32,7 @@ internal static partial class RedirectStdErrFix
     public static void Apply()
     {
         if (!PlatformDetection.OS.Is(OSKind.Windows)) return;
-        var errorFile = CreateFile(Path.Combine(Paths.BepInExRootPath, "ErrorLog.log"), GENERIC_WRITE,
+        var errorFile = CreateFile(Path.Combine(Paths.LoaderRootPath, "ErrorLog.log"), GENERIC_WRITE,
                                    FILE_SHARE_READ,
                                    0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
         if (errorFile == INVALID_HANDLE_VALUE)

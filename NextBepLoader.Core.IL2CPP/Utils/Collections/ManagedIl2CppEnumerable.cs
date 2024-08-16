@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections;
+using Il2CppSystem.Collections;
+using IEnumerator = System.Collections.IEnumerator;
 
 namespace NextBepLoader.Core.IL2CPP.Utils.Collections;
 
-public class ManagedIl2CppEnumerable(Il2CppSystem.Collections.IEnumerable enumerable) : IEnumerable
+public class ManagedIl2CppEnumerable(IEnumerable enumerable) : System.Collections.IEnumerable
 {
-    private readonly Il2CppSystem.Collections.IEnumerable enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
+    private readonly IEnumerable enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
 
     public IEnumerator GetEnumerator() => new ManagedIl2CppEnumerator(enumerable.GetEnumerator());
 }

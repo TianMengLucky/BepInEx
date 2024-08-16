@@ -2,4 +2,7 @@ using System;
 
 namespace NextBepLoader.Core.PreLoader;
 
-public class PreLoadEventArg : EventArgs { }
+public class ServiceBuildEventArg : EventArgs
+{
+    
+}

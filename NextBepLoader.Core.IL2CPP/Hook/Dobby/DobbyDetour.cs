@@ -10,7 +10,7 @@ internal class DobbyDetour(IntPtr originalMethodPtr, IntPtr detourMethod)
     protected override unsafe void PrepareImpl()
     {
         nint trampolinePtr = 0;
-        _ = DobbyLib.Prepare(Source, Target,  &trampolinePtr);
+        _ = DobbyLib.Prepare(Source, Target, &trampolinePtr);
         OrigEntrypoint = trampolinePtr;
         HasOrigEntrypoint = true;
     }

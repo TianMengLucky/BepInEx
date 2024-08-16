@@ -1,3 +1,6 @@
 namespace NextBepLoader.Core.Logging;
 
-public interface ILogger { }
+public class FastLogBuilder
+{
+    
+}

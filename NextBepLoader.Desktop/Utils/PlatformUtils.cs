@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using MonoMod.Utils;
 using NextBepLoader.Core;
 
-namespace NextBepLoader.Deskstop;
+namespace NextBepLoader.Deskstop.Utils;
 
 internal static class PlatformUtils
 {

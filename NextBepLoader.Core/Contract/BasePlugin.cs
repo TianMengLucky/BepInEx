@@ -1,10 +1,14 @@
 using NextBepLoader.Core.Configuration;
+using NextBepLoader.Core.Contract.Attributes;
 using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core.Contract;
 
 public abstract class BasePlugin
 {
+    public virtual BepInDependency[] Dependencies { get; set; } = [];
+
+    
     protected BasePlugin()
     {
         var metadata = MetadataHelper.GetMetadata(this);

@@ -66,27 +66,27 @@ internal static class SafeConsole
         var stt = tConsole.GetMethod("set_Title", BINDING_FLAGS);
 
         _setForegroundColor = sfc != null
-                                  ? (SetColorDelegate) Delegate.CreateDelegate(typeof(SetColorDelegate), sfc)
+                                  ? (SetColorDelegate)Delegate.CreateDelegate(typeof(SetColorDelegate), sfc)
                                   : value => { };
 
         _setBackgroundColor = sbc != null
-                                  ? (SetColorDelegate) Delegate.CreateDelegate(typeof(SetColorDelegate), sbc)
+                                  ? (SetColorDelegate)Delegate.CreateDelegate(typeof(SetColorDelegate), sbc)
                                   : value => { };
 
         _getForegroundColor = gfc != null
-                                  ? (GetColorDelegate) Delegate.CreateDelegate(typeof(GetColorDelegate), gfc)
+                                  ? (GetColorDelegate)Delegate.CreateDelegate(typeof(GetColorDelegate), gfc)
                                   : () => ConsoleColor.Gray;
 
         _getBackgroundColor = gbc != null
-                                  ? (GetColorDelegate) Delegate.CreateDelegate(typeof(GetColorDelegate), gbc)
+                                  ? (GetColorDelegate)Delegate.CreateDelegate(typeof(GetColorDelegate), gbc)
                                   : () => ConsoleColor.Black;
 
         _getTitle = gtt != null
-                        ? (GetStringDelegate) Delegate.CreateDelegate(typeof(GetStringDelegate), gtt)
+                        ? (GetStringDelegate)Delegate.CreateDelegate(typeof(GetStringDelegate), gtt)
                         : () => string.Empty;
 
         _setTitle = stt != null
-                        ? (SetStringDelegate) Delegate.CreateDelegate(typeof(SetStringDelegate), stt)
+                        ? (SetStringDelegate)Delegate.CreateDelegate(typeof(SetStringDelegate), stt)
                         : value => { };
 
         BackgroundColorExists = _setBackgroundColor != null && _getBackgroundColor != null;

@@ -46,7 +46,7 @@ public sealed class ConfigEntry<T> : ConfigEntryBase
     public override object BoxedValue
     {
         get => Value;
-        set => Value = (T) value;
+        set => Value = (T)value;
     }
 
     /// <summary>
@@ -64,11 +64,11 @@ public abstract class ConfigEntryBase
     /// <summary>
     ///     Types of defaultValue and definition.AcceptableValues have to be the same as settingType.
     /// </summary>
-    internal protected ConfigEntryBase(ConfigFile configFile,
-                             ConfigDefinition definition,
-                             Type settingType,
-                             object defaultValue,
-                             ConfigDescription configDescription)
+    protected internal ConfigEntryBase(ConfigFile configFile,
+                                       ConfigDefinition definition,
+                                       Type settingType,
+                                       object defaultValue,
+                                       ConfigDescription configDescription)
     {
         ConfigFile = configFile ?? throw new ArgumentNullException(nameof(configFile));
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));
@@ -145,7 +145,7 @@ public abstract class ConfigEntryBase
     protected T ClampValue<T>(T value)
     {
         if (Description.AcceptableValues != null)
-            return (T) Description.AcceptableValues.Clamp(value);
+            return (T)Description.AcceptableValues.Clamp(value);
         return value;
     }
 

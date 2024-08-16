@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
+using AssemblyDefinition = AsmResolver.DotNet.AssemblyDefinition;
 
 namespace NextBepLoader.Core.IL2CPP;
 
@@ -9,52 +10,48 @@ internal static partial class Il2CppInteropManager
 {
     private sealed class AsmToCecilConverter : IAssemblyResolver
     {
-        private readonly Dictionary<string, AsmResolver.DotNet.AssemblyDefinition> asmResolverDictionary;
-        private readonly Dictionary<string, AssemblyDefinition> cecilDictionary = new();
-        private readonly Dictionary<AsmResolver.DotNet.AssemblyDefinition, AssemblyDefinition> asmToCecil = new();
-        public AsmToCecilConverter(List<AsmResolver.DotNet.AssemblyDefinition> list)
+        private readonly Dictionary<string, AssemblyDefinition> asmResolverDictionary;
+        private readonly Dictionary<AssemblyDefinition, Mono.Cecil.AssemblyDefinition> asmToCecil = new();
+        private readonly Dictionary<string, Mono.Cecil.AssemblyDefinition> cecilDictionary = new();
+
+        public AsmToCecilConverter(List<AssemblyDefinition> list)
         {
-            asmResolverDictionary = list.ToDictionary(a => a.Name?.ToString(), a => a);
+            asmResolverDictionary = list.ToDictionary(a => a.Name!.ToString(), a => a)!;
         }
 
         public void Dispose() { }
-        public AssemblyDefinition Resolve(AssemblyNameReference name) => Resolve(name, new() { AssemblyResolver = this });
-        public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+
+        public Mono.Cecil.AssemblyDefinition? Resolve(AssemblyNameReference name) =>
+            Resolve(name, new ReaderParameters { AssemblyResolver = this });
+
+        public Mono.Cecil.AssemblyDefinition? Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
             var assemblyName = name.Name;
-            if (!cecilDictionary.TryGetValue(assemblyName, out var cecilAssembly) && asmResolverDictionary.TryGetValue(assemblyName, out var asmAssembly))
-            {
+            if (!cecilDictionary.TryGetValue(assemblyName, out var cecilAssembly) &&
+                asmResolverDictionary.TryGetValue(assemblyName, out var asmAssembly))
                 cecilAssembly = Convert(asmAssembly, parameters);
-            }
             return cecilAssembly;
         }
 
-        public List<AssemblyDefinition> ConvertAll()
+        public List<Mono.Cecil.AssemblyDefinition> ConvertAll()
         {
-            List<AssemblyDefinition> cecilAssemblies = new(asmResolverDictionary.Count);
-            foreach (var asmResolverAssembly in asmResolverDictionary.Values)
-            {
-                var cecilAssembly = Convert(asmResolverAssembly);
-                cecilAssemblies.Add(cecilAssembly);
-            }
+            List<Mono.Cecil.AssemblyDefinition> cecilAssemblies = new(asmResolverDictionary.Count);
+            cecilAssemblies.AddRange(asmResolverDictionary.Values.Select(Convert));
+
             return cecilAssemblies;
         }
 
-        private AssemblyDefinition Convert(AsmResolver.DotNet.AssemblyDefinition asmResolverAssembly)
-        {
-            return Convert(asmResolverAssembly, new ReaderParameters() { AssemblyResolver = this });
-        }
+        private Mono.Cecil.AssemblyDefinition Convert(AssemblyDefinition asmResolverAssembly) =>
+            Convert(asmResolverAssembly, new ReaderParameters { AssemblyResolver = this });
 
-        private AssemblyDefinition Convert(AsmResolver.DotNet.AssemblyDefinition asmResolverAssembly, ReaderParameters readerParameters)
+        private Mono.Cecil.AssemblyDefinition Convert(AssemblyDefinition asmResolverAssembly,
+                                                      ReaderParameters readerParameters)
         {
-            if (asmToCecil.TryGetValue(asmResolverAssembly, out var cecilAssembly))
-            {
-                return cecilAssembly;
-            }
+            if (asmToCecil.TryGetValue(asmResolverAssembly, out var cecilAssembly)) return cecilAssembly;
             MemoryStream stream = new();
             asmResolverAssembly.WriteManifest(stream);
             stream.Position = 0;
-            cecilAssembly = AssemblyDefinition.ReadAssembly(stream, readerParameters);
+            cecilAssembly = Mono.Cecil.AssemblyDefinition.ReadAssembly(stream, readerParameters);
             cecilDictionary.Add(cecilAssembly.Name.Name, cecilAssembly);
             asmToCecil.Add(asmResolverAssembly, cecilAssembly);
             return cecilAssembly;

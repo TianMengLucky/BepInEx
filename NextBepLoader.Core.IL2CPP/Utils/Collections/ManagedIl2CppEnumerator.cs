@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Collections;
 using HarmonyLib;
+using Il2CppSystem.Collections;
 
 namespace NextBepLoader.Core.IL2CPP.Utils.Collections;
 
-public class ManagedIl2CppEnumerator(Il2CppSystem.Collections.IEnumerator enumerator) : IEnumerator
+public class ManagedIl2CppEnumerator(IEnumerator enumerator) : System.Collections.IEnumerator
 {
-    private static readonly Func<Il2CppSystem.Collections.IEnumerator, bool> moveNext = AccessTools
-        .Method(typeof(Il2CppSystem.Collections.IEnumerator), "MoveNext")
-        ?.CreateDelegate<Func<Il2CppSystem.Collections.IEnumerator, bool>>();
+    private static readonly Func<IEnumerator, bool> moveNext = AccessTools
+                                                               .Method(typeof(IEnumerator), "MoveNext")
+                                                               ?.CreateDelegate<Func<IEnumerator, bool>>();
 
-    private static readonly Action<Il2CppSystem.Collections.IEnumerator> reset = AccessTools
-        .Method(typeof(Il2CppSystem.Collections.IEnumerator), "Reset")
-        ?.CreateDelegate<Action<Il2CppSystem.Collections.IEnumerator>>();
+    private static readonly Action<IEnumerator> reset = AccessTools
+                                                        .Method(typeof(IEnumerator), "Reset")
+                                                        ?.CreateDelegate<Action<IEnumerator>>();
 
-    private readonly Il2CppSystem.Collections.IEnumerator enumerator = enumerator ?? throw new ArgumentNullException(nameof(enumerator));
+    private readonly IEnumerator enumerator = enumerator ?? throw new ArgumentNullException(nameof(enumerator));
 
     public bool MoveNext() => moveNext?.Invoke(enumerator) ?? false;
 

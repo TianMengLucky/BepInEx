@@ -6,9 +6,9 @@ using Cake.Json;
 
 namespace Build;
 
-readonly record struct DependencyCache(BuildContext Ctx, FilePath CacheFile)
+internal readonly record struct DependencyCache(BuildContext Ctx, FilePath CacheFile)
 {
-    readonly IDictionary<string, string> cache =
+    private readonly IDictionary<string, string> cache =
         File.Exists(CacheFile.FullPath)
             ? Ctx.DeserializeJsonFromFile<Dictionary<string, string>>(CacheFile.FullPath)
             : new Dictionary<string, string>();

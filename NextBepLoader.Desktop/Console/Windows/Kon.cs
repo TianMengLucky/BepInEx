@@ -1,147 +1,146 @@
 using System.Runtime.InteropServices;
 
-namespace NextBepLoader.Deskstop.Console.Windows
+namespace NextBepLoader.Deskstop.Console.Windows;
+
+internal class Kon
 {
-    internal class Kon
+    #region pinvoke
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool GetConsoleScreenBufferInfo(IntPtr hConsoleOutput,
+                                                          out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool SetConsoleTextAttribute(IntPtr hConsoleOutput, short attributes);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GetStdHandle(int nStdHandle);
+
+    #endregion
+
+    #region Types
+
+    private struct CONSOLE_SCREEN_BUFFER_INFO
     {
-        #region pinvoke
+        internal COORD dwSize;
+        internal COORD dwCursorPosition;
+        internal short wAttributes;
+        internal SMALL_RECT srWindow;
+        internal COORD dwMaximumWindowSize;
+    }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetConsoleScreenBufferInfo(IntPtr hConsoleOutput,
-                                                              out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
+    private struct COORD
+    {
+        internal short X;
+        internal short Y;
+    }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleTextAttribute(IntPtr hConsoleOutput, short attributes);
+    private struct SMALL_RECT
+    {
+        internal short Left;
+        internal short Top;
+        internal short Right;
+        internal short Bottom;
+    }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr GetStdHandle(int nStdHandle);
+    private static readonly IntPtr INVALID_HANDLE_VALUE = new(-1);
 
-        #endregion
+    #endregion
 
-        #region Types
+    #region Private
 
-        private struct CONSOLE_SCREEN_BUFFER_INFO
+    private static short ConsoleColorToColorAttribute(short color, bool isBackground)
+    {
+        if ((color & -16) != 0)
+            throw new ArgumentException("Arg_InvalidConsoleColor");
+        if (isBackground)
+            color <<= 4;
+        return color;
+    }
+
+    private static CONSOLE_SCREEN_BUFFER_INFO GetBufferInfo(bool throwOnNoConsole, out bool succeeded)
+    {
+        succeeded = false;
+        if (!(conOut == INVALID_HANDLE_VALUE))
         {
-            internal COORD dwSize;
-            internal COORD dwCursorPosition;
-            internal short wAttributes;
-            internal SMALL_RECT srWindow;
-            internal COORD dwMaximumWindowSize;
-        }
-
-        private struct COORD
-        {
-            internal short X;
-            internal short Y;
-        }
-
-        private struct SMALL_RECT
-        {
-            internal short Left;
-            internal short Top;
-            internal short Right;
-            internal short Bottom;
-        }
-
-        private static readonly IntPtr INVALID_HANDLE_VALUE = new(-1);
-
-        #endregion
-
-        #region Private
-
-        private static short ConsoleColorToColorAttribute(short color, bool isBackground)
-        {
-            if ((color & -16) != 0)
-                throw new ArgumentException("Arg_InvalidConsoleColor");
-            if (isBackground)
-                color <<= 4;
-            return color;
-        }
-
-        private static CONSOLE_SCREEN_BUFFER_INFO GetBufferInfo(bool throwOnNoConsole, out bool succeeded)
-        {
-            succeeded = false;
-            if (!(conOut == INVALID_HANDLE_VALUE))
+            CONSOLE_SCREEN_BUFFER_INFO console_SCREEN_BUFFER_INFO;
+            if (!GetConsoleScreenBufferInfo(conOut, out console_SCREEN_BUFFER_INFO))
             {
-                CONSOLE_SCREEN_BUFFER_INFO console_SCREEN_BUFFER_INFO;
-                if (!GetConsoleScreenBufferInfo(conOut, out console_SCREEN_BUFFER_INFO))
-                {
-                    var consoleScreenBufferInfo =
-                        GetConsoleScreenBufferInfo(GetStdHandle(-12), out console_SCREEN_BUFFER_INFO);
-                    if (!consoleScreenBufferInfo)
-                        consoleScreenBufferInfo =
-                            GetConsoleScreenBufferInfo(GetStdHandle(-10), out console_SCREEN_BUFFER_INFO);
+                var consoleScreenBufferInfo =
+                    GetConsoleScreenBufferInfo(GetStdHandle(-12), out console_SCREEN_BUFFER_INFO);
+                if (!consoleScreenBufferInfo)
+                    consoleScreenBufferInfo =
+                        GetConsoleScreenBufferInfo(GetStdHandle(-10), out console_SCREEN_BUFFER_INFO);
 
-                    if (!consoleScreenBufferInfo)
-                        if (Marshal.GetLastWin32Error() == 6 && !throwOnNoConsole)
-                            return default;
-                }
-
-                succeeded = true;
-                return console_SCREEN_BUFFER_INFO;
+                if (!consoleScreenBufferInfo)
+                    if (Marshal.GetLastWin32Error() == 6 && !throwOnNoConsole)
+                        return default;
             }
 
-            if (!throwOnNoConsole)
-                return default;
-            throw new Exception("IO.IO_NoConsole");
+            succeeded = true;
+            return console_SCREEN_BUFFER_INFO;
         }
 
-        private static void SetConsoleColor(bool isBackground, ConsoleColor c)
-        {
+        if (!throwOnNoConsole)
+            return default;
+        throw new Exception("IO.IO_NoConsole");
+    }
+
+    private static void SetConsoleColor(bool isBackground, ConsoleColor c)
+    {
 #if NET35
             new UIPermission(UIPermissionWindow.SafeTopLevelWindows).Demand();
 #endif
-            var color = ConsoleColorToColorAttribute((short) c, isBackground);
-            bool flag;
-            var bufferInfo = GetBufferInfo(false, out flag);
-            if (!flag)
-                return;
-            var num = bufferInfo.wAttributes;
-            num &= (short) (isBackground ? -241 : -16);
-            num = (short) ((ushort) num | (ushort) color);
-            SetConsoleTextAttribute(conOut, num);
-        }
-
-        private static ConsoleColor GetConsoleColor(bool isBackground)
-        {
-            bool flag;
-            var bufferInfo = GetBufferInfo(false, out flag);
-            if (!flag)
-                return isBackground ? ConsoleColor.Black : ConsoleColor.Gray;
-            return ColorAttributeToConsoleColor((short) (bufferInfo.wAttributes & 240));
-        }
-
-        private static ConsoleColor ColorAttributeToConsoleColor(short c)
-        {
-            if ((short) (c & 255) != 0)
-                c >>= 4;
-            return (ConsoleColor) c;
-        }
-
-        internal static IntPtr conOut = IntPtr.Zero;
-
-        #endregion
-
-        #region Public
-
-        public static void ResetConsoleColor()
-        {
-            SetConsoleColor(true, ConsoleColor.Black);
-            SetConsoleColor(false, ConsoleColor.Gray);
-        }
-
-        public static ConsoleColor ForegroundColor
-        {
-            get => GetConsoleColor(false);
-            set => SetConsoleColor(false, value);
-        }
-
-        public static ConsoleColor BackgroundColor
-        {
-            get => GetConsoleColor(true);
-            set => SetConsoleColor(true, value);
-        }
-
-        #endregion
+        var color = ConsoleColorToColorAttribute((short)c, isBackground);
+        bool flag;
+        var bufferInfo = GetBufferInfo(false, out flag);
+        if (!flag)
+            return;
+        var num = bufferInfo.wAttributes;
+        num &= (short)(isBackground ? -241 : -16);
+        num = (short)((ushort)num | (ushort)color);
+        SetConsoleTextAttribute(conOut, num);
     }
+
+    private static ConsoleColor GetConsoleColor(bool isBackground)
+    {
+        bool flag;
+        var bufferInfo = GetBufferInfo(false, out flag);
+        if (!flag)
+            return isBackground ? ConsoleColor.Black : ConsoleColor.Gray;
+        return ColorAttributeToConsoleColor((short)(bufferInfo.wAttributes & 240));
+    }
+
+    private static ConsoleColor ColorAttributeToConsoleColor(short c)
+    {
+        if ((short)(c & 255) != 0)
+            c >>= 4;
+        return (ConsoleColor)c;
+    }
+
+    internal static IntPtr conOut = IntPtr.Zero;
+
+    #endregion
+
+    #region Public
+
+    public static void ResetConsoleColor()
+    {
+        SetConsoleColor(true, ConsoleColor.Black);
+        SetConsoleColor(false, ConsoleColor.Gray);
+    }
+
+    public static ConsoleColor ForegroundColor
+    {
+        get => GetConsoleColor(false);
+        set => SetConsoleColor(false, value);
+    }
+
+    public static ConsoleColor BackgroundColor
+    {
+        get => GetConsoleColor(true);
+        set => SetConsoleColor(true, value);
+    }
+
+    #endregion
 }

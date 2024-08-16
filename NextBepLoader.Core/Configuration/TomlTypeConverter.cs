@@ -17,14 +17,8 @@ public static class TomlTypeConverter
     {
         [typeof(string)] = new TypeConverter
         {
-            ConvertToString = (obj, type) => Escape((string) obj),
-            ConvertToObject = (str, type) =>
-            {
-                // Check if the string is a file path with unescaped \ path separators (e.g. D:\test and not D:\\test)
-                if (Regex.IsMatch(str, @"^""?\w:\\(?!\\)(?!.+\\\\)"))
-                    return str;
-                return Unescape(str);
-            }
+            ConvertToString = (obj, type) => Escape((string)obj),
+            ConvertToObject = (str, type) => Regex.IsMatch(str, @"^""?\w:\\(?!\\)(?!.+\\\\)") ? str : Unescape(str)
         },
         [typeof(bool)] = new TypeConverter
         {
@@ -84,17 +78,17 @@ public static class TomlTypeConverter
 
         [typeof(float)] = new TypeConverter
         {
-            ConvertToString = (obj, type) => ((float) obj).ToString(NumberFormatInfo.InvariantInfo),
+            ConvertToString = (obj, type) => ((float)obj).ToString(NumberFormatInfo.InvariantInfo),
             ConvertToObject = (str, type) => float.Parse(str, NumberFormatInfo.InvariantInfo)
         },
         [typeof(double)] = new TypeConverter
         {
-            ConvertToString = (obj, type) => ((double) obj).ToString(NumberFormatInfo.InvariantInfo),
+            ConvertToString = (obj, type) => ((double)obj).ToString(NumberFormatInfo.InvariantInfo),
             ConvertToObject = (str, type) => double.Parse(str, NumberFormatInfo.InvariantInfo)
         },
         [typeof(decimal)] = new TypeConverter
         {
-            ConvertToString = (obj, type) => ((decimal) obj).ToString(NumberFormatInfo.InvariantInfo),
+            ConvertToString = (obj, type) => ((decimal)obj).ToString(NumberFormatInfo.InvariantInfo),
             ConvertToObject = (str, type) => decimal.Parse(str, NumberFormatInfo.InvariantInfo)
         },
 
@@ -122,7 +116,7 @@ public static class TomlTypeConverter
     /// <summary>
     ///     Convert string to an object of a given type using available converters.
     /// </summary>
-    public static T ConvertToValue<T>(string value) => (T) ConvertToValue(value, typeof(T));
+    public static T ConvertToValue<T>(string value) => (T)ConvertToValue(value, typeof(T));
 
     /// <summary>
     ///     Convert string to an object of a given type using available converters.

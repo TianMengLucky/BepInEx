@@ -4,8 +4,7 @@ using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core.IL2CPP.Hook;
 
-internal abstract class BaseNativeDetour<T>
-    (IntPtr originalMethodPtr, IntPtr detourMethod) : ICoreNativeDetour
+internal abstract class BaseNativeDetour<T>(IntPtr originalMethodPtr, IntPtr detourMethod) : ICoreNativeDetour
     where T : BaseNativeDetour<T>
 {
     protected static readonly ManualLogSource _Logger = Logger.CreateLogSource(typeof(T).Name);
@@ -14,7 +13,7 @@ internal abstract class BaseNativeDetour<T>
 
     public IntPtr Source { get; } = originalMethodPtr;
     public IntPtr Target { get; } = detourMethod;
-    
+
     public bool HasOrigEntrypoint { get; protected set; }
     public IntPtr OrigEntrypoint { get; protected set; }
     public bool IsApplied { get; private set; }
@@ -34,7 +33,7 @@ internal abstract class BaseNativeDetour<T>
         ApplyImpl();
 
         _Logger.Log(LogLevel.Debug,
-                   $"Original: {Source:X}, Trampoline: {OrigEntrypoint:X}, diff: {Math.Abs(Source - OrigEntrypoint):X}");
+                    $"Original: {Source:X}, Trampoline: {OrigEntrypoint:X}, diff: {Math.Abs(Source - OrigEntrypoint):X}");
 
         IsApplied = true;
     }
@@ -44,10 +43,7 @@ internal abstract class BaseNativeDetour<T>
         if (IsApplied && IsPrepared) UndoImpl();
     }
 
-    public void Free()
-    {
-        FreeImpl();
-    }
+    public void Free() => FreeImpl();
 
     protected abstract void ApplyImpl();
 

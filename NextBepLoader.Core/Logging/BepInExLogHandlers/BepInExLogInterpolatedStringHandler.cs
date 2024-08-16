@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace NextBepLoader.Core.Logging.BepInExLogHandlers;

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.Contract.Attributes;
 using NextBepLoader.Core.Logging;
 
@@ -39,7 +37,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
         else if (saveOnInit) Save();
     }
 
-    public static ConfigFile CoreConfig { get; } = new(Paths.BepInExConfigPath, true);
+    public static ConfigFile CoreConfig { get; } = new(Paths.CoreConfigFile, true);
 
     /// <summary>
     ///     All config entries inside
@@ -48,20 +46,6 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
 
     private Dictionary<ConfigDefinition, string> OrphanedEntries { get; } = new();
 
-    /// <summary>
-    ///     Create a list with all config entries inside of this config file.
-    /// </summary>
-    [Obsolete("Use Keys instead")]
-    public ReadOnlyCollection<ConfigDefinition> ConfigDefinitions
-    {
-        get
-        {
-            lock (_ioLock)
-            {
-                return Entries.Keys.ToList().AsReadOnly();
-            }
-        }
-    }
 
     /// <summary>
     ///     Full path to the config file. The file might not exist until a setting is added and changed, or <see cref="Save" />
@@ -114,7 +98,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     {
         lock (_ioLock)
         {
-            return ((ICollection<KeyValuePair<ConfigDefinition, ConfigEntryBase>>) Entries).Contains(item);
+            return ((ICollection<KeyValuePair<ConfigDefinition, ConfigEntryBase>>)Entries).Contains(item);
         }
     }
 
@@ -124,7 +108,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     {
         lock (_ioLock)
         {
-            ((ICollection<KeyValuePair<ConfigDefinition, ConfigEntryBase>>) Entries).CopyTo(array, arrayIndex);
+            ((ICollection<KeyValuePair<ConfigDefinition, ConfigEntryBase>>)Entries).CopyTo(array, arrayIndex);
         }
     }
 
@@ -234,20 +218,6 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
         }
     }
 
-    /// <summary>
-    ///     Create an array with all config entries inside of this config file. Should be only used for metadata purposes.
-    ///     If you want to access and modify an existing setting then use
-    ///     <see cref="AddSetting{T}(ConfigDefinition,T,ConfigDescription)" />
-    ///     instead with no description.
-    /// </summary>
-    [Obsolete("Use Values instead")]
-    public ConfigEntryBase[] GetConfigEntries()
-    {
-        lock (_ioLock)
-        {
-            return Entries.Values.ToArray();
-        }
-    }
 
     #region Save/Load
 
@@ -328,7 +298,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
                                    })
                                    .Concat(OrphanedEntries.Select(x => new
                                    {
-                                       x.Key, entry = (ConfigEntryBase) null, value = x.Value
+                                       x.Key, entry = (ConfigEntryBase)null, value = x.Value
                                    }));
 
             foreach (var sectionKv in allConfigEntries.GroupBy(x => x.Key.Section).OrderBy(x => x.Key))
@@ -357,33 +327,6 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     #region Wraps
 
     /// <summary>
-    ///     Access one of the existing settings. If the setting has not been added yet, null is returned.
-    ///     If the setting exists but has a different type than T, an exception is thrown.
-    ///     New settings should be added with <see cref="AddSetting{T}(ConfigDefinition,T,ConfigDescription)" />.
-    /// </summary>
-    /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
-    /// <param name="configDefinition">Section and Key of the setting.</param>
-    [Obsolete("Use ConfigFile[key] or TryGetEntry instead")]
-    public ConfigEntry<T> GetSetting<T>(ConfigDefinition configDefinition) =>
-        TryGetEntry<T>(configDefinition, out var entry)
-            ? entry
-            : null;
-
-    /// <summary>
-    ///     Access one of the existing settings. If the setting has not been added yet, null is returned.
-    ///     If the setting exists but has a different type than T, an exception is thrown.
-    ///     New settings should be added with <see cref="AddSetting{T}(ConfigDefinition,T,ConfigDescription)" />.
-    /// </summary>
-    /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
-    /// <param name="section">Section/category/group of the setting. Settings are grouped by this.</param>
-    /// <param name="key">Name of the setting.</param>
-    [Obsolete("Use ConfigFile[key] or TryGetEntry instead")]
-    public ConfigEntry<T> GetSetting<T>(string section, string key) =>
-        TryGetEntry<T>(section, key, out var entry)
-            ? entry
-            : null;
-
-    /// <summary>
     ///     Access one of the existing settings. If the setting has not been added yet, false is returned. Otherwise, true.
     ///     If the setting exists but has a different type than T, an exception is thrown.
     ///     New settings should be added with
@@ -398,7 +341,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
         {
             if (Entries.TryGetValue(configDefinition, out var rawEntry))
             {
-                entry = (ConfigEntry<T>) rawEntry;
+                entry = (ConfigEntry<T>)rawEntry;
                 return true;
             }
 
@@ -439,7 +382,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
         lock (_ioLock)
         {
             if (Entries.TryGetValue(configDefinition, out var rawEntry))
-                return (ConfigEntry<T>) rawEntry;
+                return (ConfigEntry<T>)rawEntry;
 
             var entry = new ConfigEntry<T>(this, configDefinition, defaultValue, configDescription);
 
@@ -486,73 +429,6 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <param name="description">Simple description of the setting shown to the user.</param>
     public ConfigEntry<T> Bind<T>(string section, string key, T defaultValue, string description) =>
         Bind(new ConfigDefinition(section, key), defaultValue, new ConfigDescription(description));
-
-    /// <summary>
-    ///     Create a new setting. The setting is saved to drive and loaded automatically.
-    ///     Each definition can be used to add only one setting, trying to add a second setting will throw an exception.
-    /// </summary>
-    /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
-    /// <param name="configDefinition">Section and Key of the setting.</param>
-    /// <param name="defaultValue">Value of the setting if the setting was not created yet.</param>
-    /// <param name="configDescription">Description of the setting shown to the user and other metadata.</param>
-    [Obsolete("Use Bind instead")]
-    public ConfigEntry<T> AddSetting<T>(ConfigDefinition configDefinition,
-                                        T defaultValue,
-                                        ConfigDescription configDescription = null) =>
-        Bind(configDefinition, defaultValue, configDescription);
-
-    /// <summary>
-    ///     Create a new setting. The setting is saved to drive and loaded automatically.
-    ///     Each section and key pair can be used to add only one setting, trying to add a second setting will throw an
-    ///     exception.
-    /// </summary>
-    /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
-    /// <param name="section">Section/category/group of the setting. Settings are grouped by this.</param>
-    /// <param name="key">Name of the setting.</param>
-    /// <param name="defaultValue">Value of the setting if the setting was not created yet.</param>
-    /// <param name="configDescription">Description of the setting shown to the user and other metadata.</param>
-    [Obsolete("Use Bind instead")]
-    public ConfigEntry<T> AddSetting<T>(string section,
-                                        string key,
-                                        T defaultValue,
-                                        ConfigDescription configDescription = null) =>
-        Bind(new ConfigDefinition(section, key), defaultValue, configDescription);
-
-    /// <summary>
-    ///     Create a new setting. The setting is saved to drive and loaded automatically.
-    ///     Each section and key pair can be used to add only one setting, trying to add a second setting will throw an
-    ///     exception.
-    /// </summary>
-    /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
-    /// <param name="section">Section/category/group of the setting. Settings are grouped by this.</param>
-    /// <param name="key">Name of the setting.</param>
-    /// <param name="defaultValue">Value of the setting if the setting was not created yet.</param>
-    /// <param name="description">Simple description of the setting shown to the user.</param>
-    [Obsolete("Use Bind instead")]
-    public ConfigEntry<T> AddSetting<T>(string section, string key, T defaultValue, string description) =>
-        Bind(new ConfigDefinition(section, key), defaultValue, new ConfigDescription(description));
-
-    /// <summary>
-    ///     Access a setting. Use Bind instead.
-    /// </summary>
-    [Obsolete("Use Bind instead")]
-    public ConfigWrapper<T> Wrap<T>(string section, string key, string description = null, T defaultValue = default)
-    {
-        lock (_ioLock)
-        {
-            var definition = new ConfigDefinition(section, key, description);
-            var setting = Bind(definition, defaultValue,
-                               string.IsNullOrEmpty(description) ? null : new ConfigDescription(description));
-            return new ConfigWrapper<T>(setting);
-        }
-    }
-
-    /// <summary>
-    ///     Access a setting. Use Bind instead.
-    /// </summary>
-    [Obsolete("Use Bind instead")]
-    public ConfigWrapper<T> Wrap<T>(ConfigDefinition configDefinition, T defaultValue = default) =>
-        Wrap(configDefinition.Section, configDefinition.Key, null, defaultValue);
 
     #endregion
 

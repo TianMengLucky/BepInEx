@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using NextBepLoader.Core;
 using MonoMod.Utils;
+using NextBepLoader.Core;
 using NextBepLoader.Deskstop;
 using NextBepLoader.Deskstop.Utils;
 
@@ -26,8 +26,8 @@ internal static class Entrypoint
             silentExceptionLog =
                 Path.Combine(Path.GetDirectoryName(EnvVars.DOORSTOP_PROCESS_PATH)!, silentExceptionLog);
 
-            var mutexId = Utility.HashStrings(Process.GetCurrentProcess().ProcessName, EnvVars.DOORSTOP_PROCESS_PATH,
-                                              typeof(Entrypoint).FullName);
+            var mutexId = Utility.HashStrings(Process.GetCurrentProcess().ProcessName, EnvVars.DOORSTOP_PROCESS_PATH ?? string.Empty,
+                                              typeof(Entrypoint).FullName ?? string.Empty);
 
             mutex = new Mutex(false, $"Global\\{mutexId}");
             mutex.WaitOne();
@@ -38,9 +38,9 @@ internal static class Entrypoint
         catch (Exception ex)
         {
             File.WriteAllText(silentExceptionLog, ex.ToString());
-            
+
             // Don't exit the game if we have no way of signaling to the user that a crash happened
-            if (!Send()&& string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BEPINEX_FAIL_FAST")))
+            if (!Send() && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BEPINEX_FAIL_FAST")))
                 return;
 
             Environment.Exit(1);
@@ -58,7 +58,7 @@ internal static class Entrypoint
             MessageBox.Show("Failed to start BepInEx", "BepInEx");
             return true;
         }
-        
+
         if (NotifySend.IsSupported)
         {
             NotifySend.Send("Failed to start BepInEx", "Check logs for details");
