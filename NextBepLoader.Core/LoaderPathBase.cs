@@ -84,21 +84,21 @@ public abstract class LoaderPathBase
     {
         Paths.MainInstance = this;
 
-        LoaderRootPath = SetPath(LoaderRootPath, nameof(NextBepLoader));
+        LoaderRootPath = SetPath(LoaderRootPath, true, nameof(NextBepLoader));
         ProcessName = string.IsNullOrEmpty(ProcessName)
                           ? Path.GetFileNameWithoutExtension(ExecutablePath)
                           : ProcessName;
         GameRootPath = string.IsNullOrEmpty(GameRootPath) ? Path.GetDirectoryName(ExecutablePath) : GameRootPath;
-        ManagedPath = SetPath(ManagedPath, "Managed");
-        GameDataPath = SetPath(GameDataPath, $"{ProcessName}_Data");
-        ConfigPath = SetPath(ConfigPath, nameof(NextBepLoader), "Config");
-        CachePath = SetPath(CachePath, nameof(NextBepLoader), "Cache");
-        PluginPath = SetPath(PluginPath, "Plugins");
-        CoreDirectory = SetPath(CoreDirectory, nameof(NextBepLoader), "Core");
+        ManagedPath = SetPath(ManagedPath, false, "Managed");
+        GameDataPath = SetPath(GameDataPath, false, $"{ProcessName}_Data");
+        ConfigPath = SetPath(ConfigPath, true, nameof(NextBepLoader), "Config");
+        CachePath = SetPath(CachePath, true, nameof(NextBepLoader), "Cache");
+        PluginPath = SetPath(PluginPath, true, "Plugins");
+        CoreDirectory = SetPath(CoreDirectory, true, nameof(NextBepLoader), "Core");
         CoreAssemblyPath = typeof(Paths).Assembly.Location;
         DllSearchPaths ??= [];
-        DllSearchPaths = DllSearchPaths.Concat(new[] { ManagedPath }).Distinct().ToArray();
-        DependencyDirectory = SetPath(DependencyDirectory, nameof(NextBepLoader), "Dependencies");
+        DllSearchPaths = DllSearchPaths.Concat([ManagedPath]).Distinct().ToArray();
+        DependencyDirectory = SetPath(DependencyDirectory, true, nameof(NextBepLoader), "Dependencies");
 
         if (autoCheckCreate)
             CheckCreateDirectories();
@@ -109,7 +109,7 @@ public abstract class LoaderPathBase
         foreach (var path in checkList.Where(path => !Directory.Exists(path))) Directory.CreateDirectory(path);
     }
 
-    public string SetPath(string org, params string[] pathNames)
+    public string SetPath(string org , bool check, params string[] pathNames)
     {
         if (!string.IsNullOrEmpty(org))
             return org;
@@ -118,7 +118,8 @@ public abstract class LoaderPathBase
                                           (current1, path) =>
                                               current1 == string.Empty ? path : Path.Combine(current1, path));
         var fullPath = Path.Combine(GameRootPath!, current);
-        checkList.Add(fullPath);
+        if (check)
+            checkList.Add(fullPath);
         return fullPath;
     }
 }
