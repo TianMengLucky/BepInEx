@@ -12,7 +12,7 @@ public abstract class BasePreLoader
 
     public virtual void PreLoad(PreLoadEventArg arg) { }
 
-    public virtual void LoaderServiceBuild(IServiceCollection collection, LoaderBase loader) { }
+    public virtual void LoaderServiceBuild(IServiceCollection collection, ILoaderBase loaderBase) { }
 
-    public virtual void PluginServiceBuild(IServiceCollection collection, LoaderBase loader) { }
+    public virtual void PluginServiceBuild(IServiceCollection collection, ILoaderBase loaderBase) { }
 }

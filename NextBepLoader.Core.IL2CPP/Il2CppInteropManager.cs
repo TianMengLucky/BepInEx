@@ -115,12 +115,7 @@ internal static partial class Il2CppInteropManager
     private static string UnityBaseLibsDirectory => Path.Combine(IL2CPPBasePath, "unity-libs");
 
     internal static string IL2CPPInteropAssemblyPath => Path.Combine(IL2CPPBasePath, "interop");
-
-    private static ILoggerFactory LoggerFactory { get; } = MSLoggerFactory.Create(b =>
-    {
-        b.AddProvider(new BepInExLoggerProvider())
-         .SetMinimumLevel(LogLevel.Trace); // Each BepInEx log listener has its own filtering
-    });
+    
 
     private static string ComputeHash()
     {
@@ -204,7 +199,6 @@ internal static partial class Il2CppInteropManager
         AppDomain.CurrentDomain.AssemblyResolve += ResolveInteropAssemblies;
 
         GenerateInteropAssemblies();
-        var interopLogger = LoggerFactory.CreateLogger("Il2CppInterop");
 
         var unityVersion = UnityInfo.Version;
         try
@@ -215,13 +209,12 @@ internal static partial class Il2CppInteropManager
                                         new Version(unityVersion.Major, unityVersion.Minor, unityVersion.Build),
                                     DetourProvider = new Il2CppInteropDetourProvider()
                                 })
-                                .AddLogger(interopLogger)
+                                /*.AddLogger(interopLogger)*/
                                 .AddHarmonySupport()
                                 .Start();
         }
         catch (Exception e)
         {
-            interopLogger.LogError($"Il2CppInterop Error: \n {e}");
         }
     }
 
@@ -283,17 +276,13 @@ internal static partial class Il2CppInteropManager
     {
         _Logger.LogMessage("Running Cpp2IL to generate dummy assemblies");
 
-        var metadataPath = Path.Combine(Paths.GameRootPath,
-                                        $"{Paths.ProcessName}_Data",
-                                        "il2cpp_data",
-                                        "Metadata",
-                                        "global-metadata.dat");
+        var metadataPath = Path.Combine(Paths.GameDataPath, "il2cpp_data", "Metadata", "global-metadata.dat");
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
         var cpp2IlLogger = Logger.CreateLogSource("Cpp2IL");
-
+        
         Cpp2IL.Core.Logging.Logger.VerboseLog += (message, s) =>
             cpp2IlLogger.LogDebug($"[{s}] {message.Trim()}");
         Cpp2IL.Core.Logging.Logger.InfoLog += (message, s) =>
@@ -347,10 +336,10 @@ internal static partial class Il2CppInteropManager
 
         _Logger.LogInfo("Generating interop assemblies");
 
-        var logger = LoggerFactory.CreateLogger("Il2CppInteropGen");
+        /*var logger = LoggerFactory.CreateLogger("Il2CppInteropGen");*/
 
         Il2CppInteropGenerator.Create(opts)
-                              .AddLogger(logger)
+                              /*.AddLogger(logger)*/
                               .AddInteropAssemblyGenerator()
                               .Run();
 

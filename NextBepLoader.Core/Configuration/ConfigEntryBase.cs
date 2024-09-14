@@ -144,7 +144,8 @@ public abstract class ConfigEntryBase
     /// </summary>
     protected T ClampValue<T>(T value)
     {
-        if (Description.AcceptableValues != null)
+        if (Description.AcceptableValues == null) return value;
+        if (value != null)
             return (T)Description.AcceptableValues.Clamp(value);
         return value;
     }

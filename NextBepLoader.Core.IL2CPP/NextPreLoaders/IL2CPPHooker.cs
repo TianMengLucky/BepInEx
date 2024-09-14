@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public class IL2CPPHook : BasePreLoader
+public sealed class IL2CPPHook : BasePreLoader
 {
     internal  NativeHook RuntimeInvokeDetour { get; set; }
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
@@ -23,7 +23,7 @@ public class IL2CPPHook : BasePreLoader
         PreloaderLogger.Log.Log(LogLevel.Info, "Runtime invoke patched");
     }
 
-    public virtual bool TryGetHandle(out nint handle)
+    public bool TryGetHandle(out nint handle)
     {
         if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) return false;
         Logger.Log(LogLevel.Fatal,

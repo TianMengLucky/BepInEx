@@ -13,7 +13,7 @@ namespace NextBepLoader.Core.Configuration;
 /// </summary>
 public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
 {
-    private readonly BepInPlugin _ownerMetadata;
+    private readonly BepInPlugin? _ownerMetadata;
 
     /// <inheritdoc cref="ConfigFile(string, bool, BepInPlugin)" />
     public ConfigFile(string configPath, bool saveOnInit) : this(configPath, saveOnInit, null) { }
@@ -24,7 +24,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <param name="configPath">Full path to a file that contains settings. The file will be created as needed.</param>
     /// <param name="saveOnInit">If the config file/directory doesn't exist, create it immediately.</param>
     /// <param name="ownerMetadata">Information about the plugin that owns this setting file.</param>
-    public ConfigFile(string configPath, bool saveOnInit, BepInPlugin ownerMetadata)
+    public ConfigFile(string configPath, bool saveOnInit, BepInPlugin? ownerMetadata)
     {
         _ownerMetadata = ownerMetadata;
 
@@ -298,8 +298,8 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
                                    })
                                    .Concat(OrphanedEntries.Select(x => new
                                    {
-                                       x.Key, entry = (ConfigEntryBase)null, value = x.Value
-                                   }));
+                                       x.Key, entry = (ConfigEntryBase)null!, value = x.Value
+                                   })!);
 
             foreach (var sectionKv in allConfigEntries.GroupBy(x => x.Key.Section).OrderBy(x => x.Key))
             {
@@ -335,7 +335,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <typeparam name="T">Type of the value contained in this setting.</typeparam>
     /// <param name="configDefinition">Section and Key of the setting.</param>
     /// <param name="entry">The ConfigEntry value to return.</param>
-    public bool TryGetEntry<T>(ConfigDefinition configDefinition, out ConfigEntry<T> entry)
+    public bool TryGetEntry<T>(ConfigDefinition configDefinition, out ConfigEntry<T>? entry)
     {
         lock (_ioLock)
         {
@@ -360,7 +360,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <param name="section">Section/category/group of the setting. Settings are grouped by this.</param>
     /// <param name="key">Name of the setting.</param>
     /// <param name="entry">The ConfigEntry value to return.</param>
-    public bool TryGetEntry<T>(string section, string key, out ConfigEntry<T> entry) =>
+    public bool TryGetEntry<T>(string section, string key, out ConfigEntry<T>? entry) =>
         TryGetEntry(new ConfigDefinition(section, key), out entry);
 
     /// <summary>

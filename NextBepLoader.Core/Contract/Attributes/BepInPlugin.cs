@@ -38,9 +38,9 @@ public class BepInPlugin : Attribute
     /// <summary>
     ///     The specific version of the plugin.
     /// </summary>
-    public Version Version { get; protected set; }
+    public Version? Version { get; protected set; }
 
-    private static Version TryParseLongVersion(string version)
+    private static Version? TryParseLongVersion(string version)
     {
         if (Version.TryParse(version, out var v))
             return v;
@@ -53,12 +53,15 @@ public class BepInPlugin : Attribute
             return new Version(longVersion.Major, longVersion.Minor,
                                longVersion.Build != -1 ? longVersion.Build : 0);
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         return null;
     }
 
-    internal static BepInPlugin FromCecilType(TypeDefinition td)
+    internal static BepInPlugin? FromCecilType(TypeDefinition td)
     {
         var attr = MetadataHelper.GetCustomAttributes<BepInPlugin>(td, false).FirstOrDefault();
 

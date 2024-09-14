@@ -189,32 +189,22 @@ public static class Utility
 
         potentialDirectories.AddRange(Directory.GetDirectories(directory, "*", SearchOption.AllDirectories));
 
-        foreach (var subDirectory in potentialDirectories)
+        foreach (var path in from subDirectory in potentialDirectories let potentialPaths = new[]
+                 {
+                     $"{assemblyName?.Name}.dll",
+                     $"{assemblyName?.Name}.exe"
+                 } from potentialPath in potentialPaths select Path.Combine(subDirectory, potentialPath) into path where File.Exists(path) select path)
         {
-            var potentialPaths = new[]
+            try
             {
-                $"{assemblyName.Name}.dll",
-                $"{assemblyName.Name}.exe"
-            };
-
-            foreach (var potentialPath in potentialPaths)
-            {
-                var path = Path.Combine(subDirectory, potentialPath);
-
-                if (!File.Exists(path))
-                    continue;
-
-                try
-                {
-                    assembly = loader(path);
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-
-                return true;
+                assembly = loader(path);
             }
+            catch (Exception)
+            {
+                continue;
+            }
+
+            return true;
         }
 
         return false;

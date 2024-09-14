@@ -75,7 +75,7 @@ public class IL2CPPChainloader/* : BaseChainloader<BasePlugin>*/
         if (Activator.CreateInstance(type) is not BasePlugin pluginInstance)
             return null;
 
-        PluginLoad?.Invoke(pluginInfo, pluginAssembly, pluginInstance);
+        PluginLoad(pluginInfo, pluginAssembly, pluginInstance);
         pluginInstance.Load();
 
         return pluginInstance;

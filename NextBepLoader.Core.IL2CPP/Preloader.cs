@@ -41,7 +41,7 @@ public static class Preloader
             Logger.Log(LogLevel.Info, $"Running under Unity {UnityInfo.Version}");
             Logger.Log(LogLevel.Info, $"Runtime version: {Environment.Version}");
             Logger.Log(LogLevel.Info, $"Runtime information: {RuntimeInformation.FrameworkDescription}");
-
+            Logger.Log(LogLevel.Info, $"OS information: {PlatformDetection.OS}");
             Logger.Log(LogLevel.Info, $"Game executable path: {Paths.ExecutablePath}");
             Logger.Log(LogLevel.Info, $"Interop assembly directory: {Il2CppInteropManager.IL2CPPInteropAssemblyPath}");
             Logger.Log(LogLevel.Info, $"BepInEx root path: {Paths.LoaderRootPath}");

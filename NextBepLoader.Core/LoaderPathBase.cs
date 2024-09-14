@@ -78,6 +78,8 @@ public abstract class LoaderPathBase
     ///     List of directories from where Mono will search assemblies before assembly resolving is invoked.
     /// </summary>
     public string[]? DllSearchPaths { get; set; }
+    
+    public string ProviderDirectory { get; set; }
 
 
     public virtual void InitPaths(bool autoCheckCreate = false)
@@ -95,9 +97,15 @@ public abstract class LoaderPathBase
         CachePath = SetPath(CachePath, true, nameof(NextBepLoader), "Cache");
         PluginPath = SetPath(PluginPath, true, "Plugins");
         CoreDirectory = SetPath(CoreDirectory, true, nameof(NextBepLoader), "Core");
+        ProviderDirectory = SetPath(ProviderDirectory, true, nameof(NextBepLoader), "Providers");
         CoreAssemblyPath = typeof(Paths).Assembly.Location;
-        DllSearchPaths ??= [];
-        DllSearchPaths = DllSearchPaths.Concat([ManagedPath]).Distinct().ToArray();
+
+        if (DllSearchPaths == null)
+        {
+            DllSearchPaths = [];
+            DllSearchPaths = DllSearchPaths.Concat([ManagedPath]).Distinct().ToArray();
+        }
+
         DependencyDirectory = SetPath(DependencyDirectory, true, nameof(NextBepLoader), "Dependencies");
 
         if (autoCheckCreate)

@@ -10,7 +10,6 @@ public class DesktopPath : LoaderPathBase
 
     public override void InitPaths(bool autoCheckCreate = false)
     {
-        base.InitPaths(autoCheckCreate);
         LoaderRootPath =
             Path.GetDirectoryName(Path.GetDirectoryName(Path.GetFullPath(EnvVars.DOORSTOP_INVOKE_DLL_PATH))) ??
             string.Empty;
@@ -22,5 +21,6 @@ public class DesktopPath : LoaderPathBase
         ManagedPath = EnvVars.DOORSTOP_MANAGED_FOLDER_DIR ?? string.Empty;
         DllSearchPaths = EnvVars.DOORSTOP_DLL_SEARCH_DIRS.Concat([ManagedPath]).Distinct().ToArray();
         LoaderAssemblyPath = typeof(DesktopPath).Assembly.Location;
+        base.InitPaths(autoCheckCreate);
     }
 }

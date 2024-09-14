@@ -48,7 +48,7 @@ public class ConfigDefinition : IEquatable<ConfigDefinition>
     ///     Check if the definitions are the same.
     /// </summary>
     /// <inheritdoc />
-    public bool Equals(ConfigDefinition other)
+    public bool Equals(ConfigDefinition? other)
     {
         if (other == null) return false;
         return string.Equals(Key, other.Key)
@@ -94,7 +94,7 @@ public class ConfigDefinition : IEquatable<ConfigDefinition>
     /// <summary>
     ///     Check if the definitions are the same.
     /// </summary>
-    public static bool operator ==(ConfigDefinition left, ConfigDefinition right) => Equals(left, right);
+    public static bool operator ==(ConfigDefinition? left, ConfigDefinition right) => Equals(left, right);
 
     /// <summary>
     ///     Check if the definitions are the same.

@@ -16,7 +16,7 @@ public class ConfigDescription
     ///     clamped.
     /// </param>
     /// <param name="tags">Objects that can be used by user-made classes to add functionality.</param>
-    public ConfigDescription(string description, AcceptableValueBase acceptableValues = null, params object[] tags)
+    public ConfigDescription(string description, AcceptableValueBase? acceptableValues = null, params object[] tags)
     {
         AcceptableValues = acceptableValues;
         Tags = tags;
@@ -31,7 +31,7 @@ public class ConfigDescription
     /// <summary>
     ///     Range of acceptable values for a setting.
     /// </summary>
-    public AcceptableValueBase AcceptableValues { get; }
+    public AcceptableValueBase? AcceptableValues { get; }
 
     /// <summary>
     ///     Objects that can be used by user-made classes to add functionality.

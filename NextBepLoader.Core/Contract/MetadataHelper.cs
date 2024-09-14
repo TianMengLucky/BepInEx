@@ -18,8 +18,8 @@ public static class MetadataHelper
 
         do
         {
-            result.AddRange(currentType.CustomAttributes.Where(ca => ca.AttributeType.FullName == type.FullName));
-            currentType = currentType.BaseType?.Resolve();
+            result.AddRange(currentType?.CustomAttributes.Where(ca => ca.AttributeType.FullName == type.FullName)!);
+            currentType = currentType?.BaseType?.Resolve();
         } while (inherit && currentType?.FullName != "System.Object");
 
 
@@ -31,7 +31,7 @@ public static class MetadataHelper
     /// </summary>
     /// <param name="pluginType">The plugin type.</param>
     /// <returns>The BepInPlugin metadata of the plugin type.</returns>
-    public static BepInPlugin GetMetadata(Type pluginType)
+    public static BepInPlugin? GetMetadata(Type pluginType)
     {
         var attributes = pluginType.GetCustomAttributes(typeof(BepInPlugin), false);
 
@@ -46,7 +46,7 @@ public static class MetadataHelper
     /// </summary>
     /// <param name="plugin">The plugin instance.</param>
     /// <returns>The BepInPlugin metadata of the plugin instance.</returns>
-    public static BepInPlugin GetMetadata(object plugin) => GetMetadata(plugin.GetType());
+    public static BepInPlugin? GetMetadata(object plugin) => GetMetadata(plugin.GetType());
 
     /// <summary>
     ///     Gets the specified attributes of a type, if they exist.

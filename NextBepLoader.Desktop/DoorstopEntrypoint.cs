@@ -32,7 +32,7 @@ internal static class Entrypoint
             mutex = new Mutex(false, $"Global\\{mutexId}");
             mutex.WaitOne();
 
-            if (!DesktopLoader.TryCreateLoader() || !DesktopLoader.Instance.TryStart())
+            if (!DesktopLoader.TryCreateLoader())
                 throw new Exception("Loader Create Load Error");
         }
         catch (Exception ex)
