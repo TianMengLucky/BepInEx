@@ -1,9 +1,0 @@
-[submodule "MonoMod"]
-	path = MonoMod
-	url = git@github.com:Next-Fast/MonoMod.git
-[submodule "Il2CppInterop"]
-	path = Il2CppInterop
-	url = git@github.com:Next-Fast/Il2CppInterop.git
-[submodule "HarmonyX"]
-	path = HarmonyX
-	url = git@github.com:Next-Fast/HarmonyX.git
