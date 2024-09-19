@@ -6,7 +6,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Security.Cryptography;
 using System.Text;
-using Mono.Cecil;
+using AsmResolver.DotNet;
+using AsmResolver.DotNet.Serialized;
 
 namespace NextBepLoader.Core;
 
@@ -173,6 +174,7 @@ public static class Utility
     /// </summary>
     /// <param name="assemblyName">Name of the assembly, of the type <see cref="AssemblyName" />.</param>
     /// <param name="directory">Directory to search the assembly from.</param>
+    /// <param name="loader"></param>
     /// <param name="assembly">The loaded assembly.</param>
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
     public static bool TryResolveDllAssembly<T>(AssemblyName? assemblyName,
@@ -243,10 +245,10 @@ public static class Utility
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
     public static bool TryResolveDllAssembly(AssemblyName? assemblyName,
                                              string directory,
-                                             ReaderParameters readerParameters,
+                                             ModuleReaderParameters readerParameters,
                                              out AssemblyDefinition? assembly) =>
         TryResolveDllAssembly(assemblyName, directory,
-                              s => AssemblyDefinition.ReadAssembly(s, readerParameters), out assembly);
+                              s => AssemblyDefinition.FromFile(s, readerParameters), out assembly);
 
     /// <summary>
     ///     Tries to create a file with the given name

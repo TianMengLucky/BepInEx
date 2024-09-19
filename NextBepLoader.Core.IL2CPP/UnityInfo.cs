@@ -22,9 +22,9 @@ public static class UnityInfo
     // Adapted from https://github.com/SamboyCoding/Cpp2IL/blob/development/LibCpp2IL/LibCpp2IlMain.cs
     private static readonly ManagerLookup[] ManagerVersionLookup =
     [
-        new ManagerLookup("globalgamemanagers", 0x14, 0x30),
-        new ManagerLookup("data.unity3d", 0x12),
-        new ManagerLookup("mainData", 0x14)
+        new("globalgamemanagers", 0x14, 0x30),
+        new("data.unity3d", 0x12),
+        new("mainData", 0x14)
     ];
 
     private static bool initialized;
@@ -48,10 +48,14 @@ public static class UnityInfo
     /// </remarks>
     public static UnityVersion Version { get; private set; }
 
+    internal static void InitializeFormPaths() =>
+        Initialize(Paths.ExecutablePath, Paths.GameDataPath);
+
     internal static void Initialize(string? unityPlayerPath, string gameDataPath)
     {
         if (initialized)
             return;
+        
         PlayerPath = Path.GetFullPath(unityPlayerPath ?? throw new ArgumentNullException(nameof(unityPlayerPath)));
         GameDataPath = Path.GetFullPath(gameDataPath ?? throw new ArgumentNullException(nameof(gameDataPath)));
 

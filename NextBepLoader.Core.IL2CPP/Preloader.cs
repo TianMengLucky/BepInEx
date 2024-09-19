@@ -20,9 +20,6 @@ public static class Preloader
     {
         try
         {
-            HarmonyBackendFix.Initialize();
-            UnityInfo.Initialize(Paths.ExecutablePath, Paths.GameDataPath);
-
             /*ConsoleManager.Initialize(false);*/
 
 
@@ -33,10 +30,7 @@ public static class Preloader
                 ConsoleManager.CreateConsole();
                 Logger.Listeners.Add(new ConsoleLogListener());
             }
-
-            RedirectStdErrFix.Apply();
-
-            ChainloaderLogHelper.PrintLogInfo(Log);*/
+            */
 
             Logger.Log(LogLevel.Info, $"Running under Unity {UnityInfo.Version}");
             Logger.Log(LogLevel.Info, $"Runtime version: {Environment.Version}");
@@ -48,8 +42,7 @@ public static class Preloader
 
             if (PlatformDetection.OS.Is(OSKind.Wine) && !Environment.Is64BitProcess)
                 if (!NativeLibrary.TryGetExport(NativeLibrary.Load("ntdll"), "RtlRestoreContext", out var _))
-                    Logger.Log(LogLevel.Warning,
-                               "Your wine version doesn't support CoreCLR properly, expect crashes! Upgrade to wine 7.16 or higher.");
+                    Logger.Log(LogLevel.Warning, "Your wine version doesn't support CoreCLR properly, expect crashes! Upgrade to wine 7.16 or higher.");
             
 
             Il2CppInteropManager.Initialize();

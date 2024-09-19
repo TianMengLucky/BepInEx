@@ -8,6 +8,7 @@ using NextBepLoader.Core.IL2CPP.NextPreLoaders;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
+using NextBepLoader.Core.PreLoader.RuntimeFixes;
 using NextBepLoader.Deskstop.Utils;
 
 namespace NextBepLoader.Deskstop;
@@ -36,5 +37,10 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
                        .BuildServiceProvider();
         
         OnServiceBuilt(MainServices);
+        
+        
+        HarmonyBackendFix.Initialize();
+        UnityInfo.InitializeFormPaths();
+        RedirectStdErrFix.Apply();
     }
 }

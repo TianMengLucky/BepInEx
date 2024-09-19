@@ -1,6 +1,5 @@
 using HarmonyLib;
 using NextBepLoader.Core.Configuration;
-using NextBepLoader.Core.Console;
 using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Deskstop.Console.Unix;

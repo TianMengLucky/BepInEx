@@ -3,10 +3,9 @@
 // Copyright (c) Usagirei 2015 - 2015
 // --------------------------------------------------
 
-using System;
 using System.Reflection;
 
-namespace NextBepLoader.Core.Console;
+namespace NextBepLoader.Deskstop.Console;
 
 /// <summary>
 ///     Console class with safe handlers for Unity 4.x, which does not have a proper Console implementation

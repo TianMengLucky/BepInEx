@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
-using Mono.Cecil;
+using AsmResolver.PE.File;
+using AssemblyDefinition = AsmResolver.DotNet.AssemblyDefinition;
 
 namespace NextBepLoader.Core.PreLoader;
 
@@ -22,24 +22,24 @@ public class AssemblyBuildInfo
 
     public FrameworkType AssemblyFrameworkType { get; set; }
 
-    private void SetNet4Version(AssemblyDefinition assemblyDefinition)
+    /*private void SetNet4Version(AssemblyDefinition assemblyDefinition)
     {
         NetFrameworkVersion = new Version(0, 0);
         AssemblyFrameworkType = FrameworkType.Unknown;
 
         var targetFrameworkAttribute = assemblyDefinition.CustomAttributes.FirstOrDefault(x =>
-                     x.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute");
+                     x.Constructor?.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute");
 
         if (targetFrameworkAttribute == null)
             return;
 
-        if (targetFrameworkAttribute.ConstructorArguments.Count < 1)
+        if (targetFrameworkAttribute.Signature?.NamedArguments.Count < 1)
             return;
 
-        if (targetFrameworkAttribute.ConstructorArguments[0].Type.Name != "String")
+        if (targetFrameworkAttribute.Signature?.NamedArguments[0].ArgumentType.Name != "String")
             return;
 
-        var versionInfo = (string)targetFrameworkAttribute.ConstructorArguments[0].Value;
+        var versionInfo = (string)targetFrameworkAttribute.Signature.NamedArguments[0].Argument.Element!;
 
         var values = versionInfo.Split(',');
 
@@ -59,37 +59,28 @@ public class AssemblyBuildInfo
                     NetFrameworkVersion = new Version(value.Substring("Version=v".Length));
                 }
                 catch { }
-    }
+    }*/
 
     public static AssemblyBuildInfo DetermineInfo(AssemblyDefinition assemblyDefinition)
     {
         var buildInfo = new AssemblyBuildInfo();
-
+        var module = assemblyDefinition.ManifestModule!;
+        
         // framework version
 
-        var runtime = assemblyDefinition.MainModule.Runtime;
+        var runtime = module.RuntimeContext.TargetRuntime;
 
-        if (runtime == TargetRuntime.Net_1_0)
-        {
-            buildInfo.NetFrameworkVersion = new Version(1, 0);
+        buildInfo.AssemblyFrameworkType = FrameworkType.Unknown;
+        
+        if (runtime.IsNetFramework)
             buildInfo.AssemblyFrameworkType = FrameworkType.NetFramework;
-        }
-        else if (runtime == TargetRuntime.Net_1_1)
-        {
-            buildInfo.NetFrameworkVersion = new Version(1, 1);
-            buildInfo.AssemblyFrameworkType = FrameworkType.NetFramework;
-        }
-        else if (runtime == TargetRuntime.Net_2_0)
-        {
-            // Assume 3.5 here. The code to determine versions between 2.0 and 3.5 is not worth the amount of non-unity games that use it, if any
+        if (runtime.IsNetStandard)
+            buildInfo.AssemblyFrameworkType = FrameworkType.NetStandard;
+        if (runtime.IsNetCoreApp)
+            buildInfo.AssemblyFrameworkType = FrameworkType.NetCore;
 
-            buildInfo.NetFrameworkVersion = new Version(3, 5);
-            buildInfo.AssemblyFrameworkType = FrameworkType.NetFramework;
-        }
-        else
-        {
-            buildInfo.SetNet4Version(assemblyDefinition);
-        }
+        buildInfo.NetFrameworkVersion = runtime.Version;
+
 
         // bitness
 
@@ -110,27 +101,25 @@ public class AssemblyBuildInfo
             MainModule.Architecture: AMD64
             MainModule.Attributes: ILOnly
         */
+        
+        var architecture = module.MachineType;
 
-        var architecture = assemblyDefinition.MainModule.Architecture;
-        var attributes = assemblyDefinition.MainModule.Attributes;
-
-        if (architecture == TargetArchitecture.AMD64)
+        if (architecture.HasFlag(MachineType.Amd64))
         {
             buildInfo.Is64Bit = true;
             buildInfo.IsAnyCpu = false;
         }
-        else if (architecture == TargetArchitecture.I386 &&
-                 HasFlag(attributes, ModuleAttributes.Preferred32Bit | ModuleAttributes.Required32Bit))
+        else if (architecture.HasFlag(MachineType.I386) && module.IsBit32Preferred && module.IsBit32Required)
         {
             buildInfo.Is64Bit = false;
             buildInfo.IsAnyCpu = true;
         }
-        else if (architecture == TargetArchitecture.I386 && HasFlag(attributes, ModuleAttributes.Required32Bit))
+        else if (architecture.HasFlag(MachineType.I386) && module.IsBit32Required)
         {
             buildInfo.Is64Bit = false;
             buildInfo.IsAnyCpu = false;
         }
-        else if (architecture == TargetArchitecture.I386)
+        else if (architecture.HasFlag(MachineType.I386))
         {
             buildInfo.Is64Bit = true;
             buildInfo.IsAnyCpu = true;
@@ -143,6 +132,7 @@ public class AssemblyBuildInfo
         return buildInfo;
     }
 
+    /*
     private static bool HasFlag(ModuleAttributes value, ModuleAttributes flag) => (value & flag) == flag;
 
     /// <inheritdoc />
@@ -161,5 +151,5 @@ public class AssemblyBuildInfo
             return $".NET {frameworkType} {NetFrameworkVersion}, AnyCPU ({(Is64Bit ? "64" : "32")}-bit preferred)";
 
         return $".NET {frameworkType} {NetFrameworkVersion}, {(Is64Bit ? "x64" : "x86")}";
-    }
+    }*/
 }

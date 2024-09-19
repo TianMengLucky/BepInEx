@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
+using AsmResolver.DotNet;
 
 namespace NextBepLoader.Core.Contract.Attributes;
 
@@ -35,7 +35,7 @@ public class BepInIncompatibility : Attribute/*, ICacheable*/
         var attrs = MetadataHelper.GetCustomAttributes<BepInIncompatibility>(td, true);
         return attrs.Select(customAttribute =>
         {
-            var dependencyGuid = (string)customAttribute.ConstructorArguments[0].Value;
+            var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;
             return new BepInIncompatibility(dependencyGuid);
         }).ToList();
     }

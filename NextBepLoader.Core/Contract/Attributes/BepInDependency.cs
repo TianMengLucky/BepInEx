@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
+using AsmResolver.DotNet;
 using Range = SemanticVersioning.Range;
 
 namespace NextBepLoader.Core.Contract.Attributes;
@@ -93,8 +93,8 @@ public class BepInDependency : Attribute/*, ICacheable*/
         var attrs = MetadataHelper.GetCustomAttributes<BepInDependency>(td, true);
         return attrs.Select(customAttribute =>
         {
-            var dependencyGuid = (string)customAttribute.ConstructorArguments[0].Value;
-            var secondArg = customAttribute.ConstructorArguments[1].Value;
+            var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;
+            var secondArg = customAttribute.Signature!.NamedArguments[1].Argument.Element!;
             if (secondArg is string minVersion) return new BepInDependency(dependencyGuid, minVersion);
             return new BepInDependency(dependencyGuid, (DependencyFlags)secondArg);
         }).ToList();

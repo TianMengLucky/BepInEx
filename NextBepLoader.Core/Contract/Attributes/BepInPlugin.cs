@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Mono.Cecil;
+using AsmResolver.DotNet;
 using Version = SemanticVersioning.Version;
 
 namespace NextBepLoader.Core.Contract.Attributes;
@@ -68,8 +68,10 @@ public class BepInPlugin : Attribute
         if (attr == null)
             return null;
 
-        return new BepInPlugin((string)attr.ConstructorArguments[0].Value,
-                               (string)attr.ConstructorArguments[1].Value,
-                               (string)attr.ConstructorArguments[2].Value);
+        var args = attr.Signature!.NamedArguments;
+
+        return new BepInPlugin((string)args[0].Argument.Element!,
+                               (string)args[1].Argument.Element!,
+                               (string)args[2].Argument.Element!);
     }
 }

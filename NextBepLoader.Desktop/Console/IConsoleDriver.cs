@@ -1,7 +1,4 @@
-using System;
-using System.IO;
-
-namespace NextBepLoader.Core.Console;
+namespace NextBepLoader.Deskstop.Console;
 
 internal interface IConsoleDriver
 {

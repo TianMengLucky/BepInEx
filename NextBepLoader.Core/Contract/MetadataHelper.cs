@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Mono.Cecil;
+using AsmResolver.DotNet;
 using NextBepLoader.Core.Contract.Attributes;
 
 namespace NextBepLoader.Core.Contract;
@@ -18,7 +18,7 @@ public static class MetadataHelper
 
         do
         {
-            result.AddRange(currentType?.CustomAttributes.Where(ca => ca.AttributeType.FullName == type.FullName)!);
+            result.AddRange(currentType?.CustomAttributes.Where(ca => ca.Constructor!.FullName == type.FullName)!);
             currentType = currentType?.BaseType?.Resolve();
         } while (inherit && currentType?.FullName != "System.Object");
 

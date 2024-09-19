@@ -2,7 +2,6 @@ using System.Reflection;
 using HarmonyLib;
 using Microsoft.Win32.SafeHandles;
 using NextBepLoader.Core;
-using NextBepLoader.Core.Console;
 
 namespace NextBepLoader.Deskstop.Console.Windows;
 
