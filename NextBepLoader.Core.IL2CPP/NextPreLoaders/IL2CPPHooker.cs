@@ -1,10 +1,11 @@
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using MonoMod.RuntimeDetour;
 using NextBepLoader.Core.IL2CPP.Logging;
-using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.PreLoader;
 using UnityEngine;
+using LogLevel = NextBepLoader.Core.Logging.LogLevel;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
@@ -25,10 +26,9 @@ public sealed class IL2CPPHook : BasePreLoader
 
     public bool TryGetHandle(out nint handle)
     {
-        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) return false;
-        Logger.Log(LogLevel.Fatal,
-                   "Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so). The game might be obfuscated or use a yet unsupported build of Unity.");
-        return true;
+        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) return true;
+         _Log.LogFatal("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so). The game might be obfuscated or use a yet unsupported build of Unity.");
+        return false;
     }
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

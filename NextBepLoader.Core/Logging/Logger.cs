@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
 
 namespace NextBepLoader.Core.Logging;
@@ -14,10 +15,13 @@ public static class Logger
 
     private static readonly LogListenerCollection listeners;
 
+    public static NextLoggerFactory LoggerFactory = LoaderInstance.Current.MainServices.GetService<NextLoggerFactory>() 
+                                                 ?? new NextLoggerFactory();
+
     static Logger()
     {
         Sources = new LogSourceCollection();
-        listeners = new LogListenerCollection();
+        listeners = [];
 
         InternalLogSource = CreateLogSource("BepInEx");
     }

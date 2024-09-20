@@ -15,19 +15,14 @@ using Cpp2IL.Core.InstructionSets;
 using Cpp2IL.Core.OutputFormats;
 using Cpp2IL.Core.ProcessingLayers;
 using HarmonyLib;
-using Il2CppInterop.Common;
 using Il2CppInterop.Generator;
 using Il2CppInterop.Generator.Runners;
 using Il2CppInterop.HarmonySupport;
 using Il2CppInterop.Runtime.Startup;
 using LibCpp2IL;
-using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.IL2CPP.Hook;
-using NextBepLoader.Core.IL2CPP.Logging;
 using NextBepLoader.Core.Logging;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using MSLoggerFactory = Microsoft.Extensions.Logging.LoggerFactory;
 
 namespace NextBepLoader.Core.IL2CPP;
 
@@ -335,7 +330,7 @@ internal static partial class Il2CppInteropManager
 
         _Logger.LogInfo("Generating interop assemblies");
 
-        /*var logger = LoggerFactory.CreateLogger("Il2CppInteropGen");*/
+        /*var logger = NextLoggerFactory.CreateLogger("Il2CppInteropGen");*/
 
         Il2CppInteropGenerator.Create(opts)
                               /*.AddLogger(logger)*/

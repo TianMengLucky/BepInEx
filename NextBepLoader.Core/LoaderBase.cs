@@ -1,16 +1,30 @@
 using System;
+using System.Collections.Generic;
 using NextBepLoader.Core.Contract;
+using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core;
+
+public static class LoaderInstance
+{
+    private static List<ILoaderBase> Bases = [];
+    public static ILoaderBase Current { get; set; }
+
+    public static void Register(ILoaderBase loader)
+    {
+        Bases.Add(loader);
+        Current = loader;
+    }
+}
 
 public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
 {
     protected LoaderBase()
     {
-        Current = this;
+        LoaderInstance.Register(this);
     }
 
-    public static LoaderBase<T> Current { get; internal set; }
+    public string GameAssemblyName { get; set; }
     
     public static T? Instance { get; private set; }
 
@@ -43,6 +57,8 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
         return true;
     }
 }
+
+
 
 public interface ILoaderBase
 {
