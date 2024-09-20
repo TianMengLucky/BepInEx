@@ -16,6 +16,7 @@
         <!--        <PackageOutputPath>$(BuildDir)/NuGet</PackageOutputPath>-->
         <PackageIcon>logo.png</PackageIcon>
         <NoWarn>CS8618</NoWarn>
+        <OutDir>../Output</OutDir>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

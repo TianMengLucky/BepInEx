@@ -10,7 +10,7 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     This attribute specifies any dependencies that this plugin has on other plugins.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class BepInDependency : Attribute/*, ICacheable*/
+public class PluginDependency : Attribute/*, ICacheable*/
 {
     /// <summary>
     ///     Flags that are applied to a dependency
@@ -36,7 +36,7 @@ public class BepInDependency : Attribute/*, ICacheable*/
     /// </summary>
     /// <param name="DependencyGUID">The GUID of the referenced plugin.</param>
     /// <param name="Flags">The flags associated with this dependency definition.</param>
-    public BepInDependency(string DependencyGUID, DependencyFlags Flags = DependencyFlags.HardDependency)
+    public PluginDependency(string DependencyGUID, DependencyFlags Flags = DependencyFlags.HardDependency)
     {
         this.DependencyGUID = DependencyGUID;
         this.Flags = Flags;
@@ -52,7 +52,7 @@ public class BepInDependency : Attribute/*, ICacheable*/
     /// <param name="guid">The GUID of the referenced plugin.</param>
     /// <param name="version">The version range of the referenced plugin.</param>
     /// <remarks>When version is supplied the dependency is always treated as HardDependency</remarks>
-    public BepInDependency(string guid, string version) : this(guid)
+    public PluginDependency(string guid, string version) : this(guid)
     {
         VersionRange = Range.Parse(version);
     }
@@ -88,15 +88,15 @@ public class BepInDependency : Attribute/*, ICacheable*/
         VersionRange = versionRange == string.Empty ? null : Range.Parse(versionRange);
     }*/
 
-    internal static IEnumerable<BepInDependency> FromCecilType(TypeDefinition td)
+    internal static IEnumerable<PluginDependency> FromCecilType(TypeDefinition td)
     {
-        var attrs = MetadataHelper.GetCustomAttributes<BepInDependency>(td, true);
+        var attrs = MetadataHelper.GetCustomAttributes<PluginDependency>(td, true);
         return attrs.Select(customAttribute =>
         {
             var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;
             var secondArg = customAttribute.Signature!.NamedArguments[1].Argument.Element!;
-            if (secondArg is string minVersion) return new BepInDependency(dependencyGuid, minVersion);
-            return new BepInDependency(dependencyGuid, (DependencyFlags)secondArg);
+            if (secondArg is string minVersion) return new PluginDependency(dependencyGuid, minVersion);
+            return new PluginDependency(dependencyGuid, (DependencyFlags)secondArg);
         }).ToList();
     }
 }

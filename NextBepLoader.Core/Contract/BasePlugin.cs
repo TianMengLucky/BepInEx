@@ -6,16 +6,14 @@ namespace NextBepLoader.Core.Contract;
 
 public abstract class BasePlugin
 {
-    public virtual BepInDependency[] Dependencies { get; set; } = [];
+    public virtual PluginDependency[] Dependencies { get; set; } = [];
+    
+    public virtual PluginProcess Process { get; set; } = new PluginProcess("");
+    public virtual PluginMetadata? Metadata { get; set; } = null;
 
     
     protected BasePlugin()
     {
-        var metadata = MetadataHelper.GetMetadata(this);
-
-        Log = Logger.CreateLogSource(metadata.Name);
-
-        Config = new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, metadata.GUID + ".cfg"), false, metadata);
     }
 
     public ManualLogSource Log { get; }

@@ -6,6 +6,9 @@ namespace NextBepLoader.Core.Contract;
 public enum LoaderPlatformType
 {
     Core = 0,
-    Desktop = Core | 1,
-    Android = Core | 2
+    PreLoader = 1,
+    IL2CPP = 2,
+    Desktop = Core | PreLoader | IL2CPP | 3,
+    Android = Core | PreLoader | IL2CPP | 4,
 }
+

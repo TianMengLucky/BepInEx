@@ -13,10 +13,7 @@ namespace NextBepLoader.Core.Configuration;
 /// </summary>
 public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
 {
-    private readonly BepInPlugin? _ownerMetadata;
 
-    /// <inheritdoc cref="ConfigFile(string, bool, BepInPlugin)" />
-    public ConfigFile(string configPath, bool saveOnInit) : this(configPath, saveOnInit, null) { }
 
     /// <summary>
     ///     Create a new config file at the specified config path.
@@ -24,9 +21,8 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <param name="configPath">Full path to a file that contains settings. The file will be created as needed.</param>
     /// <param name="saveOnInit">If the config file/directory doesn't exist, create it immediately.</param>
     /// <param name="ownerMetadata">Information about the plugin that owns this setting file.</param>
-    public ConfigFile(string configPath, bool saveOnInit, BepInPlugin? ownerMetadata)
+    public ConfigFile(string configPath, bool saveOnInit)
     {
-        _ownerMetadata = ownerMetadata;
 
         if (configPath == null) throw new ArgumentNullException(nameof(configPath));
         configPath = Path.GetFullPath(configPath);
@@ -284,12 +280,12 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
             if (directoryName != null) Directory.CreateDirectory(directoryName);
 
             using var writer = new StreamWriter(ConfigFilePath, false, Utility.UTF8NoBom);
-            if (_ownerMetadata != null)
+            /*if (_ownerMetadata != null)
             {
                 writer.WriteLine($"## Settings file was created by plugin {_ownerMetadata.Name} v{_ownerMetadata.Version}");
                 writer.WriteLine($"## Plugin GUID: {_ownerMetadata.GUID}");
                 writer.WriteLine();
-            }
+            }*/
 
             var allConfigEntries = Entries
                                    .Select(x => new

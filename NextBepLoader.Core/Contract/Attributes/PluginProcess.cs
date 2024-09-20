@@ -10,10 +10,10 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     plugin under every process.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class BepInProcess : Attribute
+public class PluginProcess : Attribute
 {
     /// <param name="ProcessName">The name of the process that this plugin will run under.</param>
-    public BepInProcess(string ProcessName)
+    public PluginProcess(string ProcessName)
     {
         this.ProcessName = ProcessName;
     }
@@ -23,10 +23,11 @@ public class BepInProcess : Attribute
     /// </summary>
     public string ProcessName { get; protected set; }
 
-    internal static List<BepInProcess> FromCecilType(TypeDefinition td)
+    internal static List<PluginProcess> FromCecilType(TypeDefinition td)
     {
-        var attrs = MetadataHelper.GetCustomAttributes<BepInProcess>(td, true);
+        var attrs = MetadataHelper.GetCustomAttributes<PluginProcess>(td, true);
         return attrs.Select(customAttribute =>
-                                new BepInProcess(((string)customAttribute.Signature!.NamedArguments[0].Argument.Element!)!)).ToList();
+                                new PluginProcess(((string)customAttribute.Signature!.NamedArguments[0].Argument.Element!)!)).ToList();
     }
+    
 }

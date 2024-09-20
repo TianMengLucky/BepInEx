@@ -26,27 +26,8 @@ public static class MetadataHelper
         return result;
     }
 
-    /// <summary>
-    ///     Retrieves the BepInPlugin metadata from a plugin type.
-    /// </summary>
-    /// <param name="pluginType">The plugin type.</param>
-    /// <returns>The BepInPlugin metadata of the plugin type.</returns>
-    public static BepInPlugin? GetMetadata(Type pluginType)
-    {
-        var attributes = pluginType.GetCustomAttributes(typeof(BepInPlugin), false);
-
-        if (attributes.Length == 0)
-            return null;
-
-        return (BepInPlugin)attributes[0];
-    }
-
-    /// <summary>
-    ///     Retrieves the BepInPlugin metadata from a plugin instance.
-    /// </summary>
-    /// <param name="plugin">The plugin instance.</param>
-    /// <returns>The BepInPlugin metadata of the plugin instance.</returns>
-    public static BepInPlugin? GetMetadata(object plugin) => GetMetadata(plugin.GetType());
+ 
+    
 
     /// <summary>
     ///     Gets the specified attributes of a type, if they exist.
@@ -89,6 +70,35 @@ public static class MetadataHelper
     /// </summary>
     /// <param name="plugin">The plugin type.</param>
     /// <returns>A list of all plugin types that the specified plugin type depends upon.</returns>
-    public static IEnumerable<BepInDependency> GetDependencies(Type plugin) =>
-        plugin.GetCustomAttributes(typeof(BepInDependency), true).Cast<BepInDependency>();
+    public static IEnumerable<PluginDependency> GetDependencies(this Type plugin) =>
+        plugin.GetCustomAttributes(typeof(PluginDependency), true).Cast<PluginDependency>();
+    
+    
+    public static IEnumerable<PluginCompatibility> FromCecilType(this TypeDefinition td)
+    {
+        var attrs = MetadataHelper.GetCustomAttributes<PluginCompatibility>(td, true);
+        return attrs.Select(customAttribute =>
+        {
+            var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;
+            return new PluginCompatibility(dependencyGuid);
+        }).ToList();
+    }
+    
+    public static void SetMedata(this PluginMetadata metadata, Type type)
+    {
+        if (string.IsNullOrEmpty(metadata.Name))
+            metadata.Name = type.Name;
+        
+        var processes = type.GetCustomAttributes<PluginProcess>(false).ToList();
+        if (processes.Any())
+            metadata.Processes = processes;
+        
+        var dependencies = type.GetCustomAttributes<PluginDependency>(false).ToList();
+        if (dependencies.Any())
+            metadata.Dependencies = dependencies;
+        
+        var compatibilities = type.GetCustomAttributes<PluginCompatibility>(false).ToList();
+        if (compatibilities.Any())
+            metadata.Compatibilities = compatibilities;
+    }
 }

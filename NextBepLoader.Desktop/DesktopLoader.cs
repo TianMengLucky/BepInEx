@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
 using NextBepLoader.Core.Contract;
@@ -35,6 +36,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
                        .AddSingleton<INextServiceManager, NextServiceManager>()
                        .AddNextLogger()
                        .BuildServiceProvider();
+        
         
         OnServiceBuilt(MainServices);
         

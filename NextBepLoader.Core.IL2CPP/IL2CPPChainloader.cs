@@ -45,7 +45,7 @@ public class IL2CPPChainloader/* : BaseChainloader<BasePlugin>*/
     /// <summary>
     ///     Occurs after a plugin is instantiated and just before <see cref="BasePlugin.Load" /> is called.
     /// </summary>
-    public event Action<PluginInfo, Assembly, BasePlugin> PluginLoad;
+    /*public event Action<PluginInfo, Assembly, BasePlugin> PluginLoad;*/
 
     public /*override */void Initialize(string gameExePath = null)
     {
@@ -65,7 +65,7 @@ public class IL2CPPChainloader/* : BaseChainloader<BasePlugin>*/
         Logger.Sources.Add(new IL2CPPLogSource());*/
     }
 
-    public/* override */BasePlugin? LoadPlugin(PluginInfo pluginInfo, Assembly pluginAssembly)
+    /*public/* override #1#BasePlugin? LoadPlugin(PluginInfo pluginInfo, Assembly pluginAssembly)
     {
         Logger.Log(LogLevel.Debug, $"{pluginInfo.TypeName}");
         var type = pluginAssembly.GetType(pluginInfo.TypeName);
@@ -79,6 +79,6 @@ public class IL2CPPChainloader/* : BaseChainloader<BasePlugin>*/
         pluginInstance.Load();
 
         return pluginInstance;
-    }
+    }*/
     
 }

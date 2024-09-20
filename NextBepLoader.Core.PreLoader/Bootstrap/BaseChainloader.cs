@@ -46,9 +46,9 @@
         if (metadata?.Name == null)
             Logger.Log(LogLevel.Warning, $"Skipping type [{type.FullName}] because its name is null.");
 
-        var filters = BepInProcess.FromCecilType(type);
-        var dependencies = BepInDependency.FromCecilType(type);
-        var incompatibilities = BepInIncompatibility.FromCecilType(type);
+        var filters = PluginProcess.FromCecilType(type);
+        var dependencies = PluginDependency.FromCecilType(type);
+        var incompatibilities = PluginCompatibility.FromCecilType(type);
 
         var bepinVersion =
             type.Module.AssemblyReferences.FirstOrDefault(reference => reference.Name == "BepInEx.Core")?.Version ??
@@ -311,11 +311,11 @@
         foreach (var plugin in sortedPlugins)
         {
             var dependsOnInvalidPlugin = false;
-            var missingDependencies = new List<BepInDependency>();
+            var missingDependencies = new List<PluginDependency>();
             foreach (var dependency in plugin.Dependencies)
             {
-                static bool IsHardDependency(BepInDependency dep) =>
-                    (dep.Flags & BepInDependency.DependencyFlags.HardDependency) != 0;
+                static bool IsHardDependency(PluginDependency dep) =>
+                    (dep.Flags & PluginDependency.DependencyFlags.HardDependency) != 0;
 
                 // If the dependency wasn't already processed, it's missing altogether
                 var dependencyExists =

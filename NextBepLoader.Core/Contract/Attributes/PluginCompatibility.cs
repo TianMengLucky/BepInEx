@@ -9,14 +9,14 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     This attribute specifies other plugins that are incompatible with this plugin.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class BepInIncompatibility : Attribute/*, ICacheable*/
+public class PluginCompatibility : Attribute/*, ICacheable*/
 {
     /// <summary>
     ///     Marks this <see cref="BaseUnityPlugin" /> as incompatible with another plugin.
     ///     If the other plugin exists, this plugin will not be loaded and a warning will be shown.
     /// </summary>
     /// <param name="IncompatibilityGUID">The GUID of the referenced plugin.</param>
-    public BepInIncompatibility(string IncompatibilityGUID)
+    public PluginCompatibility(string IncompatibilityGUID)
     {
         this.IncompatibilityGUID = IncompatibilityGUID;
     }
@@ -30,13 +30,13 @@ public class BepInIncompatibility : Attribute/*, ICacheable*/
 
     void ICacheable.Load(BinaryReader br) => IncompatibilityGUID = br.ReadString();*/
 
-    internal static IEnumerable<BepInIncompatibility> FromCecilType(TypeDefinition td)
+    internal static IEnumerable<PluginCompatibility> FromCecilType(TypeDefinition td)
     {
-        var attrs = MetadataHelper.GetCustomAttributes<BepInIncompatibility>(td, true);
+        var attrs = MetadataHelper.GetCustomAttributes<PluginCompatibility>(td, true);
         return attrs.Select(customAttribute =>
         {
             var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;
-            return new BepInIncompatibility(dependencyGuid);
+            return new PluginCompatibility(dependencyGuid);
         }).ToList();
     }
 }
