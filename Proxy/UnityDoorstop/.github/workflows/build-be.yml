@@ -1,0 +1,177 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure paths
+        run: |
+          New-Item -ItemType Directory -Force -Path ./artifacts/release/x64
+          New-Item -ItemType Directory -Force -Path ./artifacts/release/x86
+          New-Item -ItemType Directory -Force -Path ./artifacts/verbose/x64
+          New-Item -ItemType Directory -Force -Path ./artifacts/verbose/x86
+      - name: Build Release
+        run: |
+          ./build.ps1
+          Copy-Item -Path ./build/windows/x64/release/doorstop.dll -Destination ./artifacts/release/x64/winhttp.dll
+          Copy-Item -Path ./build/windows/x64/release/.doorstop_version -Destination ./artifacts/release/x64/.doorstop_version
+          Copy-Item -Path ./build/windows/x86/release/doorstop.dll -Destination ./artifacts/release/x86/winhttp.dll
+          Copy-Item -Path ./build/windows/x86/release/.doorstop_version -Destination ./artifacts/release/x86/.doorstop_version
+          Copy-Item -Path ./assets/windows/doorstop_config.ini -Destination ./artifacts/release/x64/doorstop_config.ini
+          Copy-Item -Path ./assets/windows/doorstop_config.ini -Destination ./artifacts/release/x86/doorstop_config.ini
+      - name: Build Verbose
+        run: |
+          ./build.ps1 -with_logging
+          Copy-Item -Path ./build/windows/x64/release/doorstop.dll -Destination ./artifacts/verbose/x64/winhttp.dll
+          Copy-Item -Path ./build/windows/x64/release/.doorstop_version -Destination ./artifacts/verbose/x64/.doorstop_version
+          Copy-Item -Path ./build/windows/x86/release/doorstop.dll -Destination ./artifacts/verbose/x86/winhttp.dll
+          Copy-Item -Path ./build/windows/x86/release/.doorstop_version -Destination ./artifacts/verbose/x86/.doorstop_version
+          Copy-Item -Path ./assets/windows/doorstop_config.ini -Destination ./artifacts/verbose/x64/doorstop_config.ini
+          Copy-Item -Path ./assets/windows/doorstop_config.ini -Destination ./artifacts/verbose/x86/doorstop_config.ini
+      - name: Upload Release
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_win_release
+          path: artifacts/release
+      - name: Upload Verbose
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_win_verbose
+          path: artifacts/verbose
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure paths
+        run: |
+          mkdir -p artifacts/{verbose,release,debug}/{x86,x64}
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y git build-essential libreadline-dev ccache gcc-multilib g++-multilib
+      - name: Build Release
+        run: |
+          ./build.sh
+          cp build/linux/x86/release/libdoorstop.so artifacts/release/x86/libdoorstop.so
+          cp build/linux/x64/release/libdoorstop.so artifacts/release/x64/libdoorstop.so
+          cp build/linux/x86/release/.doorstop_version artifacts/release/x86/.doorstop_version
+          cp build/linux/x64/release/.doorstop_version artifacts/release/x64/.doorstop_version
+          cp assets/nix/run.sh artifacts/release/x86/run.sh
+          cp assets/nix/run.sh artifacts/release/x64/run.sh
+      - name: Build Verbose
+        run: |
+          ./build.sh -with_logging
+          cp build/linux/x86/release/libdoorstop.so artifacts/verbose/x86/libdoorstop.so
+          cp build/linux/x64/release/libdoorstop.so artifacts/verbose/x64/libdoorstop.so
+          cp build/linux/x64/release/.doorstop_version artifacts/verbose/x86/.doorstop_version
+          cp build/linux/x86/release/.doorstop_version artifacts/verbose/x64/.doorstop_version
+          cp assets/nix/run.sh artifacts/verbose/x86/run.sh
+          cp assets/nix/run.sh artifacts/verbose/x64/run.sh
+      - name: Build Debug
+        run: |
+          ./build.sh -with_logging -debug
+          cp build/linux/x86/debug/libdoorstop.so artifacts/debug/x86/libdoorstop.so
+          cp build/linux/x64/debug/libdoorstop.so artifacts/debug/x64/libdoorstop.so
+          cp build/linux/x86/debug/.doorstop_version artifacts/debug/x86/.doorstop_version
+          cp build/linux/x64/debug/.doorstop_version artifacts/debug/x64/.doorstop_version
+          cp assets/nix/run.sh artifacts/debug/x86/run.sh
+          cp assets/nix/run.sh artifacts/debug/x64/run.sh
+      - name: Upload Release
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_linux_release
+          path: artifacts/release
+      - name: Upload Verbose
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_linux_verbose
+          path: artifacts/verbose
+      - name: Upload Debug
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_linux_debug
+          path: artifacts/debug
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure paths
+        run: |
+          mkdir -p artifacts/{verbose,release,debug}/x64
+      - name: Build Release
+        run: |
+          ./build.sh
+          cp build/macosx/x86_64/release/libdoorstop.dylib artifacts/release/x64/libdoorstop.dylib
+          cp build/macosx/x86_64/release/.doorstop_version artifacts/release/x64/.doorstop_version
+          cp assets/nix/run.sh artifacts/release/x64/run.sh
+      - name: Build Verbose
+        run: |
+          ./build.sh -with_logging
+          cp build/macosx/x86_64/release/libdoorstop.dylib artifacts/verbose/x64/libdoorstop.dylib
+          cp build/macosx/x86_64/release/.doorstop_version artifacts/verbose/x64/.doorstop_version
+          cp assets/nix/run.sh artifacts/verbose/x64/run.sh
+      - name: Build Debug
+        run: |
+          ./build.sh -with_logging -debug
+          cp build/macosx/x86_64/debug/libdoorstop.dylib artifacts/debug/x64/libdoorstop.dylib
+          cp build/macosx/x86_64/debug/.doorstop_version artifacts/debug/x64/.doorstop_version
+          cp assets/nix/run.sh artifacts/debug/x64/run.sh
+      - name: Upload Release
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_macos_release
+          path: artifacts/release
+      - name: Upload Verbose
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_macos_verbose
+          path: artifacts/verbose
+      - name: Upload Debug
+        uses: actions/upload-artifact@v2
+        with:
+          name: doorstop_macos_debug
+          path: artifacts/debug
+
+  collect:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - build-windows
+      - build-linux
+      - build-macos
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3.0.0
+        with:
+          path: artifacts
+      - name: Grab version
+        run: |
+          VERSION=$(cat artifacts/doorstop_win_release/x86/.doorstop_version)
+          echo "doorstop_version=$VERSION" >> $GITHUB_ENV
+      - name: Create zips
+        run: |
+          mkdir dist
+          cd artifacts
+          zip -r ../dist/doorstop_all_${{ env.doorstop_version }}.zip *
+          for dir in *
+          do
+            (cd ${dir}; zip -r ../../dist/${dir}_${{ env.doorstop_version }}.zip *)
+          done
+      - name: Create release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "ci"
+          prerelease: true
+          title: "CI build"
+          files: dist/*.zip

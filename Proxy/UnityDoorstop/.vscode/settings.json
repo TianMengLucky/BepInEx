@@ -1,0 +1,47 @@
+{
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "tools/": true,
+        ".xmake/": true,
+    },
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "grammarly.overrides": [
+        {
+            "files": [
+                "**/README.md"
+            ],
+            "config": {
+                "audience": "general",
+                "dialect": "british",
+                "domain": "technical",
+                "emotions": [
+                    "neutral",
+                    "confident",
+                    "friendly"
+                ],
+                "goals": [
+                    "describe",
+                    "convince"
+                ]
+            }
+        }
+    ],
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c",
+        "typeinfo": "c"
+    }
+}
