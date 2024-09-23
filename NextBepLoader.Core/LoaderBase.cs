@@ -7,7 +7,7 @@ namespace NextBepLoader.Core;
 
 public static class LoaderInstance
 {
-    private static List<ILoaderBase> Bases = [];
+    private static readonly List<ILoaderBase> Bases = [];
     public static ILoaderBase Current { get; set; }
 
     public static void Register(ILoaderBase loader)
@@ -23,9 +23,6 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
     {
         LoaderInstance.Register(this);
     }
-
-    public string GameAssemblyName { get; set; }
-    
     public static T? Instance { get; private set; }
 
     public virtual INextServiceManager ServiceManager { get; set; }

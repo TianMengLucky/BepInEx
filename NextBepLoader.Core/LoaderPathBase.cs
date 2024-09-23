@@ -80,25 +80,40 @@ public abstract class LoaderPathBase
     public string[]? DllSearchPaths { get; set; }
     
     public string ProviderDirectory { get; set; }
-
+    
+    public string UnityBaseDirectory { get; set; }
+    
+    public string GameAssemblyPath { get; set; }
+    
+    public string GameAssemblyName { get; set; }
+    
+    public string IL2CPPInteropAssemblyDirectory { get; set; }
+    
+    public string GameMetadataPath { get; set; } 
+    
+    public string CPP2ILCacheDir { get; set; }
+    
+    public string CacheDataDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)
     {
         Paths.MainInstance = this;
 
-        LoaderRootPath = SetPath(LoaderRootPath, true, nameof(NextBepLoader));
+        LoaderRootPath = SetPath(LoaderRootPath, true, true,nameof(NextBepLoader));
         ProcessName = string.IsNullOrEmpty(ProcessName)
                           ? Path.GetFileNameWithoutExtension(ExecutablePath)
                           : ProcessName;
         GameRootPath = string.IsNullOrEmpty(GameRootPath) ? Path.GetDirectoryName(ExecutablePath) : GameRootPath;
-        ManagedPath = SetPath(ManagedPath, false, "Managed");
-        GameDataPath = SetPath(GameDataPath, false, $"{ProcessName}_Data");
-        ConfigPath = SetPath(ConfigPath, true, nameof(NextBepLoader), "Config");
-        CachePath = SetPath(CachePath, true, nameof(NextBepLoader), "Cache");
-        PluginPath = SetPath(PluginPath, true, "Plugins");
-        CoreDirectory = SetPath(CoreDirectory, true, nameof(NextBepLoader), "Core");
-        ProviderDirectory = SetPath(ProviderDirectory, true, nameof(NextBepLoader), "Providers");
+        ManagedPath = SetPath(ManagedPath, false, true, "Managed");
+        GameDataPath = SetPath(GameDataPath, false, true,$"{ProcessName}_Data");
+        ConfigPath = SetPath(ConfigPath, true, false, LoaderRootPath, "Config");
+        CachePath = SetPath(CachePath, true, false, LoaderRootPath, "Cache");
+        PluginPath = SetPath(PluginPath, true, true, "Plugins");
+        CoreDirectory = SetPath(CoreDirectory, true, false, LoaderRootPath, "Core");
+        ProviderDirectory = SetPath(ProviderDirectory, true, true, "Providers");
         CoreAssemblyPath = typeof(Paths).Assembly.Location;
+        UnityBaseDirectory = SetPath(UnityBaseDirectory, true, false, LoaderRootPath,"Unity-Libs");
+        IL2CPPInteropAssemblyDirectory = SetPath(IL2CPPInteropAssemblyDirectory, true, false, LoaderRootPath, "Interop");
 
         if (DllSearchPaths == null)
         {
@@ -106,7 +121,15 @@ public abstract class LoaderPathBase
             DllSearchPaths = DllSearchPaths.Concat([ManagedPath]).Distinct().ToArray();
         }
 
-        DependencyDirectory = SetPath(DependencyDirectory, true, nameof(NextBepLoader), "Dependencies");
+        DependencyDirectory = SetPath(DependencyDirectory, true, false, LoaderRootPath, "Dependencies");
+        GameMetadataPath = SetPath(GameMetadataPath, false, false, GameDataPath, "il2cpp_data", "Metadata",
+                                   "global-metadata.dat");
+        if (string.IsNullOrEmpty(GameAssemblyName))
+            GameAssemblyName = $"{Utils.PlatformGameAssemblyName}.{Utils.PlatformPostFix}";
+        
+        GameAssemblyPath = SetPath(GameAssemblyPath, false, true, GameAssemblyName);
+        CPP2ILCacheDir = SetPath(CPP2ILCacheDir, true, false, LoaderRootPath, "CacheCPP2IL");
+        CacheDataDir = SetPath(CacheDataDir, true, false, LoaderRootPath, "CacheData");
 
         if (autoCheckCreate)
             CheckCreateDirectories();
@@ -117,7 +140,7 @@ public abstract class LoaderPathBase
         foreach (var path in checkList.Where(path => !Directory.Exists(path))) Directory.CreateDirectory(path);
     }
 
-    public string SetPath(string org , bool check, params string[] pathNames)
+    public string SetPath(string org , bool check, bool root = true,  params string[] pathNames)
     {
         if (!string.IsNullOrEmpty(org))
             return org;
@@ -125,7 +148,7 @@ public abstract class LoaderPathBase
         var current = pathNames.Aggregate(string.Empty,
                                           (current1, path) =>
                                               current1 == string.Empty ? path : Path.Combine(current1, path));
-        var fullPath = Path.Combine(GameRootPath!, current);
+        var fullPath = root ? Path.Combine(GameRootPath!, current) : current;
         if (check)
             checkList.Add(fullPath);
         return fullPath;

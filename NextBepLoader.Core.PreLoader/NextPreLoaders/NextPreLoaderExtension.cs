@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NextBepLoader.Core.PreLoader.NextPreLoaders;
 
@@ -60,4 +61,26 @@ public static class NextPreLoaderExtension
         preLoader = loader;
         return true;
     }
+
+    public static List<BasePreLoader> SortLoaders(this List<BasePreLoader> preLoaders)
+    {
+        preLoaders.Sort((x, y) => x.Priority.CompareTo(y.Priority));
+        preLoaders.Sort((x, y) =>
+        {
+            if (x.WaitLoadLoader.Length == 0)
+                return -2;
+
+            if (x.WaitLoadLoader.Contains(y.GetType()))
+                return -1;
+            
+            if (y.WaitLoadLoader.Contains(x.GetType()))
+                return 1;
+
+            return 0;
+        });
+        return preLoaders;
+    }
+
+    public static IServiceCollection AddStartRunner(this IServiceCollection collection) =>
+        collection.AddActivatedSingleton<OnStartRunner>();
 }

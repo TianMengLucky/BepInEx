@@ -1,4 +1,4 @@
-namespace NextBepLoader.Core.Bootstrap;
+namespace NextBepLoader.Core.PreLoader.Bootstrap;
 
 /*/// <summary>
 ///     A cacheable metadata item. Can be used with <see cref="TypeLoader.LoadAssemblyCache{T}" /> and

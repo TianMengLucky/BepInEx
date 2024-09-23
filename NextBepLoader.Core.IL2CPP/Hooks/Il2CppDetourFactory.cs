@@ -1,15 +1,14 @@
 ﻿using System;
 using MonoMod.Core;
-using MonoMod.RuntimeDetour;
-using NextBepLoader.Core.IL2CPP.Hook.Dobby;
+using NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 
-namespace NextBepLoader.Core.IL2CPP.Hook;
+namespace NextBepLoader.Core.IL2CPP.Hooks;
 
 public class Il2CppDetourFactory : IDetourFactory
 {
-    
+
     public ICoreDetour CreateDetour(CreateDetourRequest request) =>
-        DetourContext.CurrentFactory?.CreateDetour(request) ?? throw new NullReferenceException();
+        DetourFactory.Current.CreateDetour(request.Source, request.Target, request.ApplyByDefault) ?? throw new NullReferenceException();
 
     public ICoreNativeDetour CreateNativeDetour(CreateNativeDetourRequest request)
     {
@@ -18,6 +17,6 @@ public class Il2CppDetourFactory : IDetourFactory
 
     private static ICoreNativeDetour CreateDefault(nint original, IntPtr target) =>
         // TODO: check and provide an OS accurate provider
-        new DobbyDetour(original, target);
+        new DobbyNativeDetour(original, target);
     
 }

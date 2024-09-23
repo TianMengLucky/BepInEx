@@ -1,44 +1,33 @@
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Linq;
 using AssetRipper.Primitives;
-using MonoMod.Utils;
+using NextBepLoader.Core.IL2CPP.Utils;
 
-[assembly: InternalsVisibleTo("NextBepLoader.Android")]
-[assembly: InternalsVisibleTo("NextBepLoader.Core")]
-[assembly: InternalsVisibleTo("NextBepLoader.Core.IL2CPP")]
-[assembly: InternalsVisibleTo("NextBepLoader.Core.PreLoader")]
-[assembly: InternalsVisibleTo("NextBepLoader.Desktop")]
 
 namespace NextBepLoader.Core.IL2CPP;
 
 /// <summary>
 ///     Various information about the currently executing Unity player.
 /// </summary>
-public static class UnityInfo
+public class UnityInfo
 {
+    private static UnityInfo? instance;
+
+    public static UnityInfo Instance => instance ??= new UnityInfo();
+
+
     // Adapted from https://github.com/SamboyCoding/Cpp2IL/blob/development/LibCpp2IL/LibCpp2IlMain.cs
-    private static readonly ManagerLookup[] ManagerVersionLookup =
+    public static readonly ManagerLookup[] DefaultManagerVersionLookup =
     [
         new("globalgamemanagers", 0x14, 0x30),
         new("data.unity3d", 0x12),
         new("mainData", 0x14)
     ];
-
-    private static bool initialized;
-
-    /// <summary>
-    ///     Path to the player executable.
-    /// </summary>
-    public static string PlayerPath { get; private set; }
-
-    /// <summary>
-    ///     Path to the game data directory (directory that contains the game assets).
-    /// </summary>
-    public static string GameDataPath { get; private set; }
-
+    
+    public List<ManagerLookup> ManagerVersionLookup { get; } = [..DefaultManagerVersionLookup];
+    
     /// <summary>
     ///     Version of the Unity player
     /// </summary>
@@ -46,96 +35,47 @@ public static class UnityInfo
     ///     Because BepInEx can execute very early, the exact Unity version might not be available in early
     ///     bootstrapping phases. The version should be treated as an estimation of the actual version of the Unity player.
     /// </remarks>
-    public static UnityVersion Version { get; private set; }
+    public UnityVersion? Version { get; private set; } 
 
-    internal static void InitializeFormPaths() =>
+    public void InitializeFormPaths() =>
         Initialize(Paths.ExecutablePath, Paths.GameDataPath);
 
-    internal static void Initialize(string? unityPlayerPath, string gameDataPath)
+    public void Initialize(string unityPlayerPath, string gameDataPath)
     {
-        if (initialized)
-            return;
-        
-        PlayerPath = Path.GetFullPath(unityPlayerPath ?? throw new ArgumentNullException(nameof(unityPlayerPath)));
-        GameDataPath = Path.GetFullPath(gameDataPath ?? throw new ArgumentNullException(nameof(gameDataPath)));
+        var playerPath = Path.GetFullPath(unityPlayerPath);
+        var dataPath = Path.GetFullPath(gameDataPath);
 
-        DetermineVersion();
-        initialized = true;
-    }
-
-    internal static void SetRuntimeUnityVersion(string version) => Version = UnityVersion.Parse(version);
-
-    private static void DetermineVersion()
-    {
-        // Try looking up first since it's more reliable
-        foreach (var lookup in ManagerVersionLookup)
-            if (lookup.TryLookup(out var version))
-            {
-                Version = version;
-                return;
-            }
-
-        // On Windows, we can try to parse executable name, but some games can mess up the file version as well 
-        if (PlatformDetection.OS.Is(OSKind.Windows))
-            try
-            {
-                var version = FileVersionInfo.GetVersionInfo(PlayerPath);
-                // Parse manually because some games can also wipe the file version (so it's an empty string)
-                var simpleVersion = new Version(version.FileVersion ?? throw new InvalidOperationException());
-                Version = new UnityVersion((ushort)simpleVersion.Major, (ushort)simpleVersion.Minor,
-                                           (ushort)simpleVersion.Build);
-                return;
-            }
-            catch (Exception)
-            {
-                // Some games have version stripped or intentionally wrong
-                // In that case pass through
-            }
-
-        // We can't determine the version fully, so we'll try to guess
-        // On UnityMono, UnityEngine.CoreModule.dll is present for post-2017
-        // We'll also mark it as "experimental" so that we can detect this via logs
-        var managed = Path.Combine(GameDataPath, "Managed");
-        if (File.Exists(Path.Combine(managed, "UnityEngine.CoreModule.dll")))
-            Version = new UnityVersion(2017, 0, 0, UnityVersionType.Experimental);
-
-        Version = default;
-    }
-
-    private class ManagerLookup(string filePath, params int[] lookupOffsets)
-    {
-        public bool TryLookup(out UnityVersion version)
+        foreach (var lookup in ManagerVersionLookup.Where(lookup => lookup.SetFileRootPath(dataPath).TryLookup()))
         {
-            var path = Path.Combine(GameDataPath, filePath);
-            if (!File.Exists(path))
-            {
-                version = default;
-                return false;
-            }
-
-            using var fs = File.OpenRead(path);
-            foreach (var offset in lookupOffsets)
-            {
-                var sb = new StringBuilder();
-                fs.Position = offset;
-
-                byte b;
-                while ((b = (byte)fs.ReadByte()) != 0)
-                    sb.Append((char)b);
-
-                try
-                {
-                    version = UnityVersion.Parse(sb.ToString());
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    // Ignore
-                }
-            }
-
-            version = default;
-            return false;
+            Version = (UnityVersion)lookup;
+            break;
         }
     }
+
+    private bool TryInitialize()
+    {
+        InitializeFormPaths();
+        return Version != null;
+    }
+
+    public void SetRuntimeUnityVersion(string version) => Version = UnityVersion.Parse(version);
+    public void SetRuntimeUnityVersion(UnityVersion version) => Version = version;
+
+    public UnityVersion GetVersion()
+    {
+        if (Version == null)
+            InitializeFormPaths();
+
+        return Version ?? throw new Exception("unity version not initialized");
+    }
+
+    public Version ToVersion()
+    {
+        var version = GetVersion();
+        return new Version(version.Major, version.Minor, version.Build);
+    }
+    
+    public static implicit operator UnityVersion(UnityInfo info) => info.GetVersion();
+
+    public static implicit operator Version(UnityInfo info) => info.ToVersion();
 }

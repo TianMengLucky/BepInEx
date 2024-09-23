@@ -9,25 +9,25 @@ using LogLevel = NextBepLoader.Core.Logging.LogLevel;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public sealed class IL2CPPHook : BasePreLoader
+public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger) : BasePreLoader
 {
     internal  NativeHook RuntimeInvokeDetour { get; set; }
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
-    public Action<IL2CPPHook> OnActiveSceneChanged;
+    public Action<IL2CPPHooker> OnActiveSceneChanged;
 
     public override void Start()
     {
         if (!TryGetHandle(out var il2CppHandle)) return;
         var runtimeInvokePtr = NativeLibrary.GetExport(il2CppHandle, "il2cpp_runtime_invoke");
-        PreloaderLogger.Log.Log(LogLevel.Info, $"Runtime invoke pointer: 0x{runtimeInvokePtr.ToInt64():X}");
-        RuntimeInvokeDetour = new NativeHook(runtimeInvokePtr, OnInvokeMethod, true);
-        PreloaderLogger.Log.Log(LogLevel.Info, "Runtime invoke patched");
+        logger.LogInformation("Runtime invoke pointer: 0x{value}", $"{runtimeInvokePtr.ToInt64():X}");
+        RuntimeInvokeDetour =new NativeHook(runtimeInvokePtr, OnInvokeMethod, true);
+        logger.LogInformation("Runtime invoke patched");
     }
 
     public bool TryGetHandle(out nint handle)
     {
         if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) return true;
-         _Log.LogFatal("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so). The game might be obfuscated or use a yet unsupported build of Unity.");
+        logger.LogError("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so). The game might be obfuscated or use a yet unsupported build of Unity.");
         return false;
     }
     
@@ -55,8 +55,7 @@ public sealed class IL2CPPHook : BasePreLoader
             }
             catch (Exception ex)
             {
-                Logger.Log(LogLevel.Fatal, "Unable to execute IL2CPP chainloader");
-                Logger.Log(LogLevel.Error, ex);
+                logger.LogError(ex.ToString());
             }
 
 
@@ -65,8 +64,7 @@ public sealed class IL2CPPHook : BasePreLoader
         if (!unhook) return result;
         RuntimeInvokeDetour.Dispose();
 
-        PreloaderLogger.Log.Log(LogLevel.Debug, "Runtime invoke unpatched");
-
+        logger.LogDebug( "Runtime invoke unpatched");
         return result;
     }
 }

@@ -1,3 +1,3 @@
-namespace NextBepLoader.Core.Console;
+namespace NextBepLoader.Deskstop.Console;
 
 public interface IConsoleWriter { }

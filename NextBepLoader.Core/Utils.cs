@@ -1,5 +1,12 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using HarmonyLib;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MonoMod.Utils;
 
 namespace NextBepLoader.Core;
@@ -39,5 +46,63 @@ public static class Utils
             return "sp";
 
         return "dll";
+    }
+
+    public static TimeSpan StartStopwatch(Action action)
+    {
+        var watch = new Stopwatch();
+        watch.Start();
+        action.Invoke();
+        watch.Stop();
+        return watch.Elapsed;
+    }
+
+    public static IServiceCollection AddOnStart<T>(this IServiceCollection collection) where T : class, IOnLoadStart =>
+        collection.AddSingleton<IOnLoadStart, T>();
+
+    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection)where TClass : class, TInterface, IOnLoadStart where TInterface : class
+    {
+        return collection.AddSingleton<TInterface, TClass>()
+                  .AddSingleton<IOnLoadStart>(n => n.GetRequiredService<TClass>());
+    }
+
+    public static IServiceCollection AddOnStart<TInterface, TClass>
+    (
+        this IServiceCollection collection, 
+        params object[] parameters
+        )
+        where TClass : class, TInterface, IOnLoadStart 
+        where TInterface : class
+        => collection
+           .AddSingleton<TInterface, TClass>(provider => ActivatorUtilities.CreateInstance<TClass>(provider, parameters))
+           .AddOnStartFormGet<TClass>();
+    
+    public static IServiceCollection AddOnStartFormGet<T>(this IServiceCollection collection) where T : class, IOnLoadStart =>
+        collection.AddSingleton<IOnLoadStart>(n => n.GetRequiredService<T>());
+
+    public static void DeleteAllFiles(string dir)
+    {
+        if (!Directory.Exists(dir))
+            return;
+        
+        Directory
+            .GetFiles(dir)
+            .Do(File.Delete);
+    }
+    
+    public static void HashString(this ICryptoTransform hash, string str)
+    {
+        var buffer = Encoding.UTF8.GetBytes(str);
+        hash.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
+    }
+
+    public static void HashFile(this ICryptoTransform hash, string file)
+    {
+        const int defaultCopyBufferSize = 81920;
+        using var fs = File.OpenRead(file);
+        var buffer = new byte[defaultCopyBufferSize];
+        int read;
+        while ((read = fs.Read(buffer)) > 0)
+            hash.TransformBlock(buffer, 0, read, buffer, 0);
     }
 }

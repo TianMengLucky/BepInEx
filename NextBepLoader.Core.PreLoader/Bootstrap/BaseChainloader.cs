@@ -1,4 +1,4 @@
-﻿namespace NextBepLoader.Core.Bootstrap;
+﻿namespace NextBepLoader.Core.PreLoader.Bootstrap;
 
 /*public abstract class BaseChainloader<TPlugin>
 {

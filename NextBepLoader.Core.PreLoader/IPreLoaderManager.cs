@@ -1,3 +1,3 @@
 namespace NextBepLoader.Core.PreLoader;
 
-public class IPreLoaderManager { }
+public interface IPreLoaderManager { }

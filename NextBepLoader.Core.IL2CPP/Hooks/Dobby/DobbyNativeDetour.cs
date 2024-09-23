@@ -1,9 +1,10 @@
 using System;
+using NextBepLoader.Core.IL2CPP.Hook;
 
-namespace NextBepLoader.Core.IL2CPP.Hook.Dobby;
+namespace NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 
-internal class DobbyDetour(IntPtr originalMethodPtr, IntPtr detourMethod)
-    : BaseNativeDetour<DobbyDetour>(originalMethodPtr, detourMethod)
+internal class DobbyNativeDetour(IntPtr originalMethodPtr, IntPtr detourMethod)
+    : BaseNativeDetour<DobbyNativeDetour>(originalMethodPtr, detourMethod)
 {
     protected override void ApplyImpl() => _ = DobbyLib.Commit(Source);
 

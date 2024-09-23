@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,33 +17,32 @@ namespace NextBepLoader.Deskstop;
 
 public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 {
-    private List<BasePreLoader> loaders = [];
+    private List<Type> loaders = [];
     public override LoaderPathBase Paths { get; set; } = new DesktopPath();
     public override LoaderPlatformType LoaderType => LoaderPlatformType.Desktop;
     internal IServiceCollection Collection { get; set; } = new ServiceCollection();
-    public new Action<IServiceProvider> OnServiceBuilt { get; set; }
 
     public override void Start()
     {
         LoaderVersion = new Version();
         loaders = [
-            new ResolvePreLoad(), 
-            new IL2CPPHook(), 
-            new IL2CPPPreLoader()
+            typeof(ResolvePreLoad), 
+            typeof(IL2CPPHooker), 
+            typeof(IL2CPPPreLoader)
         ];
         PlatformUtils.SetDesktopPlatformVersion();
         MainServices = Collection
-                       .AddSingleton<IPreLoaderManager, DesktopPreLoadManager>(n => new DesktopPreLoadManager(n, loaders))
+                       .AddSingleton<TaskFactory>()
                        .AddSingleton<INextServiceManager, NextServiceManager>()
+                       .AddSingleton<IProviderManager, DesktopProviderManager>()
+                       .AddSingleton<UnityInfo>()
+                       .AddOnStart<INextBepEnv, DesktopBepEnv>()
+                       .AddOnStart<IPreLoaderManager, DesktopPreLoadManager>(loaders)
+                       .AddStartRunner()
                        .AddNextLogger()
                        .BuildServiceProvider();
         
-        
-        OnServiceBuilt(MainServices);
-        
-        
         HarmonyBackendFix.Initialize();
-        UnityInfo.InitializeFormPaths();
         RedirectStdErrFix.Apply();
     }
 }

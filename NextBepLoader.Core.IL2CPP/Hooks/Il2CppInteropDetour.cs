@@ -4,7 +4,7 @@ using Il2CppInterop.Runtime.Injection;
 using MonoMod.Core;
 using MonoMod.Core.Platforms;
 
-namespace NextBepLoader.Core.IL2CPP.Hook;
+namespace NextBepLoader.Core.IL2CPP.Hooks;
 
 internal class Il2CppInteropDetour(ICoreNativeDetour detour) : IDetour
 {

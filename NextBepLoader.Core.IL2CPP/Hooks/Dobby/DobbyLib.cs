@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace NextBepLoader.Core.IL2CPP.Hook.Dobby;
+namespace NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 
 internal static unsafe class DobbyLib
 {

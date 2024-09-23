@@ -19,6 +19,7 @@ public class ResolvePreLoad : BasePreLoader
         AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Paths.ManagedPath);
         // The parent path -> .NET has some extra managed DLLs in there
         AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Path.GetDirectoryName(Paths.ManagedPath)!);
+        AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Paths.UnityBaseDirectory);
 
         AppDomain.CurrentDomain.AssemblyResolve += LocalResolve;
     }
@@ -40,6 +41,10 @@ public class ResolvePreLoad : BasePreLoader
             Utility.TryResolveDllAssembly(assemblyName, Paths.PluginPath, out foundAssembly)
           ||
             Utility.TryResolveDllAssembly(assemblyName, Paths.DependencyDirectory, out foundAssembly)
+          ||
+            Utility.TryResolveDllAssembly(assemblyName, Paths.IL2CPPInteropAssemblyDirectory, out foundAssembly)
+          ||
+            Utility.TryResolveDllAssembly(assemblyName, Paths.UnityBaseDirectory, out foundAssembly)
         )
             return foundAssembly;
 

@@ -32,7 +32,7 @@ public class IL2CPPUnityLogSource : ILogSource
             LogType.Exception => LogLevel.Error,
             _                 => LogLevel.Message
         };
-        LogEvent?.Invoke(this, new LogEventArgs(logLine, level, this));
+        LogEvent(this, new LogEventArgs(logLine, level, this));
     }
 
     private delegate IntPtr SetLogCallbackDefinedDelegate(bool defined);

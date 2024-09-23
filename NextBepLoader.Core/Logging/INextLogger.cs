@@ -1,3 +1,3 @@
 namespace NextBepLoader.Core.Logging;
 
-public interface ILogger { }
+public interface INextLogger { }

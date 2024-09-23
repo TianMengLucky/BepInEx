@@ -10,9 +10,9 @@ public class NextLoggerProvider : ILoggerProvider
 {
     public void Dispose() => throw new NotImplementedException();
 
-    public MicrosoftLogging.ILogger CreateLogger(string categoryName) => throw new NotImplementedException();
+    public ILogger CreateLogger(string categoryName) => throw new NotImplementedException();
     
-    public class NextLogger : MicrosoftLogging.ILogger
+    public class NextLogger : ILogger
     {
         public void Log<TState>(MicrosoftLogging.LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => throw new NotImplementedException();
 

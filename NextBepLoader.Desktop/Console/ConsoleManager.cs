@@ -1,4 +1,4 @@
-namespace NextBepLoader.Core.Console;
+namespace NextBepLoader.Deskstop.Console;
 
 /*public static class ConsoleManager
 {
