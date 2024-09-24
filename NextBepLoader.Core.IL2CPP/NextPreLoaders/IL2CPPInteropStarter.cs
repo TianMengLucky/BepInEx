@@ -25,16 +25,15 @@ public class IL2CPPInteropStarter(
     public override void PreLoad(PreLoadEventArg arg)
     {
         IL2CPPCheckEventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
-        
     }
 
     public override void Start()
     {
         factory.StartNew(() =>
         {
-            var generatorTime = Core.Utils.StartStopwatch(StartGenerator);
+            var generatorTime = CoreUtils.StartStopwatch(StartGenerator);
             logger.LogInformation("IL2CPPInteropStarter Start generator,use time:{time}", generatorTime);
-            var runtimeTime = Core.Utils.StartStopwatch(StartRuntime);
+            var runtimeTime = CoreUtils.StartStopwatch(StartRuntime);
             logger.LogInformation("IL2CPPInteropStarter Start Runtime,use time:{time}", runtimeTime);
         });
     }
@@ -53,7 +52,7 @@ public class IL2CPPInteropStarter(
 
     public void StartGenerator()
     {
-        Core.Utils.DeleteAllFiles(Paths.IL2CPPInteropAssemblyDirectory);
+        CoreUtils.DeleteAllFiles(Paths.IL2CPPInteropAssemblyDirectory);
         var opts = new GeneratorOptions
         {
             GameAssemblyPath = Paths.GameAssemblyPath,

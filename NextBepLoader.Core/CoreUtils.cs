@@ -6,12 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 using HarmonyLib;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using MonoMod.Utils;
 
 namespace NextBepLoader.Core;
 
-public static class Utils
+public static class CoreUtils
 {
     public static readonly bool IsMono = PlatformDetection.Runtime == RuntimeKind.Mono;
 

@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using AssetRipper.Primitives;
 using Il2CppSystem.Text;
 using Microsoft.Extensions.Logging;
 using MonoMod.RuntimeDetour;
@@ -25,6 +27,8 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
                                        .AppendLine("If disabled assemblies in `BepInEx/interop` won't be updated between game or BepInEx updates!")
                                        .ToString());
 
+    public static readonly string UnityBaseVersionPath = Path.Combine(Paths.CacheDataDir, "unity_base.ver");
+
     public override void PreLoad(PreLoadEventArg arg)
     {
         logger.LogInformation("Running under Unity {version}", unityInfo.GetVersion());
@@ -44,6 +48,9 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
         _IL2CPPCheckEventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
         _IL2CPPCheckEventArg.UpdateIL2CPPInteropAssembly = UpdateInteropAssemblies.Value;
 
+        if (!File.Exists(UnityBaseVersionPath) || Version.Parse(File.ReadAllText(UnityBaseVersionPath)) != unityInfo)
+            _IL2CPPCheckEventArg.DownloadUnityBaseLib = true;
+
         env.RegisterSystemEnv("IL2CPP_INTEROP_DATABASES_LOCATION", Paths.IL2CPPInteropAssemblyDirectory);
     }
 
@@ -57,4 +64,7 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
     {
         return libraryName == "GameAssembly" ? NativeLibrary.Load(Paths.GameAssemblyPath, assembly, searchPath) : IntPtr.Zero;
     }
+
+    public static void WriteUnityBaseVersion(Version version) =>
+        File.WriteAllText(version.ToString(), UnityBaseVersionPath);
 }

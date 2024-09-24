@@ -6,8 +6,8 @@ use jni::{
 use std::path::PathBuf;
 use std::ffi::CStr;
 
-use crate::libloading;
-use crate::libloading::load_lib;
+use crate::lib_loading;
+use crate::lib_loading::load_lib;
 
 #[no_mangle]
 fn load(env: JNIEnv, _: JClass, _: JString) -> jboolean {
@@ -35,7 +35,7 @@ fn load_bootstrap(env: &JNIEnv) {
             panic!();
         });
 
-    let on_load: libloading::NativeMethod<fn(*mut JavaVM, *mut libc::c_void)> = bootstrap_lib
+    let on_load: lib_loading::NativeMethod<fn(*mut JavaVM, *mut libc::c_void)> = bootstrap_lib
         .sym("JNI_OnLoad")
         .unwrap_or_else(|e| {
             error!("Failed to find JNI_OnLoad: {}", e.to_string());
@@ -44,7 +44,7 @@ fn load_bootstrap(env: &JNIEnv) {
 
     (on_load)(env.get_java_vm().expect("msg").get_java_vm_pointer(), std::ptr::null_mut());
 
-    let initialize: libloading::NativeMethod<fn()> = bootstrap_lib
+    let initialize: lib_loading::NativeMethod<fn()> = bootstrap_lib
         .sym("startup")
         .unwrap_or_else(|e| {
             info!("Failed to find Initialize: {}", e.to_string());
@@ -58,7 +58,7 @@ fn load_lib_unity(env: &JNIEnv) {
     let unity_lib = load_lib(&PathBuf::from("libunity.so"), libc::RTLD_NOW | libc::RTLD_GLOBAL)
         .expect("Couldn't load libunity!");
 
-    let on_load: libloading::NativeMethod<fn(*mut JavaVM, *mut libc::c_void)> = unity_lib
+    let on_load: lib_loading::NativeMethod<fn(*mut JavaVM, *mut libc::c_void)> = unity_lib
         .sym("JNI_OnLoad")
         .expect("Couldn't find JNI_OnLoad!");
 

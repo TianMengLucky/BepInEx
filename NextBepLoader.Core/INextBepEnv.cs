@@ -13,4 +13,5 @@ public interface INextBepEnv
     
     
     public INextBepEnv UpdateEventArgs<T>(T arg) where T : EventArgs;
+    
 }

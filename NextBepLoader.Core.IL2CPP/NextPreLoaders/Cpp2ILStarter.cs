@@ -16,7 +16,7 @@ namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
 public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, UnityInfo unityInfo) : BasePreLoader
 {
-    public override Type[] WaitLoadLoader { get; set; }
+    public override Type[] WaitLoadLoader => [typeof(HashComputer)];
     private IL2CPPCheckEventArg il2CPPCheckEventArg ;
 
     public override void PreLoad(PreLoadEventArg arg)
@@ -33,7 +33,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
         CPP2ILUtils.SetLogger(null, logger);
 
         List<AssemblyDefinition> result = [];
-        var runTime = Core.Utils.StartStopwatch(() =>
+        var runTime = CoreUtils.StartStopwatch(() =>
         {
             Cpp2IlApi.InitializeLibCpp2Il(Paths.GameAssemblyPath, Paths.GameMetaDataPath, unityInfo);
         
@@ -56,7 +56,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
         if (il2CPPCheckEventArg.CacheCPP2ILAssembly)
         {
             var id = 0;
-            var time = Core.Utils.StartStopwatch(() =>
+            var time = CoreUtils.StartStopwatch(() =>
             {
                 foreach (var assembly in result)
                     assembly.Write(Path.Combine(Paths.CPP2ILCacheDir, assembly.Name ?? id++ + ".dll"));

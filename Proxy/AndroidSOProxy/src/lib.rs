@@ -1,5 +1,5 @@
-pub mod nativeloader;
-pub mod libloading;
+pub mod native_loader;
+pub mod lib_loading;
 
 use jni::{
     objects::{JClass, JString},
@@ -8,7 +8,7 @@ use jni::{
 };
 use std::{mem, os::raw::c_void, panic::catch_unwind, path::PathBuf};
 
-use libloading::load_lib;
+use lib_loading::load_lib;
 #[macro_use]
 extern crate log;
 
@@ -26,11 +26,11 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
     let self_lib = load_lib(&PathBuf::from("libmain.so"), libc::RTLD_NOW | libc::RTLD_GLOBAL)
         .expect("Failed to load self");
 
-    let load_handle: libloading::NativeMethod<fn(JNIEnv, JClass, JString) -> jboolean> =
+    let load_handle: lib_loading::NativeMethod<fn(JNIEnv, JClass, JString) -> jboolean> =
         self_lib.sym("load")
         .expect("Failed to find load function");
 
-    let unload_handle: libloading::NativeMethod<fn(JNIEnv, JClass)> = self_lib
+    let unload_handle: lib_loading::NativeMethod<fn(JNIEnv, JClass)> = self_lib
         .sym("unload")
         .expect("Failed to find unload function");
 

@@ -203,7 +203,7 @@ pub fn load_self() -> Result<NativeLibrary, LibError> {
 ///
 /// assert!(lib.is_ok());
 #[cfg(target_os = "windows")]
-pub fn load_lib<P: AsRef<Path>>(path: P) -> Result<NativeLibrary, LibError> {
+pub fn load_lib<P: AsRef<Path>>(path: P, x: _) -> Result<NativeLibrary, LibError> {
     use std::ffi::CString;
 
     let path = path.as_ref();

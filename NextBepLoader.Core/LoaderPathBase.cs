@@ -96,7 +96,7 @@ public abstract class LoaderPathBase
     public string CacheDataDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)
-    {
+    { 
         Paths.MainInstance = this;
 
         LoaderRootPath = SetPath(LoaderRootPath, true, true,nameof(NextBepLoader));
@@ -125,7 +125,7 @@ public abstract class LoaderPathBase
         GameMetadataPath = SetPath(GameMetadataPath, false, false, GameDataPath, "il2cpp_data", "Metadata",
                                    "global-metadata.dat");
         if (string.IsNullOrEmpty(GameAssemblyName))
-            GameAssemblyName = $"{Utils.PlatformGameAssemblyName}.{Utils.PlatformPostFix}";
+            GameAssemblyName = $"{CoreUtils.PlatformGameAssemblyName}.{CoreUtils.PlatformPostFix}";
         
         GameAssemblyPath = SetPath(GameAssemblyPath, false, true, GameAssemblyName);
         CPP2ILCacheDir = SetPath(CPP2ILCacheDir, true, false, LoaderRootPath, "CacheCPP2IL");

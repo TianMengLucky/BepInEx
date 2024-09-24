@@ -5,15 +5,22 @@ using MonoMod.RuntimeDetour;
 using NextBepLoader.Core.IL2CPP.Logging;
 using NextBepLoader.Core.PreLoader;
 using UnityEngine;
-using LogLevel = NextBepLoader.Core.Logging.LogLevel;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
 public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger) : BasePreLoader
 {
-    internal  NativeHook RuntimeInvokeDetour { get; set; }
+    internal NativeHook RuntimeInvokeDetour { get; set; }
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
     public Action<IL2CPPHooker> OnActiveSceneChanged;
+
+    public override void PreLoad(PreLoadEventArg arg)
+    {
+        OnActiveSceneChanged += hooker =>
+        {
+            
+        };
+    }
 
     public override void Start()
     {
@@ -26,8 +33,14 @@ public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger) : BasePreLoader
 
     public bool TryGetHandle(out nint handle)
     {
-        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) return true;
-        logger.LogError("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so). The game might be obfuscated or use a yet unsupported build of Unity.");
+        if (NativeLibrary.TryLoad(CoreUtils.PlatformGameAssemblyName, typeof(IL2CPPChainloader).Assembly, null, out handle)) 
+            return true;
+        
+        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) 
+            return true;
+        
+        logger.LogError("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so)." +
+                        " The game might be obfuscated or use a yet unsupported build of Unity.");
         return false;
     }
     
@@ -44,6 +57,7 @@ public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger) : BasePreLoader
 
         var unhook = false;
 
+        logger.LogDebug("Runtime invoke called for {methodName}", methodName);
         if (methodName == "Internal_ActiveSceneChanged")
             try
             {

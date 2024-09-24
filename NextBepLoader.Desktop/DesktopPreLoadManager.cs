@@ -7,7 +7,7 @@ namespace NextBepLoader.Deskstop;
 
 public class DesktopPreLoadManager(IServiceProvider provider, List<Type> loaderTypes, TaskFactory factory, PreLoadEventArg loadEventArg) : IPreLoaderManager, IOnLoadStart
 {
-    public List<BasePreLoader> PreLoaders = [];
+    public List<BasePreLoader> PreLoaders { get; set; } = [];
     public void OnLoadStart()
     {
         foreach (var loader in loaderTypes.Select(type => ActivatorUtilities.CreateInstance(provider, type)))
@@ -29,6 +29,8 @@ public class DesktopPreLoadManager(IServiceProvider provider, List<Type> loaderT
         
         foreach (var loader in PreLoaders)
             loader.Start();
-        
+
+        foreach (var loader in PreLoaders)
+            loader.Finish();
     }
 }

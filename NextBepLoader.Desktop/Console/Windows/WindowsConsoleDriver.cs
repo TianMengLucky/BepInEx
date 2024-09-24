@@ -134,7 +134,7 @@ internal class WindowsConsoleDriver : IConsoleDriver
 
     private static Stream OpenFileStream(IntPtr handle)
     {
-        if (Core.Utils.IsCore)
+        if (Core.CoreUtils.IsCore)
         {
             var windowsConsoleStreamType = Type.GetType("System.ConsolePal+WindowsConsoleStream, System.Console", true);
             var constructor = AccessTools.Constructor(windowsConsoleStreamType,
