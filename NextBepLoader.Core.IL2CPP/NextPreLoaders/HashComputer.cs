@@ -21,6 +21,7 @@ public class HashComputer(INextBepEnv env, ILogger<HashComputer> logger) : BaseP
     {
         EventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
         EventArg.UpdateIL2CPPInteropAssembly = CheckIfGenerationRequired();
+        EventArg.UpdateCPP2ILAssembly = File.ReadAllText(AssemblyHashPath) != ComputeGameAssemblyHash();
     }
 
     public override void Finish()

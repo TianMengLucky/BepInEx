@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP;
 
-public class IL2CPPChainloader/* : BaseChainloader<BasePlugin>*/
+public class IL2CPPChainloader
 {
     private static readonly ConfigEntry<bool> ConfigUnityLogging = ConfigFile.CoreConfig.Bind(
      "Logging", "UnityLogListening",

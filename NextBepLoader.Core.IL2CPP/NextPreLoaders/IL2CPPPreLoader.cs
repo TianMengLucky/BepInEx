@@ -39,7 +39,7 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
         logger.LogInformation("Interop assembly directory: {dir}", Paths.IL2CPPInteropAssemblyDirectory);
         logger.LogInformation("Loader root path: {path}", Paths.LoaderRootPath);
         logger.LogInformation("Loader Core Assembly path: {path}", Paths.CoreAssemblyPath);
-        logger.LogInformation("Loader Type {type}", LoaderInstance.Current.LoaderType);
+        logger.LogInformation("Loader Type {type}", LoaderInstance.LoaderRegister.Current.LoaderType);
 
         if (PlatformDetection.OS.Is(OSKind.Wine) && !Environment.Is64BitProcess) 
             if (!NativeLibrary.TryGetExport(NativeLibrary.Load("ntdll"), "RtlRestoreContext", out var _)) 

@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.Logging;
 
@@ -11,42 +14,88 @@ namespace NextBepLoader.Core.Logging;
 /// </summary>
 public static class Logger
 {
-    private static readonly ManualLogSource InternalLogSource;
-
-    private static readonly LogListenerCollection listeners;
-
-    public static NextLoggerFactory LoggerFactory = LoaderInstance.Current.MainServices.GetService<NextLoggerFactory>() 
-                                                 ?? new NextLoggerFactory();
-
-    static Logger()
-    {
-        Sources = new LogSourceCollection();
-        listeners = [];
-
-        InternalLogSource = CreateLogSource("BepInEx");
-    }
-
-    /// <summary>
-    ///     Log levels that are currently listened to by at least one listener.
-    /// </summary>
-    public static LogLevel ListenedLogLevels => listeners.activeLogLevels;
-
-    /// <summary>
-    ///     Collection of all log listeners that receive log events.
-    /// </summary>
-    public static ICollection<ILogListener> Listeners => listeners;
-
+    private static readonly ManualLogSource MainLogSource;
+    
+    
     /// <summary>
     ///     Collection of all log source that output log events.
     /// </summary>
-    public static ICollection<ILogSource> Sources { get; }
+    public static readonly NextEventList<ILogSource> Sources = [];
+    
+    /// <summary>
+    ///     Collection of all log listeners that receive log events.
+    /// </summary>
+    public static readonly NextEventList<ILogListener> Listeners = [];
+
+    static Logger()
+    {
+        Sources.OnEvent += OnSourceEventList;
+        Listeners.OnEvent += OnListenerEventList;
+        MainLogSource = CreateLogSource(nameof(NextBepLoader));
+    }
+
+    private static bool OnSourceEventList(NextEventListEventArgs<ILogSource> eventArgs)
+    {
+        if (eventArgs.Type == ListEventType.Add)
+            eventArgs.Value!.LogEvent += InternalLogEvent;
+
+        if (eventArgs.Type == ListEventType.Clear)
+            foreach (var source in eventArgs.List)
+                source.LogEvent -= InternalLogEvent;
+
+        if (eventArgs.Type == ListEventType.Remove)
+            eventArgs.OnRemoved += args =>
+            {
+                args.Value!.LogEvent -= InternalLogEvent;
+            };
+        
+        return NoNotify(eventArgs);
+    }
+    private static bool OnListenerEventList(NextEventListEventArgs<ILogListener> eventArgs)
+    {
+        if (eventArgs.Type == ListEventType.Add)
+            ListenedLogLevels |= eventArgs.Value!.LogLevelFilter;
+
+        if (eventArgs.Type == ListEventType.Clear)
+            ListenedLogLevels = LogLevel.None;
+
+        if (eventArgs.Type == ListEventType.Remove)
+            eventArgs.OnRemoved += args =>
+            {
+                if (!args.Remove) return;
+                ListenedLogLevels = LogLevel.None;
+                foreach (var listener in eventArgs.List)
+                    ListenedLogLevels |= listener.LogLevelFilter;
+            };
+        
+        return NoNotify(eventArgs);
+    }
+    
+    public static bool NoNotify<T>(NextEventListEventArgs<T> e) where T : class
+    {
+        return e.Type switch
+        {
+            ListEventType.Add      => true,
+            ListEventType.Clear    => true,
+            ListEventType.Contains => false,
+            ListEventType.Remove   => false,
+            var _                  => throw new ArgumentOutOfRangeException()
+        };
+    }
+    
+    /// <summary>
+    ///     Log levels that are currently listened to by at least one listener.
+    /// </summary>
+    public static LogLevel ListenedLogLevels { get; private set; }
 
     internal static void InternalLogEvent(object sender, LogEventArgs eventArgs)
     {
-        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator Prevent extra allocations
-        foreach (var listener in listeners)
-            if ((eventArgs.Level & listener.LogLevelFilter) != LogLevel.None)
-                listener?.LogEvent(sender, eventArgs);
+        Task.Factory.StartNew(() =>
+        {
+            foreach (var listener in Listeners.Where(listener => (eventArgs.Level & listener.LogLevelFilter) !=
+                                                                 LogLevel.None))
+                listener.LogEvent(sender, eventArgs);
+        });
     }
 
     /// <summary>
@@ -54,7 +103,7 @@ public static class Logger
     /// </summary>
     /// <param name="level">The level of the entry.</param>
     /// <param name="data">The data of the entry.</param>
-    internal static void Log(LogLevel level, object data) => InternalLogSource.Log(level, data);
+    internal static void Log(LogLevel level, object data) => MainLogSource.Log(level, data);
 
     /// <summary>
     ///     Logs an entry to the internal logger instance if any log listener wants the message.
@@ -64,7 +113,7 @@ public static class Logger
     internal static void Log(LogLevel level,
                              [InterpolatedStringHandlerArgument("level")]
                              BepInExLogInterpolatedStringHandler logHandler) =>
-        InternalLogSource.Log(level, logHandler);
+        MainLogSource.Log(level, logHandler);
 
     /// <summary>
     ///     Creates a new log source with a name and attaches it to <see cref="Sources" />.
@@ -76,71 +125,5 @@ public static class Logger
         var source = new ManualLogSource(sourceName);
         Sources.Add(source);
         return source;
-    }
-
-    private class LogListenerCollection : List<ILogListener>, ICollection<ILogListener>
-    {
-        public LogLevel activeLogLevels = LogLevel.None;
-
-        void ICollection<ILogListener>.Add(ILogListener item)
-        {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
-            activeLogLevels |= item.LogLevelFilter;
-
-            base.Add(item);
-        }
-
-        void ICollection<ILogListener>.Clear()
-        {
-            activeLogLevels = LogLevel.None;
-            base.Clear();
-        }
-
-        bool ICollection<ILogListener>.Remove(ILogListener item)
-        {
-            if (!base.Remove(item))
-                return false;
-
-            activeLogLevels = LogLevel.None;
-
-            foreach (var i in this)
-                activeLogLevels |= i.LogLevelFilter;
-
-            return true;
-        }
-    }
-
-
-    private class LogSourceCollection : List<ILogSource>, ICollection<ILogSource>
-    {
-        void ICollection<ILogSource>.Add(ILogSource item)
-        {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item),
-                                                "Log sources cannot be null when added to the source list.");
-
-            item.LogEvent += InternalLogEvent;
-
-            base.Add(item);
-        }
-
-        void ICollection<ILogSource>.Clear()
-        {
-            foreach (var item in this)
-                item.LogEvent -= InternalLogEvent;
-
-            base.Clear();
-        }
-
-        bool ICollection<ILogSource>.Remove(ILogSource item)
-        {
-            if (!Remove(item))
-                return false;
-
-            item.LogEvent -= InternalLogEvent;
-            return true;
-        }
     }
 }

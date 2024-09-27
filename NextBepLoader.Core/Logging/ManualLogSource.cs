@@ -32,7 +32,11 @@ public class ManualLogSource : ILogSource
     /// </summary>
     /// <param name="level">Log levels to attach to the message. Multiple can be used with bitwise ORing.</param>
     /// <param name="data">Data to log.</param>
-    public void Log(LogLevel level, object data) => LogEvent?.Invoke(this, new LogEventArgs(data, level, this));
+    public void Log(LogLevel level, object? data)
+    {
+        if (data == null) return;
+        LogEvent(this, new LogEventArgs(data, level, this));
+    }
 
     /// <summary>
     ///     Logs an interpolated string with the specified log level.

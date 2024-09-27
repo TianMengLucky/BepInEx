@@ -12,7 +12,6 @@ public class UnityBasePreDownloader(
     HttpClient client, 
     ILogger<UnityBasePreDownloader> logger,
     INextBepEnv env, 
-    IL2CPPPreLoader preLoader,
     UnityInfo unityInfo
     ) : BasePreLoader
 {

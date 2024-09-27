@@ -1,21 +1,8 @@
 using System;
-using System.Collections.Generic;
 using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core;
-
-public static class LoaderInstance
-{
-    private static readonly List<ILoaderBase> Bases = [];
-    public static ILoaderBase Current { get; set; }
-
-    public static void Register(ILoaderBase loader)
-    {
-        Bases.Add(loader);
-        Current = loader;
-    }
-}
 
 public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
 {

@@ -29,6 +29,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
 
     public override void Start()
     {
+        if (!il2CPPCheckEventArg.UpdateCPP2ILAssembly) return;
         logger.LogInformation("Running Cpp2IL to generate dummy assemblies");
         CPP2ILUtils.SetLogger(null, logger);
 

@@ -33,14 +33,20 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         PlatformUtils.SetDesktopPlatformVersion();
         MainServices = Collection
                        .AddSingleton<TaskFactory>()
-                       .AddSingleton<INextServiceManager, NextServiceManager>()
                        .AddSingleton<IProviderManager, DesktopProviderManager>()
                        .AddSingleton<UnityInfo>()
+                       .AddActivatedSingleton<INextServiceManager, NextServiceManager>()
                        .AddOnStart<INextBepEnv, DesktopBepEnv>()
                        .AddOnStart<IPreLoaderManager, DesktopPreLoadManager>(loaders)
                        .AddStartRunner()
                        .AddNextLogger()
+                       .AddTraceLogSource()
                        .BuildServiceProvider();
+
+        MainServices
+            .GetService<NextServiceManager>()?
+            .Register(Collection, MainServices);
+        
         
         HarmonyBackendFix.Initialize();
         RedirectStdErrFix.Apply();

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace NextBepLoader.Core.Logging;
 
@@ -8,7 +9,7 @@ namespace NextBepLoader.Core.Logging;
 /// <inheritdoc cref="TraceListener" />
 public class TraceLogSource : TraceListener
 {
-    private static TraceLogSource traceListener;
+    private static TraceLogSource? traceListener;
 
     /// <summary>
     ///     Creates a new trace log source.
@@ -27,6 +28,18 @@ public class TraceLogSource : TraceListener
     ///     Internal log source.
     /// </summary>
     protected ManualLogSource LogSource { get; }
+
+    public static TraceLogSource CreateListener()
+    {
+        if (traceListener == null)
+        {
+            traceListener = new TraceLogSource();
+            Trace.Listeners.Add(traceListener);
+            IsListening = true;
+        }
+
+        return traceListener;
+    }
 
     /// <summary>
     ///     Creates a new trace log source.
@@ -48,13 +61,13 @@ public class TraceLogSource : TraceListener
     ///     Writes a message to the underlying <see cref="ManualLogSource" /> instance.
     /// </summary>
     /// <param name="message">The message to write.</param>
-    public override void Write(string message) => LogSource.Log(LogLevel.Info, message);
+    public override void Write(string? message) => LogSource.Log(LogLevel.Info, message);
 
     /// <summary>
     ///     Writes a message and a newline to the underlying <see cref="ManualLogSource" /> instance.
     /// </summary>
     /// <param name="message">The message to write.</param>
-    public override void WriteLine(string message) => LogSource.Log(LogLevel.Info, message);
+    public override void WriteLine(string? message) => LogSource.Log(LogLevel.Info, message);
 
     /// <inheritdoc />
     public override void TraceEvent(TraceEventCache eventCache,
@@ -70,7 +83,7 @@ public class TraceLogSource : TraceListener
                                     string source,
                                     TraceEventType eventType,
                                     int id,
-                                    string message)
+                                    string? message)
     {
         var level = eventType switch
         {
@@ -80,6 +93,6 @@ public class TraceLogSource : TraceListener
             TraceEventType.Information => LogLevel.Info,
             _                          => LogLevel.Debug
         };
-        LogSource.Log(level, $"{message}".Trim());
+        LogSource.Log(level, $"{message ?? string.Empty}".Trim());
     }
 }
