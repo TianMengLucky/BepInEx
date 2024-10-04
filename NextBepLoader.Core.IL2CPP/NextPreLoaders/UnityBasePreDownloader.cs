@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.Configuration;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;

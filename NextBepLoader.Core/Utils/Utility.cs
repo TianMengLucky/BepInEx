@@ -9,7 +9,7 @@ using System.Text;
 using AsmResolver.DotNet;
 using AsmResolver.DotNet.Serialized;
 
-namespace NextBepLoader.Core;
+namespace NextBepLoader.Core.Utils;
 
 /// <summary>
 ///     Generic helper properties and methods.

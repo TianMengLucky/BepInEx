@@ -3,8 +3,7 @@ using System.IO;
 namespace NextBepLoader.Core.PreLoader.Bootstrap;
 
 /// <summary>
-///     A cacheable metadata item. Can be used with <see cref="TypeLoader.LoadAssemblyCache{T}" /> and
-///     <see cref="TypeLoader.SaveAssemblyCache{T}" /> to cache plugin metadata.
+///     A cacheable metadata item. cache data
 /// </summary>
 public interface ICacheableData
 {

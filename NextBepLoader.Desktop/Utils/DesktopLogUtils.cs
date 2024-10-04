@@ -1,5 +1,6 @@
 using System.Text;
 using MonoMod.Utils;
+using NextBepLoader.Core;
 using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Deskstop.Utils;
@@ -29,21 +30,19 @@ public static class DesktopLogUtils
         ["21.2.0"] = "12.1"
     };
 
-    public static void PrintLogInfo(ManualLogSource log)
+    public static void PrintLogInfo()
     {
-        /*var bepinVersion = Paths.BepInExVersion;
-        var versionMini = new Version(bepinVersion.Major, bepinVersion.Minor, bepinVersion.Patch,
-                                      bepinVersion.PreRelease);
-        var consoleTitle = $"BepInEx {versionMini} - {Paths.ProcessName}";
-        log.Log(LogLevel.Message, consoleTitle);
+        var version = DesktopLoader.Instance?.LoaderVersion;
+        var consoleTitle = $"BepInEx {version} - {Paths.ProcessName}";
+        Logger.LogInfo(consoleTitle);
 
         /*if (ConsoleManager.ConsoleActive)
-            ConsoleManager.SetConsoleTitle(consoleTitle);#1#
+            ConsoleManager.SetConsoleTitle(consoleTitle);*/
 
-        if (!string.IsNullOrEmpty(bepinVersion.Build))
-            log.Log(LogLevel.Message, $"Built from commit {bepinVersion.Build}");
+        if (!string.IsNullOrEmpty(version?.Build.ToString()))
+            Logger.LogInfo($"Built from commit {version.Build}");
 
-        Logger.Log(LogLevel.Info, $"System platform: {GetPlatformString()}");*/
+        Logger.LogInfo($"System platform: {GetPlatformString()}");
     }
 
     private static string GetPlatformString()

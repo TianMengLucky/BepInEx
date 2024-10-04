@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MonoMod.RuntimeDetour;
 using NextBepLoader.Core.IL2CPP.Logging;
 using NextBepLoader.Core.PreLoader;
+using NextBepLoader.Core.Utils;
 using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;

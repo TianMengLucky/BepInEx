@@ -27,20 +27,8 @@ public class IL2CPPChainloader
     
 
     public static IL2CPPChainloader Instance { get; set; }
-
-    /// <summary>
-    ///     Register and add a Unity Component (for example MonoBehaviour) into BepInEx global manager.
-    ///     Automatically registers the type with Il2Cpp type system if it isn't initialised already.
-    /// </summary>
-    /// <typeparam name="T">Type of the component to add.</typeparam>
-    public static T AddUnityComponent<T>() where T : Il2CppObjectBase => AddUnityComponent(typeof(T)).Cast<T>();
-
-    /// <summary>
-    ///     Register and add a Unity Component (for example MonoBehaviour) into BepInEx global manager.
-    ///     Automatically registers the type with Il2Cpp type system if it isn't initialised already.
-    /// </summary>
-    /// <param name="t">Type of the component to add</param>
-    public static Il2CppObjectBase AddUnityComponent(Type t) => Il2CppUtils.AddComponent(t);
+    
+    
 
     /// <summary>
     ///     Occurs after a plugin is instantiated and just before <see cref="BasePlugin.Load" /> is called.

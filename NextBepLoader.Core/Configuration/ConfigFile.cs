@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using NextBepLoader.Core.Contract.Attributes;
 using NextBepLoader.Core.Logging;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.Configuration;
 
@@ -13,8 +14,6 @@ namespace NextBepLoader.Core.Configuration;
 /// </summary>
 public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
 {
-
-
     /// <summary>
     ///     Create a new config file at the specified config path.
     /// </summary>
@@ -32,6 +31,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
             Reload();
         else if (saveOnInit) Save();
     }
+
 
     public static ConfigFile CoreConfig { get; } = new(Paths.CoreConfigFile, true);
 
@@ -288,7 +288,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
             }*/
 
             var allConfigEntries = Entries
-                                   .Select(x => new
+                                   .Select(x => new 
                                    {
                                        x.Key, entry = x.Value, value = x.Value.GetSerializedValue()
                                    })

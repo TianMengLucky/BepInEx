@@ -1,12 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using NextBepLoader.Core;
+using NextBepLoader.Core.LoaderInterface;
 
-namespace NextBepLoader.Deskstop;
+namespace NextBepLoader.Core;
 
 public class NextServiceManager : INextServiceManager
 {
     public List<IServiceProvider> Providers = [];
-    public static NextServiceManager Instance => DesktopLoader.Instance!.MainServices.GetService<NextServiceManager>()!;
+    public static NextServiceManager Instance => LoaderInstance.GetOrCreateManager<NextServiceManager>();
 
     public List<ServiceFastInfo> ServiceInfos = [];
 

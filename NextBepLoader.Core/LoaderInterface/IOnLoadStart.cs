@@ -1,4 +1,4 @@
-namespace NextBepLoader.Core;
+namespace NextBepLoader.Core.LoaderInterface;
 
 public interface IOnLoadStart
 {

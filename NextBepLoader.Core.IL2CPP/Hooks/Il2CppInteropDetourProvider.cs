@@ -4,7 +4,6 @@ using Il2CppInterop.Runtime.Injection;
 using MonoMod.Core;
 using MonoMod.Core.Platforms;
 using MonoMod.RuntimeDetour;
-using NextBepLoader.Core.IL2CPP.Hook;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;
 

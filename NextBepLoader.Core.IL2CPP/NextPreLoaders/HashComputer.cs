@@ -5,7 +5,9 @@ using System.Text;
 using Cpp2IL.Core;
 using Il2CppInterop.Generator.Runners;
 using Microsoft.Extensions.Logging;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 

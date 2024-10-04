@@ -2,6 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using Microsoft.Win32.SafeHandles;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Windows;
 
@@ -134,7 +135,7 @@ internal class WindowsConsoleDriver : IConsoleDriver
 
     private static Stream OpenFileStream(IntPtr handle)
     {
-        if (Core.CoreUtils.IsCore)
+        if (CoreUtils.IsCore)
         {
             var windowsConsoleStreamType = Type.GetType("System.ConsolePal+WindowsConsoleStream, System.Console", true);
             var constructor = AccessTools.Constructor(windowsConsoleStreamType,

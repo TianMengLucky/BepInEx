@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using MonoMod.Utils;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Utils;
 

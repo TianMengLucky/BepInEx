@@ -62,23 +62,21 @@ public static class NextPreLoaderExtension
         return true;
     }
 
-    public static List<BasePreLoader> SortLoaders(this List<BasePreLoader> preLoaders)
+    public static void SortLoaders(this List<BasePreLoader> preLoaders)
     {
-        preLoaders.Sort((x, y) => x.Priority.CompareTo(y.Priority));
         preLoaders.Sort((x, y) =>
         {
-            if (x.WaitLoadLoader.Length == 0)
-                return -2;
-
             if (x.WaitLoadLoader.Contains(y.GetType()))
-                return -1;
-            
-            if (y.WaitLoadLoader.Contains(x.GetType()))
-                return 1;
+                return x.Priority > y.Priority ? 2 : 1;
 
-            return 0;
+            if (!y.WaitLoadLoader.Contains(x.GetType())) 
+                return 0;
+            
+            if (x.Priority < y.Priority)
+                return -2;
+                
+            return -1;
         });
-        return preLoaders;
     }
 
     public static IServiceCollection AddStartRunner(this IServiceCollection collection) =>

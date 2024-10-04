@@ -6,6 +6,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Windows;
 

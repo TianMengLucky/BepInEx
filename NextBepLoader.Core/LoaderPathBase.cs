@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core;
 
@@ -94,6 +95,10 @@ public abstract class LoaderPathBase
     public string CPP2ILCacheDir { get; set; }
     
     public string CacheDataDir { get; set; }
+    
+    public string TempDir { get; set; }
+    
+    public string? SystemDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)
     { 
@@ -130,6 +135,7 @@ public abstract class LoaderPathBase
         GameAssemblyPath = SetPath(GameAssemblyPath, false, true, GameAssemblyName);
         CPP2ILCacheDir = SetPath(CPP2ILCacheDir, true, false, LoaderRootPath, "CacheCPP2IL");
         CacheDataDir = SetPath(CacheDataDir, true, false, LoaderRootPath, "CacheData");
+        TempDir = SetPath(TempDir, true, false, LoaderRootPath, "Temp");
 
         if (autoCheckCreate)
             CheckCreateDirectories();

@@ -7,10 +7,12 @@ using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.IL2CPP;
 using NextBepLoader.Core.IL2CPP.Logging;
 using NextBepLoader.Core.IL2CPP.NextPreLoaders;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
 using NextBepLoader.Core.PreLoader.RuntimeFixes;
+using NextBepLoader.Core.Utils;
 using NextBepLoader.Deskstop.Utils;
 
 namespace NextBepLoader.Deskstop;
@@ -24,18 +26,21 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 
     public override void Start()
     {
+        PlatformUtils.SetDesktopPlatformVersion();
+        HarmonyBackendFix.Initialize();
+        RedirectStdErrFix.Apply();
+        
         LoaderVersion = new Version();
         loaders = [
             typeof(ResolvePreLoad), 
             typeof(IL2CPPHooker), 
             typeof(IL2CPPPreLoader)
         ];
-        PlatformUtils.SetDesktopPlatformVersion();
+        
         MainServices = Collection
                        .AddSingleton<TaskFactory>()
                        .AddSingleton<IProviderManager, DesktopProviderManager>()
                        .AddSingleton<UnityInfo>()
-                       .AddActivatedSingleton<INextServiceManager, NextServiceManager>()
                        .AddOnStart<INextBepEnv, DesktopBepEnv>()
                        .AddOnStart<IPreLoaderManager, DesktopPreLoadManager>(loaders)
                        .AddStartRunner()
@@ -43,12 +48,6 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
                        .AddTraceLogSource()
                        .BuildServiceProvider();
 
-        MainServices
-            .GetService<NextServiceManager>()?
-            .Register(Collection, MainServices);
-        
-        
-        HarmonyBackendFix.Initialize();
-        RedirectStdErrFix.Apply();
+        ServiceManager.Register(Collection, MainServices);
     }
 }

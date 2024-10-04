@@ -1,5 +1,6 @@
 using MonoMod.Utils;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Utils;
 using NextBepLoader.Deskstop.Utils;
 
 namespace NextBepLoader.Deskstop;
@@ -21,6 +22,13 @@ public class DesktopPath : LoaderPathBase
         ManagedPath = EnvVars.DOORSTOP_MANAGED_FOLDER_DIR ?? string.Empty;
         DllSearchPaths = EnvVars.DOORSTOP_DLL_SEARCH_DIRS.Concat([ManagedPath]).Distinct().ToArray();
         LoaderAssemblyPath = typeof(DesktopPath).Assembly.Location;
+        
+        if (PlatformDetection.OS.Is(OSKind.Windows))
+        {
+            SystemDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                     nameof(NextBepLoader));
+            TempDir = Path.Combine(SystemDir, "Temp");
+        }
         base.InitPaths(autoCheckCreate);
     }
 }

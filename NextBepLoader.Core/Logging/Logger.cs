@@ -36,38 +36,48 @@ public static class Logger
 
     private static bool OnSourceEventList(NextEventListEventArgs<ILogSource> eventArgs)
     {
-        if (eventArgs.Type == ListEventType.Add)
-            eventArgs.Value!.LogEvent += InternalLogEvent;
-
-        if (eventArgs.Type == ListEventType.Clear)
-            foreach (var source in eventArgs.List)
-                source.LogEvent -= InternalLogEvent;
-
-        if (eventArgs.Type == ListEventType.Remove)
-            eventArgs.OnRemoved += args =>
+        switch (eventArgs.Type)
+        {
+            case ListEventType.Add:
+                eventArgs.Value!.LogEvent += InternalLogEvent;
+                break;
+            case ListEventType.Clear:
             {
-                args.Value!.LogEvent -= InternalLogEvent;
-            };
-        
+                foreach (var source in eventArgs.List)
+                    source.LogEvent -= InternalLogEvent;
+                break;
+            }
+            case ListEventType.Remove:
+                eventArgs.OnRemoved += args =>
+                {
+                    args.Value!.LogEvent -= InternalLogEvent;
+                };
+                break;
+        }
+
         return NoNotify(eventArgs);
     }
     private static bool OnListenerEventList(NextEventListEventArgs<ILogListener> eventArgs)
     {
-        if (eventArgs.Type == ListEventType.Add)
-            ListenedLogLevels |= eventArgs.Value!.LogLevelFilter;
-
-        if (eventArgs.Type == ListEventType.Clear)
-            ListenedLogLevels = LogLevel.None;
-
-        if (eventArgs.Type == ListEventType.Remove)
-            eventArgs.OnRemoved += args =>
-            {
-                if (!args.Remove) return;
+        switch (eventArgs.Type)
+        {
+            case ListEventType.Add:
+                ListenedLogLevels |= eventArgs.Value!.LogLevelFilter;
+                break;
+            case ListEventType.Clear:
                 ListenedLogLevels = LogLevel.None;
-                foreach (var listener in eventArgs.List)
-                    ListenedLogLevels |= listener.LogLevelFilter;
-            };
-        
+                break;
+            case ListEventType.Remove:
+                eventArgs.OnRemoved += args =>
+                {
+                    if (!args.Remove) return;
+                    ListenedLogLevels = LogLevel.None;
+                    foreach (var listener in eventArgs.List)
+                        ListenedLogLevels |= listener.LogLevelFilter;
+                };
+                break;
+        }
+
         return NoNotify(eventArgs);
     }
     
@@ -114,6 +124,78 @@ public static class Logger
                              [InterpolatedStringHandlerArgument("level")]
                              BepInExLogInterpolatedStringHandler logHandler) =>
         MainLogSource.Log(level, logHandler);
+
+        /// <summary>
+    ///     Logs a message with <see cref="LogLevel.Fatal" /> level.
+    /// </summary>
+    /// <param name="data">Data to log.</param>
+    public static void LogFatal(object data) => Log(LogLevel.Fatal, data);
+
+    /// <summary>
+    ///     Logs an interpolated string with <see cref="LogLevel.Fatal" /> level.
+    /// </summary>
+    /// <param name="logHandler">Handler for the interpolated string.</param>
+    public static void LogFatal(BepInExFatalLogInterpolatedStringHandler logHandler) => Log(LogLevel.Fatal, logHandler);
+
+    /// <summary>
+    ///     Logs a message with <see cref="LogLevel.Error" /> level.
+    /// </summary>
+    /// <param name="data">Data to log.</param>
+    public static void LogError(object data) => Log(LogLevel.Error, data);
+
+    /// <summary>
+    ///     Logs an interpolated string with <see cref="LogLevel.Error" /> level.
+    /// </summary>
+    /// <param name="logHandler">Handler for the interpolated string.</param>
+    public static void LogError(BepInExErrorLogInterpolatedStringHandler logHandler) => Log(LogLevel.Error, logHandler);
+
+    /// <summary>
+    ///     Logs a message with <see cref="LogLevel.Warning" /> level.
+    /// </summary>
+    /// <param name="data">Data to log.</param>
+    public static void LogWarning(object data) => Log(LogLevel.Warning, data);
+
+    /// <summary>
+    ///     Logs an interpolated string with <see cref="LogLevel.Warning" /> level.
+    /// </summary>
+    /// <param name="logHandler">Handler for the interpolated string.</param>
+    public static void LogWarning(BepInExWarningLogInterpolatedStringHandler logHandler) => Log(LogLevel.Warning, logHandler);
+
+    /// <summary>
+    ///     Logs a message with <see cref="LogLevel.Message" /> level.
+    /// </summary>
+    /// <param name="data">Data to log.</param>
+    public static void LogMessage(object data) => Log(LogLevel.Message, data);
+
+    /// <summary>
+    ///     Logs an interpolated string with <see cref="LogLevel.Message" /> level.
+    /// </summary>
+    /// <param name="logHandler">Handler for the interpolated string.</param>
+    public static void LogMessage(BepInExMessageLogInterpolatedStringHandler logHandler) => Log(LogLevel.Message, logHandler);
+
+    /// <summary>
+    ///     Logs a message with <see cref="LogLevel.Info" /> level.
+    /// </summary>
+    /// <param name="data">Data to log.</param>
+    public static void LogInfo(object data) => Log(LogLevel.Info, data);
+
+    /// <summary>
+    ///     Logs an interpolated string with <see cref="LogLevel.Info" /> level.
+    /// </summary>
+    /// <param name="logHandler">Handler for the interpolated string.</param>
+    public static void LogInfo(BepInExInfoLogInterpolatedStringHandler logHandler) => Log(LogLevel.Info, logHandler);
+
+    /// <summary>
+    ///     Logs a message with <see cref="LogLevel.Debug" /> level.
+    /// </summary>
+    /// <param name="data">Data to log.</param>
+    public static void LogDebug(object data) => Log(LogLevel.Debug, data);
+
+    /// <summary>
+    ///     Logs an interpolated string with <see cref="LogLevel.Debug" /> level.
+    /// </summary>
+    /// <param name="logHandler">Handler for the interpolated string.</param>
+    public static void LogDebug(BepInExDebugLogInterpolatedStringHandler logHandler) => Log(LogLevel.Debug, logHandler);
 
     /// <summary>
     ///     Creates a new log source with a name and attaches it to <see cref="Sources" />.

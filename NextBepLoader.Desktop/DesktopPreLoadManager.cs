@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
 
@@ -17,8 +18,8 @@ public class DesktopPreLoadManager(IServiceProvider provider, List<Type> loaderT
                 PreLoaders.Add(basePreLoader);
             }
         }
-
-        PreLoaders.Sort();
+        
+        PreLoaders.SortLoaders();
         factory.StartNew(LoadPreLoad);
     }
 

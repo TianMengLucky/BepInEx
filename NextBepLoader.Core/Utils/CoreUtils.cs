@@ -1,14 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using HarmonyLib;
 using Microsoft.Extensions.DependencyInjection;
 using MonoMod.Utils;
+using NextBepLoader.Core.LoaderInterface;
 
-namespace NextBepLoader.Core;
+namespace NextBepLoader.Core.Utils;
 
 public static class CoreUtils
 {
@@ -103,5 +107,29 @@ public static class CoreUtils
         int read;
         while ((read = fs.Read(buffer)) > 0)
             hash.TransformBlock(buffer, 0, read, buffer, 0);
+    }
+
+    public static T GetOrCreate<T>(this List<T> list, Func<T, bool> predicate, Func<T> create) where T : class
+    {
+        var item = list.FirstOrDefault(predicate);
+        if (item is not null) return item;
+        item = create();
+        list.Add(item);
+
+        return item;        
+    }
+
+    public static bool GetAndSet<T>(this List<T> list, Func<T, bool> predicate, Action<T> set)
+    {
+        var item = list.FirstOrDefault(predicate);
+        if (item is null) return false;
+        set(item);
+        return true;
+    }
+
+    public static bool TryGet<T>(this List<T> list, Func<T, bool> predicate,[MaybeNullWhen(false)] out T item) where T : class
+    {
+        item = list.FirstOrDefault(predicate);
+        return item is not null;
     }
 }

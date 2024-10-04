@@ -2,6 +2,7 @@
 
 using System.Text;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Unix;
 

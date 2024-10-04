@@ -1,5 +1,4 @@
 using System;
-using NextBepLoader.Core.IL2CPP.Hook;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 

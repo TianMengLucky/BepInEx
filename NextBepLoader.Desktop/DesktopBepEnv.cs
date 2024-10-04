@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using NextBepLoader.Core;
+using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Deskstop;
 

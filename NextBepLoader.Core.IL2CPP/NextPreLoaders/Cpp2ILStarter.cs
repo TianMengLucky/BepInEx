@@ -10,7 +10,9 @@ using Cpp2IL.Core.ProcessingLayers;
 using LibCpp2IL;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.IL2CPP.Utils;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 

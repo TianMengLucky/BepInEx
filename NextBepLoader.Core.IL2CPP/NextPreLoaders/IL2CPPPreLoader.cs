@@ -9,6 +9,7 @@ using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.IL2CPP.Hooks;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;

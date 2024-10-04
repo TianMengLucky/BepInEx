@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Core.PreLoader;
 

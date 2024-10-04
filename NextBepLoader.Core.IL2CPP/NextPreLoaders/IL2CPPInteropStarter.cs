@@ -8,7 +8,9 @@ using Il2CppInterop.HarmonySupport;
 using Il2CppInterop.Runtime.Startup;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.IL2CPP.Hooks;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 

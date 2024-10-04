@@ -1,4 +1,5 @@
 using NextBepLoader.Core.Contract;
+using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Core.PreLoader;
 

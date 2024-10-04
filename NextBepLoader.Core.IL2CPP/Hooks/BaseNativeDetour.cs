@@ -2,7 +2,7 @@ using System;
 using MonoMod.Core;
 using NextBepLoader.Core.Logging;
 
-namespace NextBepLoader.Core.IL2CPP.Hook;
+namespace NextBepLoader.Core.IL2CPP.Hooks;
 
 internal abstract class BaseNativeDetour<T>(IntPtr originalMethodPtr, IntPtr detourMethod) : ICoreNativeDetour
     where T : BaseNativeDetour<T>

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using MonoMod.Utils;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Utils;
 using NextBepLoader.Deskstop;
 using NextBepLoader.Deskstop.Utils;
 

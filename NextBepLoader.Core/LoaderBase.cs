@@ -1,5 +1,6 @@
 using System;
 using NextBepLoader.Core.Contract;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core;
@@ -21,6 +22,8 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
     public IServiceProvider MainServices { get; set; }
 
     public Action<IServiceProvider>? OnServiceBuilt { get; set; }
+    
+
 
     public abstract void Start();
     

@@ -26,13 +26,7 @@ public class ConfigDefinition : IEquatable<ConfigDefinition>
         Section = section;
     }
 
-    /// <inheritdoc />
-    [Obsolete("description argument is no longer used, put it in a ConfigDescription instead")]
-    public ConfigDefinition(string section, string key, string description)
-    {
-        Key = key ?? "";
-        Section = section ?? "";
-    }
+
 
     /// <summary>
     ///     Group of the setting. All settings within a config file are grouped by this.
@@ -94,7 +88,7 @@ public class ConfigDefinition : IEquatable<ConfigDefinition>
     /// <summary>
     ///     Check if the definitions are the same.
     /// </summary>
-    public static bool operator ==(ConfigDefinition? left, ConfigDefinition right) => Equals(left, right);
+    public static bool operator ==(ConfigDefinition? left, ConfigDefinition? right) => Equals(left, right);
 
     /// <summary>
     ///     Check if the definitions are the same.

@@ -1,3 +1,4 @@
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;
