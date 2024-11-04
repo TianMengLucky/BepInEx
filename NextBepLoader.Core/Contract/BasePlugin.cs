@@ -6,9 +6,6 @@ namespace NextBepLoader.Core.Contract;
 
 public abstract class BasePlugin : INextPlugin
 {
-    public virtual PluginDependency[] Dependencies { get; set; } = [];
-    
-    public virtual PluginProcess Process { get; set; }
     public virtual PluginMetadata? Metadata { get; set; } = null;
     
     protected BasePlugin()
@@ -18,6 +15,11 @@ public abstract class BasePlugin : INextPlugin
     public ManualLogSource Log { get; }
 
     public ConfigFile Config { get; }
+
+    internal void SetMetadata(PluginMetadata metadata)
+    {
+        Metadata = metadata;
+    }
 
     public abstract void Load();
 

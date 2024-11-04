@@ -35,7 +35,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     ];
     
     
-    private static DotNetLoader dotNetLoader = new()
+    private static readonly DotNetLoader dotNetLoader = new()
     {
         AssemblyFilter = AssemblyFilter
     };

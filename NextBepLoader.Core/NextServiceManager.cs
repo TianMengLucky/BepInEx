@@ -26,6 +26,11 @@ public class NextServiceManager : INextServiceManager
         set;
     }
 
+    public ServiceFastInfo? GetServiceInfo(string id)
+    {
+        return ServiceInfos.FirstOrDefault(n => n.Collection.ServiceId == id);
+    }
+
 
     public NextServiceManager Register(NextServiceCollection collection, IServiceProvider? provider = null)
     {
