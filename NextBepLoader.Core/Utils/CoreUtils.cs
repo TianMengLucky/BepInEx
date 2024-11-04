@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using AsmResolver.DotNet;
 using HarmonyLib;
 using Microsoft.Extensions.DependencyInjection;
 using MonoMod.Utils;
@@ -132,4 +133,29 @@ public static class CoreUtils
         item = list.FirstOrDefault(predicate);
         return item is not null;
     }
+
+    public static bool HasBase<T>(this Type type) => type.HasBase(typeof(T));
+
+    public static bool HasBase(this Type type, Type baseType)
+    {
+        if (type.BaseType == null) return false;
+        
+        return 
+            type.BaseType == baseType 
+            || 
+            type.BaseType.HasBase(baseType);
+    }
+    
+    public static bool HasBase<T>(this TypeDefinition type) => type.HasBase(typeof(T));
+
+    public static bool HasBase(this TypeDefinition? type, Type baseType)
+    {
+        if (type?.BaseType == null) return false;
+        
+        return 
+            type.BaseType.FullName == baseType.FullName 
+         || 
+            type.BaseType.Resolve().HasBase(baseType);
+    }
+
 }

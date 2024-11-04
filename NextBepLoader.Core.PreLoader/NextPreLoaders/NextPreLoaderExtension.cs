@@ -30,7 +30,7 @@ public static class NextPreLoaderExtension
                 continue;
             }
 
-            var instance = (BasePreLoader)Activator.CreateInstance(findType);
+            var instance = (BasePreLoader)Activator.CreateInstance(findType)!;
             Cache.Add(instance);
             findList.Add(instance);
         }

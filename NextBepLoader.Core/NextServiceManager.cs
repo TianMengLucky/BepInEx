@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Core;
@@ -9,38 +10,52 @@ namespace NextBepLoader.Core;
 public class NextServiceManager : INextServiceManager
 {
     public List<IServiceProvider> Providers = [];
-    public static NextServiceManager Instance => LoaderInstance.GetOrCreateManager<NextServiceManager>();
+    public static NextServiceManager Instance => NextServiceManagerExtension.CreateOrGet();
 
     public List<ServiceFastInfo> ServiceInfos = [];
 
     public IServiceProvider MainProvider
+    {
+        get => MainFastInfo.Provider ?? MainFastInfo.Collection.BuildOrCreateProvider();
+        set => MainFastInfo.Provider = value;
+    }
+
+    public ServiceFastInfo MainFastInfo
     {
         get;
         set;
     }
 
 
-    public NextServiceManager Register(IServiceCollection collection, IServiceProvider? provider = null)
+    public NextServiceManager Register(NextServiceCollection collection, IServiceProvider? provider = null)
     {
-        ServiceInfos.Add(new ServiceFastInfo
+        if (ServiceInfos.Exists(n => n.Id == collection.ServiceId)) return this;
+        var info = new ServiceFastInfo
         {
             Collection = collection,
             Provider = provider,
             Types = collection.Where(x => x.Lifetime == ServiceLifetime.Singleton).Select(x => x.ServiceType).ToList()
-        });
+        };
+        ServiceInfos.Add(info);
+        if (collection.ServiceId == "Main")
+            MainFastInfo = info;
         return this;
     }
-    
-    public IServiceCollection CreateService(string id)
-    {
-        return new ServiceCollection();
-    }
-    
 
-    public T GetService<T>(string id)
+    public NextServiceCollection CreateMainCollection()
     {
-        throw new NotImplementedException();
+        return CreateService("Main");
     }
+    
+    public NextServiceCollection CreateService(string id)
+    {
+        return new NextServiceCollection
+        {
+            ServiceId = id
+        }.AddNextServiceManager();
+    }
+    
+    
 
     public T GetServiceFormAll<T>()
     {
@@ -62,23 +77,58 @@ public static class NextServiceManagerExtension
 {
     public static NextServiceManager CreateOrGet() => LoaderInstance.GetOrCreateManager<NextServiceManager>();
     
-    public static IServiceCollection AddNextServiceManager(this IServiceCollection services)
+    public static NextServiceCollection AddNextServiceManager(this NextServiceCollection services)
     {
         var manager = CreateOrGet();
         manager.Register(services);
- 
         services.AddSingleton<INextServiceManager>(manager);
         return services;
     }    
 }
 
-public class NextServiceCollection : ServiceCollection, IServiceCollection
+public class NextServiceCollection : ServiceCollection
 {
+    public string ServiceId { get; set; }
+
+    private NextServiceProvider? Provider { get; set; }
+    public ServiceFastInfo? FastInfo { get; set; }
+
+    public NextServiceCollection Copy(IServiceCollection collection, IServiceProvider provider)
+    {
+        foreach (var service in collection.Where(n => n.Lifetime == ServiceLifetime.Singleton && !n.IsKeyedService))
+        {
+            if (Contains(service)) continue;
+            this.AddSingleton(service.ServiceType, provider.GetService(service.ServiceType));
+        }
+
+        return this;
+    }
+
+    public NextServiceProvider BuildOrCreateProvider()
+    {
+        if (FastInfo?.Provider != null)
+            return (NextServiceProvider)FastInfo.Provider;
+        
+        if (Provider != null)
+            return Provider;
+        
+        Provider = new NextServiceProvider(this.BuildServiceProvider(), this);
+        NextServiceManager.Instance.Register(this, Provider);
+        if (FastInfo != null)
+            FastInfo.Provider = Provider;
+        return Provider;
+    }
 }
 
-public class NextServiceProvider : IServiceProvider
+public class NextServiceProvider(IServiceProvider baseProvider, NextServiceCollection collection) : IServiceProvider
 {
-    public object? GetService(Type serviceType) => throw new NotImplementedException();
+    public IServiceProvider _Provider { get; set; } = baseProvider;
+    public NextServiceCollection Collection { get; set; } = collection;
+
+    public object? GetService(Type serviceType)
+    {
+        return _Provider.GetService(serviceType);
+    }
 }
 
 public class NextServiceDescriptor : ServiceDescriptor
@@ -112,16 +162,18 @@ public class ServiceFastInfo
 {
     public List<Type> Types = [];
     public IServiceProvider? Provider;
-    public IServiceCollection Collection;
+    public NextServiceCollection Collection;
 
-    public IServiceCollection CreateCollection()
+    public string Id => Collection.ServiceId;
+
+    public NextServiceCollection CreateCollection()
     {
-        return Collection =  new NextServiceCollection();
+        return Collection = [];
     }
     
     public void Copy(ServiceFastInfo info)
     {
-        var collection = new ServiceCollection();
+        var collection = new NextServiceCollection();
 
         foreach (var type in Types)
         {

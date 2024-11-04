@@ -39,6 +39,11 @@ public abstract class BaseTypeLoader<TLoader, TType, TAssembly> where TAssembly 
         return (TLoader)this;
     }
 
+    public virtual TLoader AddAssembliesFormDirector(string path)
+    {
+        return AddAssembliesFormDirector(new DirectoryInfo(path));
+    }
+
     public virtual TLoader LoadTypes()
     {
         foreach (var assembly in Assemblies.Where(n => AssemblyFilter?.Invoke(n) ?? true))

@@ -2,14 +2,16 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MonoMod.RuntimeDetour;
+using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.IL2CPP.Logging;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.Utils;
 using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger) : BasePreLoader
+public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManager providerManager) : BasePreLoader
 {
     internal NativeHook RuntimeInvokeDetour { get; set; }
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
@@ -17,9 +19,9 @@ public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger) : BasePreLoader
 
     public override void PreLoad(PreLoadEventArg arg)
     {
-        OnActiveSceneChanged += hooker =>
+        OnActiveSceneChanged += _ =>
         {
-            
+            providerManager.OnGameActive();
         };
     }
 

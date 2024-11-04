@@ -8,9 +8,9 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AsmResolver.DotNet" Version="6.0.0-beta.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All"/>
         <PackageReference Include="HarmonyX" Version="2.13.0"/>
         <PackageReference Include="SemanticVersioning" Version="3.0.0-beta2"/>

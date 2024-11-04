@@ -11,6 +11,14 @@ namespace NextBepLoader.Core.PreLoader.NextPreLoaders;
 public class ResolvePreLoad : BasePreLoader
 {
     public List<Assembly> ResolvedAssemblies { get; set; } = [];
+    public static readonly IReadOnlyList<string> TargetDirectors = 
+        [
+            Paths.CoreAssemblyPath,
+            Paths.IL2CPPInteropAssemblyDirectory,
+            Paths.UnityBaseDirectory,
+            Paths.DependencyDirectory,
+            Paths.PluginPath
+        ];
     public override PreLoadPriority Priority => PreLoadPriority.VeryLast;
 
     public override void Start()
@@ -28,26 +36,19 @@ public class ResolvePreLoad : BasePreLoader
     internal static Assembly? LocalResolve(object? sender, ResolveEventArgs args)
     {
         var assemblyName = new AssemblyName(args.Name);
-
         var foundAssembly = AppDomain.CurrentDomain.GetAssemblies()
                                      .FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
 
         if (foundAssembly != null)
             return foundAssembly;
 
-
-        if (
-            Utility.TryResolveDllAssembly(assemblyName, Paths.CoreAssemblyPath, out foundAssembly)
-          ||
-            Utility.TryResolveDllAssembly(assemblyName, Paths.PluginPath, out foundAssembly)
-          ||
-            Utility.TryResolveDllAssembly(assemblyName, Paths.DependencyDirectory, out foundAssembly)
-          ||
-            Utility.TryResolveDllAssembly(assemblyName, Paths.IL2CPPInteropAssemblyDirectory, out foundAssembly)
-          ||
-            Utility.TryResolveDllAssembly(assemblyName, Paths.UnityBaseDirectory, out foundAssembly)
-        )
-            return foundAssembly;
+        foreach (var dir in TargetDirectors)
+        {
+            if (Utility.TryResolveDllAssembly(assemblyName, dir, out var assembly))
+            {
+                return assembly;
+            }
+        }
 
         return null;
     }

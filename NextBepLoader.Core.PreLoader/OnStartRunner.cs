@@ -1,17 +1,20 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Core.PreLoader;
 
-public class OnStartRunner
+internal class OnStartRunner
 {
-    public OnStartRunner(IServiceProvider provider) => Run(provider);
+    internal OnStartRunner(IServiceProvider provider) => Run(provider);
 
-    public static void Run(IServiceProvider provider)
+    private static void Run(IServiceProvider provider)
     {
-        foreach (var start  in provider.GetServices<IOnLoadStart>())
+        var allStart = provider.GetServices<IOnLoadStart>().ToList();
+        allStart.Sort((x, y) => x.Priority.CompareTo(y.Priority));
+        foreach (var start in allStart)
             start.OnLoadStart();
     }
 }
