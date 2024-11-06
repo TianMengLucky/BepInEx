@@ -16,8 +16,8 @@ public sealed class ConfigEntry<T> : ConfigEntryBase
     internal ConfigEntry(ConfigFile configFile,
                          ConfigDefinition definition,
                          T defaultValue,
-                         ConfigDescription configDescription) : base(configFile, definition, typeof(T),
-                                                                     defaultValue, configDescription)
+                         ConfigDescription? configDescription) : base(configFile, definition, typeof(T),
+                                                                      defaultValue, configDescription)
     {
         configFile.SettingChanged += (sender, args) =>
         {
@@ -68,7 +68,7 @@ public abstract class ConfigEntryBase
                                        ConfigDefinition definition,
                                        Type settingType,
                                        object defaultValue,
-                                       ConfigDescription configDescription)
+                                       ConfigDescription? configDescription)
     {
         ConfigFile = configFile ?? throw new ArgumentNullException(nameof(configFile));
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));

@@ -18,20 +18,20 @@ public class UnityBasePreDownloader(
 {
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
 
-    private static readonly ConfigEntry<string> UnityBaseLibrariesSource = ConfigFile.CoreConfig.Bind(
+    /*private static readonly ConfigEntry<string> UnityBaseLibrariesSource = ConfigFile.CoreConfig.Bind(
                                                                                                       "IL2CPP", "UnityBaseLibrariesSource",
                                                                                                       "https://unity.bepinex.dev/libraries/{VERSION}.zip",
                                                                                                       new StringBuilder()
                                                                                                           .AppendLine("URL to the ZIP of managed Unity base libraries.")
                                                                                                           .AppendLine("The base libraries are used by Il2CppInterop to generate interop assemblies.")
                                                                                                           .AppendLine("The URL can include {VERSION} template which will be replaced with the game's Unity engine version.")
-                                                                                                          .ToString());
+                                                                                                          .ToString());*/
     
     public override async void PreLoad(PreLoadEventArg arg)
     {
         if (!env.GetOrCreateEventArgs<IL2CPPCheckEventArg>().DownloadUnityBaseLib) return;
         var unityVersion = unityInfo.GetVersion();
-        var source = UnityBaseLibrariesSource.Value.Replace("{VERSION}", $"{unityVersion.Major}.{unityVersion.Minor}.{unityVersion.Build}");
+        var source = "https://unity.bepinex.dev/libraries/{VERSION}.zip".Replace("{VERSION}", $"{unityVersion.Major}.{unityVersion.Minor}.{unityVersion.Build}");
         logger.LogInformation("Unity Base Lib Download Source: {source}", source);
 
         if (string.IsNullOrEmpty(source)) return;

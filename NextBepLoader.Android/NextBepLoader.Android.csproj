@@ -8,6 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../NextBepLoader.Core/NextBepLoader.Core.csproj"/>
+        <ProjectReference Include="../Core/NextBepLoader.Core/NextBepLoader.Core.csproj"/>
     </ItemGroup>
 </Project>

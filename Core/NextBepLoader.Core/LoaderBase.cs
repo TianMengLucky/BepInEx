@@ -26,8 +26,8 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
 
 
     public abstract void Start();
-    
-    internal static bool TryCreateLoader(bool start = true)
+
+    internal static bool TryCreateLoader(out string? message, bool start = true)
     {
         try
         {
@@ -35,13 +35,19 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
             if (start) 
                 Instance.Start();
         }
-        catch
+        catch (Exception e)
         {
-            // ignored
+            message = e.ToString();
             return false;
         }
 
+        message = null;
         return true;
+    }
+    
+    internal static bool TryCreateLoader(bool start = true)
+    {
+        return TryCreateLoader(out var _, start);
     }
 }
 

@@ -33,7 +33,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     }
 
 
-    public static ConfigFile CoreConfig { get; } = new(Paths.CoreConfigFile, true);
+    /*public static ConfigFile CoreConfig { get; } = new(Paths.CoreConfigFile, true);*/
 
     /// <summary>
     ///     All config entries inside
@@ -369,7 +369,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <param name="configDescription">Description of the setting shown to the user and other metadata.</param>
     public ConfigEntry<T> Bind<T>(ConfigDefinition configDefinition,
                                   T defaultValue,
-                                  ConfigDescription configDescription = null)
+                                  ConfigDescription? configDescription = null)
     {
         if (!TomlTypeConverter.CanConvert(typeof(T)))
             throw new
@@ -410,7 +410,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     public ConfigEntry<T> Bind<T>(string section,
                                   string key,
                                   T defaultValue,
-                                  ConfigDescription configDescription = null) =>
+                                  ConfigDescription? configDescription = null) =>
         Bind(new ConfigDefinition(section, key), defaultValue, configDescription);
 
     /// <summary>

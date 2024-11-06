@@ -6,13 +6,15 @@ namespace NextBepLoader.Core.PreLoader.RuntimeFixes;
 
 public static class HarmonyBackendFix
 {
+    /*
     private static readonly ConfigEntry<MonoModBackend> ConfigHarmonyBackend = ConfigFile.CoreConfig.Bind(
          "Preloader",
          "HarmonyBackend",
          MonoModBackend.auto,
          "Specifies which MonoMod backend to use for Harmony patches. Auto uses the best available backend.\nThis setting should only be used for development purposes (e.g. debugging in dnSpy). Other code might override this setting.");
+         */
 
-    public static void Initialize()
+    /*public static void Initialize()
     {
         switch (ConfigHarmonyBackend.Value)
         {
@@ -43,5 +45,5 @@ public static class HarmonyBackendFix
 
         [Description("Cecil")]
         cecil
-    }
+    }*/
 }

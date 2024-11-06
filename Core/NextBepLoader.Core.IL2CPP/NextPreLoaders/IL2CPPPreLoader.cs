@@ -19,14 +19,14 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
     public override PreLoadPriority Priority => PreLoadPriority.VeryLast;
     public IL2CPPCheckEventArg _IL2CPPCheckEventArg;
     
-    private static readonly ConfigEntry<bool> UpdateInteropAssemblies =
+    /*private static readonly ConfigEntry<bool> UpdateInteropAssemblies =
         ConfigFile.CoreConfig.Bind("IL2CPP",
                                    "UpdateInteropAssemblies",
                                    true,
                                    new StringBuilder()
                                        .AppendLine("Whether to run Il2CppInterop automatically to generate Il2Cpp support assemblies when they are outdated.")
                                        .AppendLine("If disabled assemblies in `BepInEx/interop` won't be updated between game or BepInEx updates!")
-                                       .ToString());
+                                       .ToString());*/
 
     public static readonly string UnityBaseVersionPath = Path.Combine(Paths.CacheDataDir, "unity_base.ver");
 
@@ -47,7 +47,7 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
                 logger.LogWarning("Your wine version doesn't support CoreCLR properly, expect crashes! Upgrade to wine 7.16 or higher.");
         
         _IL2CPPCheckEventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
-        _IL2CPPCheckEventArg.UpdateIL2CPPInteropAssembly = UpdateInteropAssemblies.Value;
+        _IL2CPPCheckEventArg.UpdateIL2CPPInteropAssembly = true;
 
         if (!File.Exists(UnityBaseVersionPath) || Version.Parse(File.ReadAllText(UnityBaseVersionPath)) != unityInfo)
             _IL2CPPCheckEventArg.DownloadUnityBaseLib = true;

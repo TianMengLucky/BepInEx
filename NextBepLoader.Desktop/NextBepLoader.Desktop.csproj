@@ -12,8 +12,8 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
         
-        <ProjectReference Include="..\NextBepLoader.Core\NextBepLoader.Core.csproj"/>
-        <ProjectReference Include="..\NextBepLoader.Core.PreLoader\NextBepLoader.Core.PreLoader.csproj"/>
-        <ProjectReference Include="..\NextBepLoader.Core.IL2CPP\NextBepLoader.Core.IL2CPP.csproj"/>
+        <ProjectReference Include="..\Core\NextBepLoader.Core\NextBepLoader.Core.csproj"/>
+        <ProjectReference Include="..\Core\NextBepLoader.Core.PreLoader\NextBepLoader.Core.PreLoader.csproj"/>
+        <ProjectReference Include="..\Core\NextBepLoader.Core.IL2CPP\NextBepLoader.Core.IL2CPP.csproj"/>
     </ItemGroup>
 </Project>

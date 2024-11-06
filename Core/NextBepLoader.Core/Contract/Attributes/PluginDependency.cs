@@ -70,7 +70,7 @@ public class PluginDependency : Attribute/*, ICacheable*/
     /// <summary>
     ///     The version <see cref="SemVer.Range">range</see> of the referenced plugin.
     /// </summary>
-    public Range VersionRange { get; protected set; }
+    public Range? VersionRange { get; protected set; }
 
     /*void ICacheable.Save(BinaryWriter bw)
     {

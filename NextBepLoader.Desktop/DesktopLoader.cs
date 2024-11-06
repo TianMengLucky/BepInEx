@@ -35,7 +35,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     ];
     
     
-    private static readonly DotNetLoader dotNetLoader = new()
+    private static readonly DotNetLoader DotNetLoader = new()
     {
         AssemblyFilter = AssemblyFilter
     };
@@ -57,11 +57,13 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     public override void Start()
     {
         PlatformUtils.SetDesktopPlatformVersion();
-        HarmonyBackendFix.Initialize();
+        /*HarmonyBackendFix.Initialize();*/
         RedirectStdErrFix.Apply();
         
-        LoaderVersion = new Version();
-        dotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
+        LoaderVersion = new Version(1, 0, 0);
+        Paths.InitPaths(true);
+        
+        DotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
         Type[] loaders = [
             typeof(ResolvePreLoad),
             typeof(Cpp2ILStarter),
@@ -80,7 +82,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     {
         var collection = NextServiceManager.Instance.CreateMainCollection();
         collection
-            .AddSingleton(dotNetLoader)
+            .AddSingleton(DotNetLoader)
             .AddSingleton(loader)
             .AddSingleton<TaskFactory>()
             .AddSingleton<IProviderManager, DesktopProviderManager>()

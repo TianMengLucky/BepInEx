@@ -7,7 +7,7 @@ namespace NextBepLoader.Deskstop;
 
 public class DesktopBepEnv : INextBepEnv, IOnLoadStart
 {
-    private Action<DesktopBepEnv> OnExited;
+    private Action<DesktopBepEnv> OnExited = env => {};
     private Dictionary<string, string> SystemEnvs = new();
     private Dictionary<Type, object> Actions = new();
 
@@ -41,5 +41,7 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
         foreach (var (variable, value) in SystemEnvs)
             Environment.SetEnvironmentVariable(variable, null);
         SystemEnvs.Clear();
+        
+        OnExited?.Invoke(this);
     }
 }

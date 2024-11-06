@@ -6,24 +6,25 @@ namespace NextBepLoader.Deskstop.Console.Unix;
 
 internal class LinuxConsoleDriver : IConsoleDriver
 {
-    private static readonly ConfigEntry<bool> ForceCustomTtyDriverConfig =
+    /*private static readonly ConfigEntry<bool> ForceCustomTtyDriverConfig =
         ConfigFile.CoreConfig.Bind(
                                    "Logging.Console",
                                    "ForceBepInExTTYDriver",
                                    false,
                                    "If enabled, forces to use custom BepInEx TTY driver for handling terminal output on unix.");
+                                   */
 
     static LinuxConsoleDriver()
     {
         UseMonoTtyDriver = false;
 
-        if (ForceCustomTtyDriverConfig.Value)
+        /*if (ForceCustomTtyDriverConfig.Value)
             return;
 
         var consoleDriverType = typeof(System.Console).Assembly.GetType("System.ConsoleDriver");
 
         if (consoleDriverType != null)
-            UseMonoTtyDriver = typeof(System.Console).Assembly.GetType("System.ParameterizedStrings") != null;
+            UseMonoTtyDriver = typeof(System.Console).Assembly.GetType("System.ParameterizedStrings") != null;*/
     }
 
     public static bool UseMonoTtyDriver { get; }

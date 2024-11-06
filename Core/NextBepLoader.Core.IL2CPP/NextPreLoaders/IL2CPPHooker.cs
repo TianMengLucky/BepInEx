@@ -36,10 +36,10 @@ public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManager 
 
     public bool TryGetHandle(out nint handle)
     {
-        if (NativeLibrary.TryLoad(CoreUtils.PlatformGameAssemblyName, typeof(IL2CPPChainloader).Assembly, null, out handle)) 
+        if (NativeLibrary.TryLoad(CoreUtils.PlatformGameAssemblyName, typeof(IL2CPPHooker).Assembly, null, out handle)) 
             return true;
         
-        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPChainloader).Assembly, null, out handle)) 
+        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPHooker).Assembly, null, out handle)) 
             return true;
         
         logger.LogError("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so)." +

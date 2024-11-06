@@ -8,11 +8,13 @@ namespace NextBepLoader.Core.IL2CPP.Logging;
 
 public class HarmonyLogSource : ILogSource
 {
+    /*
     private static readonly ConfigEntry<HarmonyLogger.LogChannel> LogChannels = ConfigFile.CoreConfig.Bind(
          "Harmony.Logger",
          "LogChannels",
          HarmonyLogger.LogChannel.Warn | HarmonyLogger.LogChannel.Error,
          "Specifies which Harmony log channels to listen to.\nNOTE: IL channel dumps the whole patch methods, use only when needed!");
+         */
 
     private static readonly Dictionary<HarmonyLogger.LogChannel, LogLevel> LevelMap = new()
     {
@@ -24,7 +26,7 @@ public class HarmonyLogSource : ILogSource
 
     public HarmonyLogSource()
     {
-        HarmonyLogger.ChannelFilter = LogChannels.Value;
+        HarmonyLogger.ChannelFilter = HarmonyLogger.LogChannel.Warn | HarmonyLogger.LogChannel.Error;
         HarmonyLogger.MessageReceived += HandleHarmonyMessage;
     }
 
