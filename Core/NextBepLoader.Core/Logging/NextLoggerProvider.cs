@@ -14,8 +14,13 @@ public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
         loggers.Clear();
     }
 
-    public MicrosoftLogging.ILogger CreateLogger(string categoryName) => new NextLogger(categoryName);
-    
+    public MicrosoftLogging.ILogger CreateLogger(string categoryName)
+    {
+        var logger = new NextLogger(categoryName);
+        logger.Register();
+        return logger;
+    }
+
     public class NextLogger(string name) : ILogSource, MicrosoftLogging.ILogger
     {
         public void Log<TState>(MicrosoftLogging.LogLevel logLevel,

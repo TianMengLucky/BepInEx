@@ -1,61 +1,63 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace NextBepLoader.Core.Utils;
 
-public class NextEventList<T> : List<T>, ICollection<T> where T : class
+public class NextEventList<T>(Action<ListEventType, T?> onEvent) : IList<T>
 {
-    public event Func<NextEventListEventArgs<T>, bool> OnEvent;
-    bool ICollection<T>.IsReadOnly => false;
+    private List<T> BaseList { get; } = [];
 
-    void ICollection<T>.Add(T? item)
+    public bool IsReadOnly => false;
+
+    public void Add(T item)
     {
-        if (item == null) return;
-        if (!StartEvent(ListEventType.Add, item)) return;
-        base.Add(item);
+        onEvent.Invoke(ListEventType.Add, item);
+        if (item != null) 
+            BaseList.Add(item);
     }
 
-    void ICollection<T>.Clear()
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        BaseList.CopyTo(array, arrayIndex);
+    }
+
+    public bool Remove(T item)
+    {
+        onEvent?.Invoke(ListEventType.Remove, item);
+        return BaseList.Remove(item);
+    }
+
+    public int Count => BaseList.Count;
+
+    public void Clear()
     {
         if (Count <= 0) return;
-        if (!StartEvent(ListEventType.Clear, null)) return;
-        base.Clear();
+        onEvent?.Invoke(ListEventType.Clear, default);
+        BaseList.Clear();
     }
 
-    bool ICollection<T>.Contains(T? item)
+    public bool Contains(T item)
     {
-        if (item == null) return false;
-        var e = new NextEventListEventArgs<T>(this, ListEventType.Contains, item);
-        var r = OnEvent.Invoke(e);
-        if (r)
-            return e.Contains;
-
-        var value = base.Contains(item);
-        e.Contains = value;
-        e.OnContained(e);
-        return value;
+        onEvent.Invoke(ListEventType.Contains, item);
+        return BaseList.Contains(item);
     }
+    
+    public IEnumerator<T> GetEnumerator() => BaseList.GetEnumerator();
 
-    bool ICollection<T>.Remove(T? item)
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int IndexOf(T item) => BaseList.IndexOf(item);
+
+    public void Insert(int index, T item) => BaseList.Insert(index, item);
+
+    public void RemoveAt(int index) => BaseList.RemoveAt(index);
+
+    public T this[int index]
     {
-        if (item == null) return false;
-        if (Count <= 0) return false;
-        var e = new NextEventListEventArgs<T>(this, ListEventType.Remove, item);
-        var r = OnEvent.Invoke(e);
-
-        if (r)
-            return e.Remove;
-
-        var value = base.Remove(item);
-        e.Remove = value;
-        e.OnRemoved(e);
-        return value;
+        get => BaseList[index];
+        set => BaseList[index] = value;
     }
-
-    public bool BaseRemove(T item) => base.Remove(item);
-
-    private bool StartEvent(ListEventType type, T? value) =>
-        OnEvent.Invoke(new NextEventListEventArgs<T>(this, type, value));
 }
 
 public enum ListEventType
@@ -64,19 +66,4 @@ public enum ListEventType
     Clear,
     Contains,
     Remove
-}
-
-public class NextEventListEventArgs<TEvent>(NextEventList<TEvent> list, ListEventType eventType, TEvent? value)
-    : EventArgs where TEvent : class
-{
-    public NextEventList<TEvent> List { get; } = list;
-    public ListEventType Type { get; } = eventType;
-    public TEvent? Value { get; } = value;
-
-    public bool Contains { get; set; }
-    
-    public bool Remove { get; set; }
-    
-    public Action<NextEventListEventArgs<TEvent>> OnRemoved { get; set; }
-    public Action<NextEventListEventArgs<TEvent>> OnContained { get; set; }
 }

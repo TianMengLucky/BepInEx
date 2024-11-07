@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
+using NextBepLoader.Core.Logging.DefaultSource;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.Logging;
@@ -14,98 +15,75 @@ namespace NextBepLoader.Core.Logging;
 /// </summary>
 public static class Logger
 {
-    private static readonly ManualLogSource MainLogSource;
-    
-    
     /// <summary>
     ///     Collection of all log source that output log events.
     /// </summary>
-    public static readonly NextEventList<ILogSource> Sources = [];
-    
+    public static readonly NextEventList<ILogSource> Sources = new(OnSourceEventList);
+
     /// <summary>
     ///     Collection of all log listeners that receive log events.
     /// </summary>
-    public static readonly NextEventList<ILogListener> Listeners = [];
+    public static readonly NextEventList<ILogListener> Listeners = new(OnListenerEventList);
+    
+    private static readonly ManualLogSource MainLogSource = CreateLogSource(nameof(NextBepLoader));
+    
 
-    static Logger()
+    private static void OnSourceEventList(ListEventType type, ILogSource? item)
     {
-        Sources.OnEvent += OnSourceEventList;
-        Listeners.OnEvent += OnListenerEventList;
-        MainLogSource = CreateLogSource(nameof(NextBepLoader));
-    }
-
-    private static bool OnSourceEventList(NextEventListEventArgs<ILogSource> eventArgs)
-    {
-        switch (eventArgs.Type)
+        if (item == null) return;
+        switch (type)
         {
             case ListEventType.Add:
-                eventArgs.Value!.LogEvent += InternalLogEvent;
+                item.LogEvent += InternalLogEvent; 
                 break;
+            
             case ListEventType.Clear:
             {
-                foreach (var source in eventArgs.List)
+                foreach (var source in Sources)
                     source.LogEvent -= InternalLogEvent;
                 break;
             }
+            
             case ListEventType.Remove:
-                eventArgs.OnRemoved += args =>
-                {
-                    args.Value!.LogEvent -= InternalLogEvent;
-                };
+                    item.LogEvent -= InternalLogEvent;
                 break;
         }
-
-        return NoNotify(eventArgs);
     }
-    private static bool OnListenerEventList(NextEventListEventArgs<ILogListener> eventArgs)
+    private static void OnListenerEventList(ListEventType type, ILogListener? item)
     {
-        switch (eventArgs.Type)
+        if (item == null) return;
+        switch (type)
         {
             case ListEventType.Add:
-                ListenedLogLevels |= eventArgs.Value!.LogLevelFilter;
+                ListenedLogLevels |= item.LogLevelFilter;
                 break;
+            
             case ListEventType.Clear:
                 ListenedLogLevels = LogLevel.None;
                 break;
             case ListEventType.Remove:
-                eventArgs.OnRemoved += args =>
-                {
-                    if (!args.Remove) return;
-                    ListenedLogLevels = LogLevel.None;
-                    foreach (var listener in eventArgs.List)
-                        ListenedLogLevels |= listener.LogLevelFilter;
-                };
+                ListenedLogLevels = LogLevel.None;
+                foreach (var listener in Listeners)
+                    ListenedLogLevels |= listener.LogLevelFilter;
                 break;
         }
-
-        return NoNotify(eventArgs);
     }
     
-    public static bool NoNotify<T>(NextEventListEventArgs<T> e) where T : class
-    {
-        return e.Type switch
-        {
-            ListEventType.Add      => true,
-            ListEventType.Clear    => true,
-            ListEventType.Contains => false,
-            ListEventType.Remove   => false,
-            var _                  => throw new ArgumentOutOfRangeException()
-        };
-    }
     
     /// <summary>
     ///     Log levels that are currently listened to by at least one listener.
     /// </summary>
     public static LogLevel ListenedLogLevels { get; private set; }
 
-    internal static void InternalLogEvent(object sender, LogEventArgs eventArgs)
+    private static void InternalLogEvent(object sender, LogEventArgs eventArgs)
     {
-        Task.Factory.StartNew(() =>
-        {
-            foreach (var listener in Listeners.Where(listener => (eventArgs.Level & listener.LogLevelFilter) !=
-                                                                 LogLevel.None))
+        foreach (var listener in Listeners.Where(
+                                                 listener => 
+                                                     (eventArgs.Level & listener.LogLevelFilter) 
+                                                  != 
+                                                     LogLevel.None)
+                 )
                 listener.LogEvent(sender, eventArgs);
-        });
     }
 
     /// <summary>

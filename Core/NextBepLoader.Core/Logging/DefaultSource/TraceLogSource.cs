@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace NextBepLoader.Core.Logging;
+namespace NextBepLoader.Core.Logging.DefaultSource;
 
 /// <summary>
 ///     A source that routes all logs from the inbuilt .NET <see cref="Trace" /> API to the BepInEx logging system.

@@ -22,6 +22,7 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
     public IServiceProvider MainServices { get; set; }
 
     public Action<IServiceProvider>? OnServiceBuilt { get; set; }
+    public virtual IConsoleManager ConsoleManager { get; set; }
     
 
 

@@ -17,8 +17,13 @@
         <PackageReference Include="MonoMod.Utils" Version="25.0.7" />
         <PackageReference Include="MonoMod.Backports" Version="1.1.2" Aliases="Backports" />
         <PackageReference Include="Tomlyn" Version="0.17.0"/>
+        
+        <ProjectReference Include="../NextBepLoader.Core.Configuration/NextBepLoader.Core.Configuration.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="Contract\IPlugin.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\NextBepLoader.Core.Configuration\NextBepLoader.Core.Configuration.csproj" />
     </ItemGroup>
 </Project>

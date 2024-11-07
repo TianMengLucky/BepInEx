@@ -5,12 +5,11 @@
 
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using NextBepLoader.Core;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Windows;
 
-internal class ConsoleWindow
+internal static partial class ConsoleWindow
 {
     private const int STD_OUTPUT_HANDLE = -11;
     private const uint SC_CLOSE = 0xF060;

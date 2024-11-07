@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.Logging;
+using NextBepLoader.Core.Logging.DefaultSource;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace NextBepLoader.Core.IL2CPP.Utils;

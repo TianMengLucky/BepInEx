@@ -10,6 +10,7 @@ public static class LoaderInstance
     public static readonly InstanceRegister<ILoaderBase> LoaderRegister = new();
     public static readonly InstanceRegister<INextServiceManager> ManagerRegister = new();
     public static readonly InstanceRegister<IProvider> ProviderRegister = new();
+    public static readonly InstanceRegister<IConsoleManager> ConsoleRegister = new();
 
     public static void Register(ILoaderBase loader) => LoaderRegister.Register(loader);
 
@@ -22,6 +23,7 @@ public static class LoaderInstance
     public static T GetOrCreateManager<T>() where T : class, INextServiceManager, new() =>
         ManagerRegister.GetOrCreateCurrent<T>();
 }
+
 
 public class InstanceRegister<T>
 {

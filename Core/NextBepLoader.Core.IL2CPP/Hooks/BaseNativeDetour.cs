@@ -1,6 +1,7 @@
 using System;
 using MonoMod.Core;
 using NextBepLoader.Core.Logging;
+using NextBepLoader.Core.Logging.DefaultSource;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;
 

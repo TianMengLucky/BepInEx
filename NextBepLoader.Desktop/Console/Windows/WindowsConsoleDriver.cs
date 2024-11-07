@@ -2,11 +2,12 @@ using System.Reflection;
 using HarmonyLib;
 using Microsoft.Win32.SafeHandles;
 using NextBepLoader.Core;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Windows;
 
-internal class WindowsConsoleDriver : IConsoleDriver
+internal class WindowsConsoleDriver : IConsoleDivider
 {
     // Apparently on some versions of Unity (e.g. 2018.4) using old mono causes crashes on game close if
     // IntPtr overload is used for file streams (check #139).
@@ -59,26 +60,10 @@ internal class WindowsConsoleDriver : IConsoleDriver
     }
 
     public TextWriter StandardOut { get; private set; }
-    public TextWriter ConsoleOut { get; private set; }
+    public TextWriter? ConsoleOut { get; private set; }
 
     public bool ConsoleActive { get; private set; }
-    public bool ConsoleIsExternal => true;
-
-    public void Initialize(bool alreadyActive)
-    {
-        ConsoleActive = alreadyActive;
-
-        if (ConsoleActive)
-        {
-            // We're in a .NET framework / XNA environment; console *is* stdout
-            ConsoleOut = System.Console.Out;
-            StandardOut = new StreamWriter(System.Console.OpenStandardOutput());
-        }
-        else
-        {
-            StandardOut = System.Console.Out;
-        }
-    }
+    
 
     public void CreateConsole(uint codepage)
     {
@@ -113,13 +98,13 @@ internal class WindowsConsoleDriver : IConsoleDriver
         ConsoleActive = true;
     }
 
-    public void PreventClose() => ConsoleWindow.PreventClose();
+    public static void PreventClose() => ConsoleWindow.PreventClose();
 
     public void DetachConsole()
     {
         ConsoleWindow.Detach();
 
-        ConsoleOut.Close();
+        ConsoleOut?.Close();
         ConsoleOut = null;
 
         ConsoleActive = false;
@@ -129,6 +114,14 @@ internal class WindowsConsoleDriver : IConsoleDriver
     {
         SafeConsole.ForegroundColor = color;
         Kon.ForegroundColor = color;
+    }
+
+    public void WriteConsoleLine(string message, ConsoleColor color)
+    {
+        if (ConsoleOut == null) return;
+        SetConsoleColor(color);
+        ConsoleOut.WriteLine(message);
+        SetConsoleColor(ConsoleColor.Gray);
     }
 
     public void SetConsoleTitle(string title) => ConsoleWindow.Title = title;
@@ -152,7 +145,8 @@ internal class WindowsConsoleDriver : IConsoleDriver
         return (FileStream)Activator.CreateInstance(typeof(FileStream), ctorParams)!;
     }
 
-    private IntPtr GetOutHandle() =>
+    private IntPtr GetOutHandle()
+    {
         /*switch (ConsoleManager.ConfigConsoleOutRedirectType.Value)
         {
             case ConsoleManager.ConsoleOutRedirectType.ConsoleOut:
@@ -165,5 +159,8 @@ internal class WindowsConsoleDriver : IConsoleDriver
                            ? ConsoleWindow.OriginalStdoutHandle
                            : ConsoleWindow.ConsoleOutHandle;
         }*/
-        IntPtr.Zero;
+        return ConsoleWindow.OriginalStdoutHandle != IntPtr.Zero
+                   ? ConsoleWindow.OriginalStdoutHandle
+                   : ConsoleWindow.ConsoleOutHandle;
+    }
 }

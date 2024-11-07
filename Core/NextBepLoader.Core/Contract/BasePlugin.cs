@@ -1,6 +1,6 @@
 using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.Contract.Attributes;
-using NextBepLoader.Core.Logging;
+using NextBepLoader.Core.Logging.DefaultSource;
 
 namespace NextBepLoader.Core.Contract;
 

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
 
-namespace NextBepLoader.Core.Logging;
+namespace NextBepLoader.Core.Logging.DefaultSource;
 
 /// <summary>
 ///     A generic, multi-purpose log source. Exposes simple API to manually emit logs.
@@ -35,7 +34,7 @@ public class ManualLogSource : ILogSource
     public void Log(LogLevel level, object? data)
     {
         if (data == null) return;
-        LogEvent(this, new LogEventArgs(data, level, this));
+        LogEvent.Invoke(this, new LogEventArgs(data, level, this));
     }
 
     /// <summary>
@@ -48,7 +47,7 @@ public class ManualLogSource : ILogSource
                     BepInExLogInterpolatedStringHandler logHandler)
     {
         if (logHandler.Enabled)
-            LogEvent?.Invoke(this, new LogEventArgs(logHandler.ToString(), level, this));
+            LogEvent.Invoke(this, new LogEventArgs(logHandler.ToString(), level, this));
     }
 
     /// <summary>

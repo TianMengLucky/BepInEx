@@ -1,10 +1,11 @@
 using HarmonyLib;
 using NextBepLoader.Core.Configuration;
+using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Deskstop.Console.Unix;
 
-internal class LinuxConsoleDriver : IConsoleDriver
+internal class LinuxConsoleDriver : IConsoleDivider
 {
     /*private static readonly ConfigEntry<bool> ForceCustomTtyDriverConfig =
         ConfigFile.CoreConfig.Bind(
@@ -33,8 +34,8 @@ internal class LinuxConsoleDriver : IConsoleDriver
 
     public TtyInfo TtyInfo { get; private set; }
 
-    public TextWriter StandardOut { get; private set; }
-    public TextWriter ConsoleOut { get; private set; }
+    public TextWriter? StandardOut { get; private set; }
+    public TextWriter? ConsoleOut { get; private set; }
 
     public bool ConsoleActive { get; private set; }
     public bool ConsoleIsExternal => false;
@@ -95,7 +96,12 @@ internal class LinuxConsoleDriver : IConsoleDriver
             // Use mono's inbuilt terminfo driver to set the foreground color for us
             SafeConsole.ForegroundColor = color;
         else
-            ConsoleOut.Write(TtyInfo.GetAnsiCode(color));
+            ConsoleOut?.Write(TtyInfo.GetAnsiCode(color));
+    }
+
+    public void WriteConsoleLine(string message, ConsoleColor color)
+    {
+        throw new NotImplementedException();
     }
 
     public void SetConsoleTitle(string title)

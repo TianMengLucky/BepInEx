@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NextBepLoader.Core.Logging.DefaultSource;
 
 namespace NextBepLoader.Core.Logging;
 
@@ -18,5 +19,17 @@ public static class NextLoggerExtension
         if (!Logger.Sources.Contains(source))
             Logger.Sources.Add(source);
         return services;
+    }
+
+    public static ILogListener Register(this ILogListener logListener)
+    {
+        Logger.Listeners.Add(logListener);
+        return logListener;
+    }
+
+    public static ILogSource Register(this ILogSource logSource)
+    {
+        Logger.Sources.Add(logSource);
+        return logSource;
     }
 }

@@ -35,7 +35,7 @@ public class HarmonyLogSource : ILogSource
     public string SourceName { get; } = "HarmonyX";
     public event EventHandler<LogEventArgs> LogEvent;
 
-    private void HandleHarmonyMessage(object sender, HarmonyLogger.LogEventArgs e)
+    private void HandleHarmonyMessage(object? sender, HarmonyLogger.LogEventArgs e)
     {
         if (!LevelMap.TryGetValue(e.LogChannel, out var level))
             return;
