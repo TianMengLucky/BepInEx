@@ -42,6 +42,5 @@ public class UnityBasePreDownloader(
 
         logger.LogInformation("Extracting downloaded unity base libraries to {dir}", Paths.UnityBaseDirectory);
         zipArchive.ExtractToDirectory(Paths.UnityBaseDirectory, true);
-        IL2CPPPreLoader.WriteUnityBaseVersion(unityInfo);
     }
 }

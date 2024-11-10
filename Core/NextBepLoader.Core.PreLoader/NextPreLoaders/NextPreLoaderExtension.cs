@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core.PreLoader.NextPreLoaders;
 
@@ -79,6 +80,20 @@ public static class NextPreLoaderExtension
         });
     }
 
-    public static IServiceCollection AddStartRunner(this IServiceCollection collection) =>
-        collection.AddActivatedSingleton<OnStartRunner>();
+    public static IServiceCollection AddStartRunner(this IServiceCollection collection)
+    {
+        collection.AddSingleton<OnStartRunner>();
+        return collection;
+    }
+
+    public static void StartRunner(this IServiceProvider provider)
+    {
+        var startRunner = provider.GetService<OnStartRunner>();
+        if (startRunner == null)
+        {
+            Logger.LogError("OnStartRunner is null");
+            return;
+        }
+        startRunner.Run(provider);
+    }
 }

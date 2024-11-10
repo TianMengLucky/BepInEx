@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using NextBepLoader.Core;
 using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Deskstop;
@@ -21,12 +19,34 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
 
     public Process CurrentProcess { get; set; }
 
-    public INextBepEnv RegisterEventArgs<T>(T arg) where T : EventArgs => throw new NotImplementedException();
+    public INextBepEnv RegisterEventArgs<T>(T arg) where T : EventArgs
+    {
+        Actions.Add(typeof(T), arg);
+        return this;
+    }
 
-    public T? GetEventArgs<T>() where T : EventArgs => throw new NotImplementedException();
-    public T GetOrCreateEventArgs<T>() where T : EventArgs, new() => throw new NotImplementedException();
+    public T? GetEventArgs<T>() where T : EventArgs
+    {
+        return Actions.FirstOrDefault(n => n.Key == typeof(T)).Value as T;
+    }
 
-    public INextBepEnv UpdateEventArgs<T>(T arg) where T : EventArgs => throw new NotImplementedException();
+    public T GetOrCreateEventArgs<T>() where T : EventArgs, new()
+    {
+        if (Actions.TryGetValue(typeof(T), out var value))
+        {
+            return (T)value;
+        }
+
+        var t = new T();
+        Actions.Add(typeof(T), t);
+        return t;
+    }
+
+    public INextBepEnv UpdateEventArgs<T>(T arg) where T : EventArgs
+    {
+        Actions[typeof(T)] = arg;
+        return this;
+    }
 
 
     public void OnLoadStart()
@@ -42,6 +62,6 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
             Environment.SetEnvironmentVariable(variable, null);
         SystemEnvs.Clear();
         
-        OnExited?.Invoke(this);
+        OnExited(this);
     }
 }

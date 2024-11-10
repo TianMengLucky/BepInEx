@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using AssetRipper.Primitives;
 using Cpp2IL.Core;
 using Il2CppInterop.Generator.Runners;
 using Microsoft.Extensions.Logging;
@@ -11,37 +12,39 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public class HashComputer(INextBepEnv env, ILogger<HashComputer> logger) : BasePreLoader
+public class HashComputer(INextBepEnv env, ILogger<HashComputer> logger, UnityInfo unityInfo) : BasePreLoader
 {
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
     public IL2CPPCheckEventArg EventArg;
     private static string HashPath => Path.Combine(Paths.CacheDataDir, "InteropAssembly.Hash");
-    private static string AssemblyHashPath => Path.Combine(Paths.CacheDataDir, "GameAssembly.Hash");
-    public string CurrentHashString { get; private set; }
+    private static string UnityVersionSavePath => Path.Combine(Paths.CacheDataDir, "UnityVersion.txt");
+
 
     public override void PreLoad(PreLoadEventArg arg)
     {
         EventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
         EventArg.UpdateIL2CPPInteropAssembly = CheckIfGenerationRequired();
-        EventArg.UpdateCPP2ILAssembly = File.ReadAllText(AssemblyHashPath) != ComputeGameAssemblyHash();
+        EventArg.DownloadUnityBaseLib = !File.Exists(UnityVersionSavePath) 
+                                     || 
+                                        UnityVersion.Parse(File.ReadAllText(UnityVersionSavePath))
+                                                    .CompareTo(unityInfo.GetVersion()) != 0;
     }
 
     public override void Finish()
     {
+        if (EventArg.DownloadUnityBaseLib)
+            File.WriteAllText(UnityVersionSavePath, unityInfo.GetVersion().ToString());
+        
         if (!EventArg.UpdateIL2CPPInteropAssembly) return;
         WriteComputeHash();
     }
     
     private bool CheckIfGenerationRequired()
     {
-        ComputeHash();
-        
-        if (EventArg.UpdateIL2CPPInteropAssembly) return true;
-
         if (!File.Exists(HashPath))
             return true;
         
-        if (CurrentHashString == File.ReadAllText(HashPath)) 
+        if (ComputeHash() == File.ReadAllText(HashPath)) 
             return false;
         
         logger.LogInformation("Detected outdated interop assemblies, will regenerate them now");
@@ -50,8 +53,7 @@ public class HashComputer(INextBepEnv env, ILogger<HashComputer> logger) : BaseP
     
 
     public void WriteComputeHash() => File.WriteAllText(HashPath, ComputeHash());
-
-    public void WriteAssemblyHash() => File.WriteAllText(AssemblyHashPath, ComputeGameAssemblyHash());
+    
 
     private string ComputeGameAssemblyHash()
     {
@@ -73,6 +75,6 @@ public class HashComputer(INextBepEnv env, ILogger<HashComputer> logger) : BaseP
         md5.HashString(typeof(InteropAssemblyGenerator).Assembly.GetName().Version?.ToString()!);
         md5.HashString(typeof(Cpp2IlApi).Assembly.GetName().Version?.ToString()!);
         md5.TransformFinalBlock([], 0, 0);
-        return CurrentHashString = Utility.ByteArrayToString(md5.Hash!);
+        return Utility.ByteArrayToString(md5.Hash!);
     }
 }

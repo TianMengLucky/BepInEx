@@ -34,7 +34,7 @@ public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
             if (exception != null)
                 logLine += $"\nException: {exception}";
 
-            LogEvent?.Invoke(this, new LogEventArgs(logLine, MSLogLevelTo(logLevel),
+            LogEvent.Invoke(this, new LogEventArgs(logLine, MSLogLevelTo(logLevel),
                                                     this));
         }
 
@@ -49,7 +49,7 @@ public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
         public void Dispose() => Logger.Sources.Remove(this);
 
         public string SourceName { get; } = name;
-        public event EventHandler<LogEventArgs>? LogEvent;
+        public event EventHandler<LogEventArgs> LogEvent;
         
         private static LogLevel MSLogLevelTo(MicrosoftLogging.LogLevel logLevel) => logLevel switch
         {

@@ -6,26 +6,24 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Core.PreLoader;
 
-public class LoadProviderBase<TPlugin> : IProvider
+public class LoadProviderBase<TPlugin>: IProvider
 {
     public static LoadProviderBase<TPlugin> Instance;
-    public DotNetLoader? _DotNetLoader;
-    public FastTypeFinder Finder;
+    public DotNetLoader _DotNetLoader;
+    public FastTypeFinder Finder = new();
     public List<TPlugin> AllSelect = [];
-    protected LoadProviderBase()
+    protected LoadProviderBase(DotNetLoader loader)
     {
         Instance = this;
+        _DotNetLoader = loader;
     }
 
     public virtual void Init(IProviderManager manager)
     {
-        _DotNetLoader = manager.MainServiceProvider.GetService<DotNetLoader>();
-        Finder = new FastTypeFinder();
     }
 
     public virtual void Run()
     {
-        if (_DotNetLoader == null) return;
         AllSelect = Finder
                     .FindFormTypeLoader(_DotNetLoader, IsTarget)
                     .SelectTo(Selector);

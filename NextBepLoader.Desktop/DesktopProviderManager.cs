@@ -8,21 +8,19 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 namespace NextBepLoader.Deskstop;
 
 public class DesktopProviderManager(
-    ServiceProvider serviceProvider, 
-    DotNetLoader dotNetLoader, 
-    TaskFactory factory) : IProviderManager, IOnLoadStart
+    IServiceProvider serviceProvider, 
+    DotNetLoader dotNetLoader) : IProviderManager, IOnLoadStart
 {
     public int Priority => 1;
-    public ServiceProvider MainServiceProvider { get; } = serviceProvider;
+    public IServiceProvider MainServiceProvider { get; } = serviceProvider;
     public List<IProvider> Providers => ProviderLoader.Providers;
     private ProviderLoader ProviderLoader { get; } = new(serviceProvider);
-    public async void OnLoadStart()
+    public void OnLoadStart()
     {
-        await ProviderLoader
-            .AddDefaultProvider()
-            .LoadFormTypeLoader(dotNetLoader)
-            .InitAll(this)
-            .RunAllAsync(factory);
+        ProviderLoader
+              .LoadFormTypeLoader(dotNetLoader)
+              .InitAll(this)
+              .RunAll();
     }
 
     public void OnGameActive()
@@ -45,14 +43,10 @@ public class DesktopProviderManager(
 
 public class ProviderLoader(IServiceProvider serviceProvider)
 {
-    public readonly List<IProvider> Providers = [];
-
-    public ProviderLoader AddDefaultProvider()
-    {
-        Providers.Add(new ServiceStartupLoadProvider());
-        Providers.Add(new PluginLoadProvider());
-        return this;
-    }
+    public readonly List<IProvider> Providers = 
+        [
+            ActivatorUtilities.CreateInstance<PluginLoadProvider>(serviceProvider)
+        ];
 
     private static readonly string BaseFullName = typeof(LoadProviderBase<>).FullName ?? "";
     private static readonly string InterfaceFullName = typeof(IProvider).FullName ?? "";   
@@ -88,19 +82,20 @@ public class ProviderLoader(IServiceProvider serviceProvider)
         foreach (var provider in Providers)
         {
             provider.Init(providerManager);
+            Logger.LogInfo($"Init {provider.GetType().Name}");
         }
         return this;
     }
+    
 
-    public Task RunAllAsync(TaskFactory factory) => factory.StartNew(RunAll);
-
-    private void RunAll()
+    public void RunAll()
     {
         foreach (var provider in Providers)
         {
             try
             {
                 provider.Run();
+                Logger.LogInfo($"Run {provider.GetType().Name}");
             }
             catch (Exception e)
             {

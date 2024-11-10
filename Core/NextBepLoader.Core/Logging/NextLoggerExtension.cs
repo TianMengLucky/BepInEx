@@ -15,9 +15,7 @@ public static class NextLoggerExtension
     public static IServiceCollection AddTraceLogSource(this IServiceCollection services)
     {
         services.AddSingleton(TraceLogSource.CreateListener());
-        var source = TraceLogSource.CreateSource();
-        if (!Logger.Sources.Contains(source))
-            Logger.Sources.Add(source);
+        TraceLogSource.CreateSource().Register();
         return services;
     }
 

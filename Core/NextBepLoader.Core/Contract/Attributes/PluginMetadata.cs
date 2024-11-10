@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace NextBepLoader.Core.Contract.Attributes;
 
+[JetBrains.Annotations.MeansImplicitUse]
 [AttributeUsage(AttributeTargets.Class)]
 public class PluginMetadata(LoaderPlatformType type, string id) : Attribute
 {

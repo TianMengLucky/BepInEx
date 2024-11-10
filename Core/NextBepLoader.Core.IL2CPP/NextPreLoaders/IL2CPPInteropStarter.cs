@@ -17,7 +17,6 @@ namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 public class IL2CPPInteropStarter(
     INextBepEnv env,
     ILogger<IL2CPPInteropStarter> logger, 
-    TaskFactory factory,
     UnityInfo unityInfo
     ) : BasePreLoader
 {
@@ -31,13 +30,14 @@ public class IL2CPPInteropStarter(
 
     public override void Start()
     {
-        factory.StartNew(() =>
+        logger.LogInformation($"IL2CPPInteropStarter Update IL2CPPInteropAssembly:{IL2CPPCheckEventArg.UpdateIL2CPPInteropAssembly}");
+        if (IL2CPPCheckEventArg.UpdateIL2CPPInteropAssembly)
         {
             var generatorTime = CoreUtils.StartStopwatch(StartGenerator);
             logger.LogInformation("IL2CPPInteropStarter Start generator,use time:{time}", generatorTime);
-            var runtimeTime = CoreUtils.StartStopwatch(StartRuntime);
-            logger.LogInformation("IL2CPPInteropStarter Start Runtime,use time:{time}", runtimeTime);
-        });
+        }
+        var runtimeTime = CoreUtils.StartStopwatch(StartRuntime);
+        logger.LogInformation("IL2CPPInteropStarter Start Runtime,use time:{time}", runtimeTime);
     }
 
     public void StartRuntime()

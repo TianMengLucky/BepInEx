@@ -8,12 +8,14 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Deskstop;
 
-public class ServiceStartupLoadProvider : LoadProviderBase<IStartup>
+/*public class ServiceStartupLoadProvider : LoadProviderBase<IStartup>
 {
     private NextServiceCollection? Service { get; set; }
 
     public override void Init(IProviderManager manager)
     {
+        base.Init(manager);
+        
         Service = NextServiceManager.Instance.CreateService("PluginService");
         if (Service == null)
             Logger.LogError("Service not found");
@@ -49,4 +51,4 @@ public class ServiceStartupLoadProvider : LoadProviderBase<IStartup>
             ?? 
             type.Interfaces.Any(n => n.Interface?.FullName.Equals(InterfaceFullName) ?? false);
     }
-}
+}*/

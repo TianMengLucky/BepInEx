@@ -31,7 +31,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
 
     public override void Start()
     {
-        if (!il2CPPCheckEventArg.UpdateCPP2ILAssembly) return;
+        if (il2CPPCheckEventArg is { UpdateIL2CPPInteropAssembly: false }) return;
         logger.LogInformation("Running Cpp2IL to generate dummy assemblies");
         CPP2ILUtils.SetLogger(null, logger);
 
@@ -67,6 +67,5 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
             logger.LogInformation("CPP2IL Cache Write Time {time}", time);
         }
         il2CPPCheckEventArg.ResolverAssemblies = result;
-        env.UpdateEventArgs(il2CPPCheckEventArg);
     }
 }

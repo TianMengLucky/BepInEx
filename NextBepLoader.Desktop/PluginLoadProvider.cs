@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using AsmResolver.DotNet;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
 using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.LoaderInterface;
@@ -10,21 +11,15 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Deskstop;
 
-public class PluginLoadProvider : LoadProviderBase<BasePlugin>
+public class PluginLoadProvider(ILogger<PluginLoadProvider> logger, DotNetLoader loader)
+    : LoadProviderBase<BasePlugin>(loader)
 {
-    public List<BasePlugin> AllPlugins { get; set; } = [];
     private static readonly string FullName = typeof(BasePlugin).FullName ?? "";
     private ServiceFastInfo? pluginServiceInfo;
 
     public override void Init(IProviderManager manager)
     {
         pluginServiceInfo = NextServiceManager.Instance.GetServiceInfo("PluginService");
-    }
-
-    public override void Run()
-    {
-        if (pluginServiceInfo == null) return;
-        base.Run();
     }
 
     protected override BasePlugin? Selector(FastTypeFinder.FindInfo info)
@@ -52,27 +47,24 @@ public class PluginLoadProvider : LoadProviderBase<BasePlugin>
     protected override bool IsTarget(TypeDefinition type)
     {
         /*MetadataHelper.GetCustomAttributes<>()*/
-        
+        logger.LogInformation($"is Target: {type.FullName} {type.FullName.Equals(FullName)}");
         return type.FullName.Equals(FullName);
     }
 
     public override void OnGameActive()
     {
-        foreach (var plugin in AllPlugins)
+        foreach (var plugin in AllSelect)
         {
             try
             {
                 plugin.Load();
+                logger.LogInformation($"Load {plugin.GetType().FullName}");
             }
             catch (Exception e)
             {
-                Logger.LogError($"{plugin.GetType().FullName} LoadError:\n" + e.Message);
+                logger.LogError($"{plugin.GetType().FullName} LoadError:\n{e.ToString()}");
             }
         }
     }
-
-    public record FastPluginMetaInfo
-    {
-        
-    }
+    
 }

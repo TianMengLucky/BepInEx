@@ -38,15 +38,16 @@ public class FastTypeFinder
             }
             
             var path = assembly.ManifestModule.FilePath!;
+            Logger.LogInfo($"FastTypeFinder: {assembly.Name} {path}");
             try
             {
                 var allFind = types.Where(n => typeFilter == null || typeFilter(n)).Select(n => new FindInfo(path, assembly, n));
                 foreach (var find in allFind)
                 {
                     _AllFindInfo.Add(find);
-                    Logger.LogDebug($"Add {find.TypeName}");
+                    Logger.LogInfo($"FastTypeFinder Add {find.TypeName}");
                 }
-                Logger.LogDebug($"Add {path}");
+                Logger.LogInfo($"FastTypeFinder Add {path}");
             }
             catch (Exception e)
             {

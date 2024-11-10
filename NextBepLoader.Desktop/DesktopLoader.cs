@@ -1,5 +1,7 @@
 using AsmResolver.DotNet;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
 using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.IL2CPP;
@@ -32,9 +34,9 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         typeof(IProvider).FullName!,
         typeof(IStartup).FullName!
     ];
-    
-    
-    private static readonly DotNetLoader DotNetLoader = new()
+
+
+    public readonly DotNetLoader DotNetLoader = new()
     {
         AssemblyFilter = AssemblyFilter
     };
@@ -46,14 +48,13 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 
         var typeReferences = assembly.ManifestModule.GetImportedTypeReferences().ToList();
         var references = assembly.ManifestModule.AssemblyReferences.ToList();
-        if (references.All(n => !n.Name!.Equals(CoreAssemblyName)))
-            return false;
-
-        return !typeReferences.All(n => FullNames.All(name => !n.FullName.Equals(name)));
+        return references.Any(n => n.Name!.Equals(CoreAssemblyName)) && FullNames.Any(name => typeReferences.Any(n => n.FullName.Equals(name)));
     }
     
 
     public ILogListener? DiskLogListener { get; private set; }
+    public List<Type> DefaultPreLoaderTypes = [];
+    public PreLoadEventArg PreLoadEventArg = new();
     public override void Start()
     {
         PlatformUtils.SetDesktopPlatformVersion();
@@ -63,13 +64,18 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         ConsoleManager.Init(new ConsoleConfig());
         ConsoleManager.CreateConsole();
         
-        Logger.LogInfo("Test");
-        
         LoaderVersion = new Version(1, 0, 0);
         Paths.InitPaths(true);
         
         DotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
-        Type[] loaders = [
+        DotNetLoader.AddAssembliesFormDirector(Paths.ProviderDirectory);
+        
+        DotNetLoader.OnLoadType += (definition, assemblyDefinition) =>
+        {
+            Logger.LogInfo("Load Type: " + definition.FullName);
+        };
+        
+        DefaultPreLoaderTypes = [
             typeof(ResolvePreLoad),
             typeof(Cpp2ILStarter),
             typeof(HashComputer),
@@ -78,24 +84,31 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
             typeof(IL2CPPInteropStarter),
             typeof(IL2CPPPreLoader)
         ];
+        
+        Logger.LogInfo("Test");
 
-        Collection = BuildService(loaders, this);
+        Collection = BuildService();
         MainServices = Collection.BuildOrCreateProvider();
+        MainServices.TryRun<DesktopBepEnv>()
+                    .TryRun<DesktopPreLoadManager>()
+                    .TryRun<DesktopProviderManager>();
+        /*MainServices.StartRunner();*/
     }
 
-    internal static NextServiceCollection BuildService(Type[] loaders, DesktopLoader loader)
+    public NextServiceCollection BuildService()
     {
         var collection = NextServiceManager.Instance.CreateMainCollection();
         collection
             .AddSingleton(DesktopConsoleManager.Instance)
             .AddSingleton(DotNetLoader)
-            .AddSingleton(loader)
-            .AddSingleton<TaskFactory>()
-            .AddSingleton<IProviderManager, DesktopProviderManager>()
-            .AddSingleton<UnityInfo>()
-            .AddOnStart<INextBepEnv, DesktopBepEnv>()
-            .AddOnStart<IPreLoaderManager, DesktopPreLoadManager>(loaders, new PreLoadEventArg())
-            .AddStartRunner()
+            .AddSingleton(this)
+            .AddSingleton(UnityInfo.Instance)
+            .AddSingleton<DesktopBepEnv>()
+            .AddSingleton<INextBepEnv, DesktopBepEnv>(n => n.GetRequiredService<DesktopBepEnv>())
+            .AddSingleton<DesktopPreLoadManager>()
+            .AddSingleton<DesktopProviderManager>()
+            .AddSingleton<IProviderManager, DesktopProviderManager>(n => n.GetRequiredService<DesktopProviderManager>())
+            .AddTransient<HttpClient>()
             .AddNextLogger()
             .AddTraceLogSource();
         return collection;

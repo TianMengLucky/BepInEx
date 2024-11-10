@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using NextBepLoader.Core.LoaderInterface;
+using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core;
 
@@ -98,12 +100,31 @@ public class NextServiceCollection : ServiceCollection
     private NextServiceProvider? Provider { get; set; }
     public ServiceFastInfo? FastInfo { get; set; }
 
+    public static readonly string[] NoCopyNames = 
+    [
+        "IOptions",
+        "IOptionsMonitor",
+        "IOptionsMonitorCache",
+        "ILogger"
+    ];
+    
     public NextServiceCollection Copy(IServiceCollection collection, IServiceProvider provider)
     {
         foreach (var service in collection.Where(n => n.Lifetime == ServiceLifetime.Singleton && !n.IsKeyedService))
         {
-            if (Contains(service)) continue;
-            this.AddSingleton(service.ServiceType, provider.GetService(service.ServiceType));
+            try
+            {
+                if (Contains(service)) continue;
+                if (NoCopyNames.Contains(service.ServiceType.Name)) continue;
+                var get = provider.GetService(service.ServiceType);
+                if (get == null) continue;
+                this.AddSingleton(service.ServiceType, get);
+                Logger.LogInfo($"Copy Get Type:{service.ServiceType.Name} Imp:{service.ImplementationType?.Name ?? "null"}");
+            }
+            catch
+            {
+                Logger.LogError($"Copy Get Type {service.ServiceType.Name}");
+            }
         }
 
         return this;

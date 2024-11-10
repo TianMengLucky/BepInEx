@@ -12,6 +12,7 @@ using HarmonyLib;
 using Microsoft.Extensions.DependencyInjection;
 using MonoMod.Utils;
 using NextBepLoader.Core.LoaderInterface;
+using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core.Utils;
 
@@ -64,7 +65,7 @@ public static class CoreUtils
     public static IServiceCollection AddOnStart<T>(this IServiceCollection collection) where T : class, IOnLoadStart =>
         collection.AddSingleton<IOnLoadStart, T>();
 
-    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection)where TClass : class, TInterface, IOnLoadStart where TInterface : class
+    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection) where TClass : class, TInterface, IOnLoadStart where TInterface : class
     {
         return collection.AddSingleton<TInterface, TClass>()
                   .AddSingleton<IOnLoadStart>(n => n.GetRequiredService<TClass>());
@@ -158,4 +159,21 @@ public static class CoreUtils
             type.BaseType.Resolve().HasBase(baseType);
     }
 
+    public static IServiceProvider TryRun<T>(this IServiceProvider provider) where T : IOnLoadStart
+    {
+        try
+        {
+            var service = provider.GetService<T>();
+            if (service is not null)
+                service.OnLoadStart();
+            else
+                Logger.LogError($"Service {typeof(T)} is null");
+        }
+        catch (Exception e)
+        {
+            Logger.LogError($"Error Try Run {typeof(T)} Exception:\n{e}");
+        }
+
+        return provider;
+    }
 }
