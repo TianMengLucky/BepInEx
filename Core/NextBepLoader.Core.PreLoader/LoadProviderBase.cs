@@ -9,8 +9,8 @@ namespace NextBepLoader.Core.PreLoader;
 public class LoadProviderBase<TPlugin>: IProvider
 {
     public static LoadProviderBase<TPlugin> Instance;
-    public DotNetLoader _DotNetLoader;
-    public FastTypeFinder Finder = new();
+    public readonly DotNetLoader _DotNetLoader;
+    public readonly FastTypeFinder Finder = new();
     public List<TPlugin> AllSelect = [];
     protected LoadProviderBase(DotNetLoader loader)
     {

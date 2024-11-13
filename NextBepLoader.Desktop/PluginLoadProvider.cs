@@ -47,8 +47,16 @@ public class PluginLoadProvider(ILogger<PluginLoadProvider> logger, DotNetLoader
     protected override bool IsTarget(TypeDefinition type)
     {
         /*MetadataHelper.GetCustomAttributes<>()*/
-        logger.LogInformation($"is Target: {type.FullName} {type.FullName.Equals(FullName)}");
-        return type.FullName.Equals(FullName);
+        var baseType = type.BaseType;
+        if (baseType == null)
+        {
+            logger.LogInformation("{type} Base IsNull", type.FullName);
+            return false;
+        }
+        
+        var isTarget = baseType.FullName.Equals(FullName);
+        logger.LogInformation($"is Target: {baseType.FullName} {FullName} {isTarget}");
+        return isTarget;
     }
 
     public override void OnGameActive()
@@ -62,7 +70,7 @@ public class PluginLoadProvider(ILogger<PluginLoadProvider> logger, DotNetLoader
             }
             catch (Exception e)
             {
-                logger.LogError($"{plugin.GetType().FullName} LoadError:\n{e.ToString()}");
+                logger.LogError($"{plugin.GetType().FullName} LoadError:\n{e}");
             }
         }
     }

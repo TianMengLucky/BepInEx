@@ -70,7 +70,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         DotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
         DotNetLoader.AddAssembliesFormDirector(Paths.ProviderDirectory);
         
-        DotNetLoader.OnLoadType += (definition, assemblyDefinition) =>
+        DotNetLoader.OnLoadType = (definition, assemblyDefinition) =>
         {
             Logger.LogInfo("Load Type: " + definition.FullName);
         };

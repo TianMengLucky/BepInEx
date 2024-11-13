@@ -35,7 +35,7 @@ public abstract class BaseTypeLoader<TLoader, TType, TAssembly> where TAssembly 
 
     public virtual TLoader AddAssembliesFormDirector(DirectoryInfo directory)
     {
-        foreach (var file in directory.GetFiles(".dll", SearchOption.AllDirectories))
+        foreach (var file in directory.GetFiles().Where(n => n.Extension == ".dll"))
             AddAssemblyFormPath(file.FullName);
         return (TLoader)this;
     }
@@ -54,6 +54,7 @@ public abstract class BaseTypeLoader<TLoader, TType, TAssembly> where TAssembly 
 
             foreach (var type in LoadTypeFormAssembly(assembly).Where(n => TypeFilter?.Invoke(n) ?? true))
             {
+                if (_LoadTypes[assembly].Contains(type)) continue;
                 _LoadTypes[assembly].Add(type);
                 OnLoadType?.Invoke(type, assembly);
             }
@@ -69,6 +70,7 @@ public class DotNetLoader : BaseTypeLoader<DotNetLoader, TypeDefinition, Assembl
 {
     public override DotNetLoader AddAssemblyFormPath(string path)
     {
+        Logger.LogInfo("Add Assembly From Path: " + path);
         Assemblies.Add(AssemblyDefinition.FromFile(path));
         return this;
     }

@@ -8,16 +8,29 @@ namespace NextBepLoader.Core.IL2CPP.Hooks;
 
 public class Il2CppDetourFactory : IDetourFactory
 {
+    private static IDetourFactory? currentFactory;
 
-    public ICoreDetour CreateDetour(CreateDetourRequest request) =>
-        DetourFactory.Current.CreateDetour(request.Source, request.Target, request.ApplyByDefault) ?? throw new NullReferenceException();
-
-    public ICoreNativeDetour CreateNativeDetour(CreateNativeDetourRequest request)
+    public static IDetourFactory CurrentFactory
     {
-        if (File.Exists(Path.Combine(Paths.CoreDirectory, "dobby.dll")))
+        get
         {
-            return new DobbyNativeDetour(request.Source, request.Target);
+            if (currentFactory != null)
+                return currentFactory;
+
+            var hasDobby = File.Exists(Path.Combine(Paths.CoreDirectory, "dobby.dll"));
+            currentFactory = hasDobby ?
+                                 new Il2CppDetourFactory() 
+                                 : 
+                                 DetourFactory.Current;
+            
+            return currentFactory;
         }
-        return DetourFactory.Current.CreateNativeDetour(request.Source, request.Target, request.ApplyByDefault) ?? throw new NullReferenceException();
+        set => currentFactory = value;
     }
+
+    public ICoreDetour CreateDetour(CreateDetourRequest request) => 
+        DetourFactory.Current.CreateDetour(request.Source, request.Target, request.ApplyByDefault);
+
+    public ICoreNativeDetour CreateNativeDetour(CreateNativeDetourRequest request) =>
+        new DobbyNativeDetour(request.Source, request.Target);
 }

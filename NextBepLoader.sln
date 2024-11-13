@@ -30,8 +30,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextBepLoader.Core.Mono", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextBepLoader.Core.PreLoader", "Core\NextBepLoader.Core.PreLoader\NextBepLoader.Core.PreLoader.csproj", "{DC416675-1977-4080-B762-A2F106377199}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extension", "Extension", "{C5EC20BC-8529-44C0-BA41-6DBA63EA0CDB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{479404B2-0BE8-4899-A601-56AC1403F8C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPlugin", "Tests\TestPlugin\TestPlugin.csproj", "{68F7211E-E62B-4DAF-99D4-4400249B9086}"

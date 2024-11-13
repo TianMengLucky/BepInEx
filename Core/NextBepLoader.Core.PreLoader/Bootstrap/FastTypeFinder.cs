@@ -66,7 +66,7 @@ public class FastTypeFinder
     public record FindInfo(string Path, AssemblyDefinition AssemblyDefinition, TypeDefinition Type)
     {
         public string TypeName => Type.FullName;
-        public Assembly _Assembly => Assembly.LoadFile(Path);
+        public Assembly _Assembly => Assembly.LoadFrom(Path);
         public Type? AssemblyType => _Assembly.GetType(TypeName);
     }
 }
