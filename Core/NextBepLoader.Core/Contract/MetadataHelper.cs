@@ -76,7 +76,7 @@ public static class MetadataHelper
     
     public static IEnumerable<PluginCompatibility> FromCecilType(this TypeDefinition td)
     {
-        var attrs = MetadataHelper.GetCustomAttributes<PluginCompatibility>(td, true);
+        var attrs = GetCustomAttributes<PluginCompatibility>(td, true);
         return attrs.Select(customAttribute =>
         {
             var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;

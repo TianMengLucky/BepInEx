@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
 using NextBepLoader.Core.Contract;
+using NextBepLoader.Core.Contract.Attributes;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.PreLoader;

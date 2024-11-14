@@ -1,29 +1,29 @@
 <Project>
     <PropertyGroup>
         <Version>0.0.1</Version>
-        <Authors>BepInEx,TianMeng</Authors>
+        <Authors>BepInEx,Nexr-Fast</Authors>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
         <DebugType>embedded</DebugType>
-        <Configurations>Debug;Release</Configurations>
-        <!--        <PackageProjectUrl>https://github.com/BepInEx/BepInEx</PackageProjectUrl>
-                <RepositoryUrl>https://github.com/BepInEx/BepInEx</RepositoryUrl>-->
+        <Configurations>Debug;Release;PreRelease</Configurations>
+        <PackageProjectUrl>https://github.com/Next-Fast/NextBepLoader</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Next-Fast/NextBepLoader</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright © 2022 BepInEx Team</Copyright>
-        <BuildDir>$(SolutionDir)bin</BuildDir>
-        <!--        <PackageOutputPath>$(BuildDir)/NuGet</PackageOutputPath>-->
         <PackageIcon>logo.png</PackageIcon>
         <NoWarn>CS8618</NoWarn>
         <OutDir>$(SolutionDir)Output</OutDir>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="$(SolutionDir)\README.md" Pack="true" PackagePath=""/>
         <None Include="$(SolutionDir)\assets\logos\logo.png" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
 
