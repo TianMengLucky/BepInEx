@@ -17,7 +17,7 @@ public sealed class ConfigEntry<T> : ConfigEntryBase
                          ConfigDefinition definition,
                          T defaultValue,
                          ConfigDescription? configDescription) : base(configFile, definition, typeof(T),
-                                                                      defaultValue, configDescription)
+                                                                      defaultValue!, configDescription)
     {
         configFile.SettingChanged += (sender, args) =>
         {
@@ -45,7 +45,7 @@ public sealed class ConfigEntry<T> : ConfigEntryBase
     /// <inheritdoc />
     public override object BoxedValue
     {
-        get => Value;
+        get => Value!;
         set => Value = (T)value;
     }
 

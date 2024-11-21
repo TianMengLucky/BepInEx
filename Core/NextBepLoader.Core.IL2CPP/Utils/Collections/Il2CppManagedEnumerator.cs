@@ -13,6 +13,7 @@ using Type = System.Type;
 
 namespace NextBepLoader.Core.IL2CPP.Utils.Collections;
 
+#nullable disable
 public class Il2CppManagedEnumerator : Object
 {
     private static readonly Dictionary<Type, System.Func<object, Object>> boxers = new();

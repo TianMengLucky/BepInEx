@@ -15,7 +15,17 @@ public class FastTypeFinder
 {
     public List<FindInfo> _AllFindInfo = [];
 
-    public FastTypeFinder FindFormTypePath(string path, Func<AssemblyDefinition, bool> assemblyFilter, Func<TypeDefinition, bool> typeFilter)
+    public FastTypeFinder FindSingleAssembly(string path, Func<AssemblyDefinition, bool>? assemblyFilter = null, Func<TypeDefinition, bool>? typeFilter = null)
+    {
+        var dotNetLoader = new DotNetLoader
+        {
+            AssemblyFilter = assemblyFilter,
+            TypeFilter = typeFilter
+        };
+        dotNetLoader.AddAssemblyFormPath(path);
+        return FindFormTypeLoader(dotNetLoader, typeFilter);
+    }
+    public FastTypeFinder FindFormTypePath(string path, Func<AssemblyDefinition, bool>? assemblyFilter = null, Func<TypeDefinition, bool>? typeFilter = null)
     {
         var dotNetLoader = new DotNetLoader
         {

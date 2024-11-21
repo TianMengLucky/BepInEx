@@ -5,6 +5,7 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Utils;
 
+#nullable disable
 internal static class PlatformUtils
 {
     public static Version WindowsVersion { get; set; }

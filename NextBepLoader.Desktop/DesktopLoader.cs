@@ -54,7 +54,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 
     public ILogListener? DiskLogListener { get; private set; }
     public List<Type> DefaultPreLoaderTypes = [];
-    public PreLoadEventArg PreLoadEventArg = new();
+    public readonly PreLoadEventArg PreLoadEventArg = new();
     public override void Start()
     {
         PlatformUtils.SetDesktopPlatformVersion();
@@ -92,7 +92,6 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         MainServices.TryRun<DesktopBepEnv>()
                     .TryRun<DesktopPreLoadManager>()
                     .TryRun<DesktopProviderManager>();
-        /*MainServices.StartRunner();*/
     }
 
     public NextServiceCollection BuildService()
@@ -107,6 +106,7 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
             .AddSingleton<INextBepEnv, DesktopBepEnv>(n => n.GetRequiredService<DesktopBepEnv>())
             .AddSingleton<DesktopPreLoadManager>()
             .AddSingleton<DesktopProviderManager>()
+            .AddSingleton<PluginInfoManager>()
             .AddSingleton<IProviderManager, DesktopProviderManager>(n => n.GetRequiredService<DesktopProviderManager>())
             .AddTransient<HttpClient>()
             .AddNextLogger()

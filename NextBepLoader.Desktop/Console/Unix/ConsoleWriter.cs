@@ -6,7 +6,7 @@ namespace NextBepLoader.Deskstop.Console.Unix;
 
 internal static class ConsoleWriter
 {
-    private static Func<Stream, Encoding, bool, StreamWriter> cStreamWriterConstructor;
+    private static Func<Stream, Encoding, bool, StreamWriter>? cStreamWriterConstructor;
 
     private static Func<Stream, Encoding, bool, StreamWriter> CStreamWriterConstructor
     {
@@ -16,19 +16,6 @@ internal static class ConsoleWriter
                 return cStreamWriterConstructor;
 
             var cStreamWriter = AccessTools.TypeByName("System.IO.CStreamWriter");
-
-            Func<Stream, Encoding, bool, StreamWriter> GetCtor(int[] perm)
-            {
-                var parameters = new[] { typeof(Stream), typeof(Encoding), typeof(bool) };
-                var ctor = AccessTools.Constructor(cStreamWriter, perm.Select(i => parameters[i]).ToArray());
-                if (ctor != null)
-                    return (stream, encoding, l) =>
-                    {
-                        var vals = new object[] { stream, encoding, l };
-                        return (StreamWriter)ctor.Invoke(perm.Select(i => vals[i]).ToArray());
-                    };
-                return null;
-            }
 
             var ctorParams = new[]
             {
@@ -40,12 +27,25 @@ internal static class ConsoleWriter
             if (cStreamWriterConstructor == null)
                 throw new AmbiguousMatchException("Failed to find suitable constructor for CStreamWriter");
             return cStreamWriterConstructor;
+
+            Func<Stream, Encoding, bool, StreamWriter>? GetCtor(int[] perm)
+            {
+                var parameters = new[] { typeof(Stream), typeof(Encoding), typeof(bool) };
+                var ctor = AccessTools.Constructor(cStreamWriter, perm.Select(i => parameters[i]).ToArray());
+                if (ctor != null)
+                    return (stream, encoding, l) =>
+                    {
+                        var vals = new object[] { stream, encoding, l };
+                        return (StreamWriter)ctor.Invoke(perm.Select(i => vals[i]).ToArray());
+                    };
+                return null;
+            }
         }
     }
 
     public static TextWriter CreateConsoleStreamWriter(Stream stream, Encoding encoding, bool leaveOpen)
     {
-        var writer = CStreamWriterConstructor(stream, encoding, leaveOpen);
+        var writer = CStreamWriterConstructor.Invoke(stream, encoding, leaveOpen);
         writer.AutoFlush = true;
         return writer;
     }

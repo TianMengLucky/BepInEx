@@ -6,6 +6,7 @@ using System.Linq;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Utils;
 
+
 namespace NextBepLoader.Core.PreLoader.Bootstrap;
 
 public class FastCaches<T>(string cacheName) where T : ICacheableData, new()

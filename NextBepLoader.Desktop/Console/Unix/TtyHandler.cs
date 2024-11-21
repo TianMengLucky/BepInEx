@@ -6,6 +6,7 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Unix;
 
+#nullable disable
 internal class TtyInfo
 {
     public string TerminalType { get; set; } = "default";
@@ -31,7 +32,7 @@ internal class TtyInfo
 
 internal static class TtyHandler
 {
-    private static readonly string[] ncursesLocations =
+    private static readonly string[] NcursesLocations =
     {
         "/usr/share/terminfo",
         "/etc/terminfo",
@@ -48,10 +49,7 @@ internal static class TtyHandler
 
         infoFilePath = Utility.CombinePaths(dir, term.Substring(0, 1), term);
 
-        if (File.Exists(infoFilePath))
-            return infoFilePath;
-
-        return null;
+        return File.Exists(infoFilePath) ? infoFilePath : null;
     }
 
     private static string FindTermInfoPath(string term)
@@ -66,7 +64,7 @@ internal static class TtyHandler
             if (text != null) return text;
         }
 
-        foreach (var location in ncursesLocations)
+        foreach (var location in NcursesLocations)
             if (Directory.Exists(location))
             {
                 var text = TryTermInfoDir(location, term);

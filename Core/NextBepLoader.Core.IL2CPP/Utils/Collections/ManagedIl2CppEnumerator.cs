@@ -4,6 +4,7 @@ using Il2CppSystem.Collections;
 
 namespace NextBepLoader.Core.IL2CPP.Utils.Collections;
 
+#nullable disable
 public class ManagedIl2CppEnumerator(IEnumerator enumerator) : System.Collections.IEnumerator
 {
     private static readonly Func<IEnumerator, bool> moveNext = AccessTools
