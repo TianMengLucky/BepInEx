@@ -13,16 +13,6 @@ namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, UnityInfo unityInfo) : BasePreLoader
 {
     public override PreLoadPriority Priority => PreLoadPriority.VeryLast;
-    public IL2CPPCheckEventArg _IL2CPPCheckEventArg;
-    
-    /*private static readonly ConfigEntry<bool> UpdateInteropAssemblies =
-        ConfigFile.CoreConfig.Bind("IL2CPP",
-                                   "UpdateInteropAssemblies",
-                                   true,
-                                   new StringBuilder()
-                                       .AppendLine("Whether to run Il2CppInterop automatically to generate Il2Cpp support assemblies when they are outdated.")
-                                       .AppendLine("If disabled assemblies in `BepInEx/interop` won't be updated between game or BepInEx updates!")
-                                       .ToString());*/
 
     public override void PreLoad(PreLoadEventArg arg)
     {

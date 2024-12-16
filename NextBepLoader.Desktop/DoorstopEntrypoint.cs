@@ -19,11 +19,10 @@ internal static class Entrypoint
         var silentExceptionLog = Environment.GetEnvironmentVariable("BEPINEX_PRELOADER_LOG") ??
                                  $"preloader_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log";
         Mutex? mutex = null;
-
+        
         try
         {
-            EnvVars.LoadVars();
-
+            EnvVars.LoadVars(); 
             silentExceptionLog =
                 Path.Combine(Path.GetDirectoryName(EnvVars.DOORSTOP_PROCESS_PATH)!, silentExceptionLog);
 
@@ -35,6 +34,7 @@ internal static class Entrypoint
 
             if (!DesktopLoader.TryCreateLoader(out var message))
             {
+                
                 throw new Exception("Loader Create Load Error:\n" + message);
             }
         }

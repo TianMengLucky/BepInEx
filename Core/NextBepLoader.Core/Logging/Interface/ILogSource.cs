@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NextBepLoader.Core.Logging;
+namespace NextBepLoader.Core.Logging.Interface;
 
 /// <summary>
 ///     Log source that can output log messages.

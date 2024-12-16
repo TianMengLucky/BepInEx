@@ -176,4 +176,13 @@ public static class CoreUtils
 
         return provider;
     }
+
+    public static IServiceCollection SingleService<TInterface, TClass>(this IServiceCollection collection) where TClass : class, TInterface where TInterface : class
+    {
+        collection
+            .AddSingleton<TClass>()
+            .AddSingleton<TInterface, TClass>(provider => provider.GetRequiredService<TClass>());
+        
+        return collection;
+    }
 }

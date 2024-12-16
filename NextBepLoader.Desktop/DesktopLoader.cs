@@ -1,7 +1,5 @@
 using AsmResolver.DotNet;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
 using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.IL2CPP;
@@ -9,6 +7,8 @@ using NextBepLoader.Core.IL2CPP.NextPreLoaders;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Logging.DefaultListener;
+using NextBepLoader.Core.Logging.Extensions;
+using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.Bootstrap;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
@@ -102,12 +102,10 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
             .AddSingleton(DotNetLoader)
             .AddSingleton(this)
             .AddSingleton(UnityInfo.Instance)
-            .AddSingleton<DesktopBepEnv>()
-            .AddSingleton<INextBepEnv, DesktopBepEnv>(n => n.GetRequiredService<DesktopBepEnv>())
-            .AddSingleton<DesktopPreLoadManager>()
-            .AddSingleton<DesktopProviderManager>()
             .AddSingleton<PluginInfoManager>()
-            .AddSingleton<IProviderManager, DesktopProviderManager>(n => n.GetRequiredService<DesktopProviderManager>())
+            .SingleService<INextBepEnv, DesktopBepEnv>()
+            .SingleService<IProviderManager, DesktopProviderManager>()
+            .SingleService<IPreLoaderManager, DesktopPreLoadManager>()
             .AddTransient<HttpClient>()
             .AddNextLogger()
             .AddTraceLogSource();

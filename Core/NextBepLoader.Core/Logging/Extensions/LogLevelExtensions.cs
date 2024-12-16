@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace NextBepLoader.Core.Logging;
+namespace NextBepLoader.Core.Logging.Extensions;
 
 /// <summary>
 ///     Helper methods for log level handling.

@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using MonoMod.Core;
-using MonoMod.Core.Platforms;
 using NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;

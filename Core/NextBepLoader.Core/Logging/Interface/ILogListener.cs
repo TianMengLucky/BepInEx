@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NextBepLoader.Core.Logging;
+namespace NextBepLoader.Core.Logging.Interface;
 
 /// <summary>
 ///     A generic log listener that receives log events and can route them to some output (e.g. file, console, socket).

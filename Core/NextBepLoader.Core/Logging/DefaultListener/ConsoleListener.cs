@@ -1,4 +1,6 @@
 using NextBepLoader.Core.LoaderInterface;
+using NextBepLoader.Core.Logging.Extensions;
+using NextBepLoader.Core.Logging.Interface;
 
 namespace NextBepLoader.Core.Logging.DefaultListener;
 

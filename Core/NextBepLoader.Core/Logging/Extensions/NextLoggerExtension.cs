@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.Logging.DefaultSource;
+using NextBepLoader.Core.Logging.Interface;
 
-namespace NextBepLoader.Core.Logging;
+namespace NextBepLoader.Core.Logging.Extensions;
 
 public static class NextLoggerExtension
 {

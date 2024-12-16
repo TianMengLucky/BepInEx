@@ -24,4 +24,6 @@ public abstract class BasePlugin : INextPlugin
     public abstract void Load();
 
     public virtual bool Unload() => false;
+
+    public virtual void RegisterApi() { }
 }

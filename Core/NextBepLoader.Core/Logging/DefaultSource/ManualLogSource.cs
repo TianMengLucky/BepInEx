@@ -1,5 +1,6 @@
 ﻿using System;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
+using NextBepLoader.Core.Logging.Interface;
 
 namespace NextBepLoader.Core.Logging.DefaultSource;
 

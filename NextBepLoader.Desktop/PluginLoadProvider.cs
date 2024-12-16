@@ -12,7 +12,7 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Deskstop;
 
-public class PluginLoadProvider(ILogger<PluginLoadProvider> logger, DotNetLoader loader, PluginInfoManager pluginInfoManager)
+public class PluginLoadProvider(ILogger<PluginLoadProvider> logger, DotNetLoader loader)
     : LoadProviderBase<BasePlugin>(loader)
 {
     private static readonly string FullName = typeof(BasePlugin).FullName ?? "";

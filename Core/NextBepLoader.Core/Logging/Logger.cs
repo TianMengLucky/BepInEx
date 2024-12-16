@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
 using NextBepLoader.Core.Logging.DefaultSource;
+using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.Logging;

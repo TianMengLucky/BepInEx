@@ -1,5 +1,6 @@
 using System;
 using NextBepLoader.Core.Logging;
+using NextBepLoader.Core.Logging.Interface;
 using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP.Logging;

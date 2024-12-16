@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using NextBepLoader.Core.Logging.Extensions;
+using NextBepLoader.Core.Logging.Interface;
 using MicrosoftLogging = Microsoft.Extensions.Logging;
 
 namespace NextBepLoader.Core.Logging;

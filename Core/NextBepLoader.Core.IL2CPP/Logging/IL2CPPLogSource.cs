@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using NextBepLoader.Core.Logging;
+using NextBepLoader.Core.Logging.Interface;
 
 namespace NextBepLoader.Core.IL2CPP.Logging;
 
@@ -18,7 +19,7 @@ public class IL2CPPLogSource : ILogSource
     public void Dispose() { }
 
     private void IL2CPPLogCallback(string message) =>
-        LogEvent?.Invoke(this, new LogEventArgs(message.Trim(), LogLevel.Message, this));
+        LogEvent(this, new LogEventArgs(message.Trim(), LogLevel.Message, this));
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void IL2CPPLogCallbackDelegate([In] [MarshalAs(UnmanagedType.LPStr)] string message);

@@ -1,4 +1,5 @@
 ﻿using System;
+using NextBepLoader.Core.Logging.Interface;
 
 namespace NextBepLoader.Core.Logging;
 

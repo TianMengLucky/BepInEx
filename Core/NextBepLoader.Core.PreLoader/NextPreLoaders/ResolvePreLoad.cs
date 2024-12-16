@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.PreLoader.NextPreLoaders;
@@ -29,7 +31,7 @@ public class ResolvePreLoad : BasePreLoader
         // The parent path -> .NET has some extra managed DLLs in there
         AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Path.GetDirectoryName(Paths.ManagedPath)!);
         AppDomain.CurrentDomain.AddCecilPlatformAssemblies(Paths.UnityBaseDirectory);
-
+        
         AppDomain.CurrentDomain.AssemblyResolve += LocalResolve;
     }
 

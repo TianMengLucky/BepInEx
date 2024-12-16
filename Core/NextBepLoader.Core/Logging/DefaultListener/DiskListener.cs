@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.Logging.DefaultListener;
