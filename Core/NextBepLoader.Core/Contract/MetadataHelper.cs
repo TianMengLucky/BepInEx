@@ -74,7 +74,7 @@ public static class MetadataHelper
         plugin.GetCustomAttributes(typeof(PluginDependency), true).Cast<PluginDependency>();
     
     
-    public static IEnumerable<PluginCompatibility> FromCecilType(this TypeDefinition td)
+    public static IEnumerable<PluginCompatibility> CompatibilityFromAsmType(this TypeDefinition td)
     {
         var attrs = GetCustomAttributes<PluginCompatibility>(td, true);
         return attrs.Select(customAttribute =>
@@ -83,22 +83,26 @@ public static class MetadataHelper
             return new PluginCompatibility(dependencyGuid);
         }).ToList();
     }
-    
-    public static void SetMedata(this PluginMetadata metadata, Type type)
+
+    public static PluginMetadata? GetMetadataFromAsmType(this TypeDefinition td)
     {
-        if (string.IsNullOrEmpty(metadata.Name))
-            metadata.Name = type.Name;
+        var attr = GetCustomAttributes<PluginMetadata>(td, false).FirstOrDefault();
+        if (attr == null)
+        {
+            return null;
+        }
         
-        var processes = type.GetCustomAttributes<PluginProcess>(false).ToList();
-        if (processes.Any())
-            metadata.Processes = processes;
-        
-        var dependencies = type.GetCustomAttributes<PluginDependency>(false).ToList();
-        if (dependencies.Any())
-            metadata.Dependencies = dependencies;
-        
-        var compatibilities = type.GetCustomAttributes<PluginCompatibility>(false).ToList();
-        if (compatibilities.Any())
-            metadata.Compatibilities = compatibilities;
+        var type =
+            Enum.Parse<LoaderPlatformType>(attr.Signature!.NamedArguments[0].Argument.Element!.ToString());
+        var id = attr.Signature!.NamedArguments[1].Argument.Element!.ToString();
+        var metadata = new PluginMetadata(type, id);
+
+        if (attr.Signature.NamedArguments.Count > 2)
+        { 
+            metadata.Name = attr.Signature.NamedArguments[2].Argument.Element!.ToString();
+            metadata.Version = new Version(attr.Signature.NamedArguments[3].Argument.Element!.ToString());
+        }
+
+        return metadata;
     }
 }

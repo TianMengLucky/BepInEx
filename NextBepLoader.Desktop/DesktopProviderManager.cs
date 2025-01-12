@@ -60,7 +60,7 @@ public class ProviderLoader(IServiceProvider serviceProvider)
         {
             Providers.Add(targetProvider);
         }
-
+        
         return this;
 
         IProvider? Selector(FastTypeFinder.FindInfo info)

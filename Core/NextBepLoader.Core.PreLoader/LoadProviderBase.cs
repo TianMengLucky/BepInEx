@@ -12,6 +12,7 @@ public class LoadProviderBase<TPlugin>: IProvider
     public readonly DotNetLoader _DotNetLoader;
     public readonly FastTypeFinder Finder = new();
     public List<TPlugin> AllSelect = [];
+    
     protected LoadProviderBase(DotNetLoader loader)
     {
         Instance = this;
@@ -26,6 +27,7 @@ public class LoadProviderBase<TPlugin>: IProvider
     {
         AllSelect = Finder
                     .FindFormTypeLoader(_DotNetLoader, IsTarget)
+                    .Where(PreFilter)
                     .SelectTo(Selector);
     }
     public virtual void OnGameActive(){}
@@ -33,6 +35,11 @@ public class LoadProviderBase<TPlugin>: IProvider
     protected virtual TPlugin? Selector(FastTypeFinder.FindInfo info)
     {
         return default;
+    }
+
+    protected virtual bool PreFilter(FastTypeFinder.FindInfo info)
+    {
+        return true;
     }
 
     protected virtual bool IsTarget(TypeDefinition type)

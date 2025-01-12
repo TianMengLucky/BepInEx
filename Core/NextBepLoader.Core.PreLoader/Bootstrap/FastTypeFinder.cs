@@ -35,6 +35,13 @@ public class FastTypeFinder
         dotNetLoader.AddAssembliesFormDirector(path);
         return FindFormTypeLoader(dotNetLoader, null);
     }
+
+    public FastTypeFinder Where(Func<FindInfo, bool> typeFilter)
+    {
+        _AllFindInfo = _AllFindInfo.Where(typeFilter).ToList();
+        return this;
+    }
+    
     public FastTypeFinder FindFormTypeLoader(DotNetLoader loader, Func<TypeDefinition, bool>? typeFilter)
     {
         _AllFindInfo = [];
@@ -76,7 +83,7 @@ public class FastTypeFinder
     public record FindInfo(string Path, AssemblyDefinition AssemblyDefinition, TypeDefinition Type)
     {
         public string TypeName => Type.FullName;
-        public Assembly _Assembly => Assembly.LoadFrom(Path);
-        public Type? AssemblyType => _Assembly.GetType(TypeName);
+        public Assembly AssemblyInstance => Assembly.LoadFrom(Path);
+        public Type? AssemblyType => AssemblyInstance.GetType(TypeName);
     }
 }
